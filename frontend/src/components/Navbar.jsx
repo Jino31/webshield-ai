@@ -105,14 +105,14 @@ export default function Navbar() {
           <div>
             <button
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-2 bg-[#13111C] hover:bg-[#1A1528] border border-[#231E33] text-white px-3.5 py-2 rounded-xl transition cursor-pointer shadow-md"
+              className="flex items-center gap-2.5 bg-gradient-to-r from-[#13111C] to-[#1A1528] hover:from-[#1A1528] hover:to-[#221B36] border border-[#22D3EE]/40 hover:border-[#22D3EE] text-white px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer shadow-lg shadow-cyan-950/30 ring-1 ring-[#22D3EE]/20 hover:ring-[#22D3EE]/50"
             >
               {currentUser.photoURL ? (
-                <img src={currentUser.photoURL} alt="Profile" className="w-5 h-5 rounded-full object-cover" />
+                <img src={currentUser.photoURL} alt="Profile" className="w-5 h-5 rounded-full object-cover ring-1 ring-[#22D3EE]/50" />
               ) : (
-                <User className="w-4 h-4 text-[#8B5CF6]" />
+                <User className="w-4 h-4 text-[#22D3EE]" />
               )}
-              <span className="text-xs font-medium max-w-[120px] truncate hidden sm:inline">
+              <span className="text-xs font-semibold tracking-wide max-w-[120px] truncate hidden sm:inline text-cyan-100">
                 {currentUser.displayName || currentUser.email}
               </span>
             </button>
