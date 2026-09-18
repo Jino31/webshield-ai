@@ -8,6 +8,7 @@ import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import ReportScam from './pages/ReportScam';
 import ScanTrends from './pages/ScanTrends';
+import Admin from './pages/Admin';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Navbar />
         <main className="flex-1 flex flex-col items-center">
           <Routes>
+            
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signin" element={<Login />} />
@@ -25,6 +27,7 @@ function App() {
             <Route path="/Profile" element={<Profile />} />
             <Route path="/scam-report" element={<ReportScam />} />
             <Route path="/scan-trends" element={<ScanTrends />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </main>
       </div>
