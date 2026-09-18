@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { ShieldCheck, User, Menu, X, History, Settings, LogOut, LogIn } from 'lucide-react';
+import { ShieldCheck, User, Menu, X, History, Settings, LogOut, LogIn, UserCircle } from 'lucide-react';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -118,6 +118,18 @@ export default function Navbar() {
                   <p className="text-xs font-semibold text-white truncate">{currentUser.displayName || 'SecOps User'}</p>
                   <p className="text-[10px] text-neutral-400 truncate mt-0.5">{currentUser.email}</p>
                 </div>
+                
+                <button
+                  onClick={() => {
+                    setProfileOpen(false);
+                    navigate('/Profile');
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-neutral-300 hover:text-white hover:bg-[#1A1528] transition text-left cursor-pointer mb-1"
+                >
+                  <UserCircle className="w-4 h-4 text-[#22D3EE]" />
+                  <span>View Profile</span>
+                </button>
+
                 <button
                   onClick={handleSignOut}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/30 transition text-left cursor-pointer"
