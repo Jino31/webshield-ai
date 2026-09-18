@@ -57,13 +57,13 @@ export default function Navbar() {
           {isOpen ? <X className="w-5 h-5 text-[#8B5CF6]" /> : <Menu className="w-5 h-5 text-white" />}
         </button>
 
-        {/* Brand Name with Properly Framed Logo Shield */}
+        {/* Brand Name with Scaled Logo Shield */}
         <Link to="/" className="flex items-center gap-3 text-white font-bold text-xl tracking-tight group">
-          <div className="w-9 h-9 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center overflow-hidden p-1 group-hover:border-[#8B5CF6]/50 transition shadow-inner">
+          <div className="w-10 h-10 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center overflow-hidden group-hover:border-[#8B5CF6]/50 transition shadow-inner">
             <img 
               src="/logo.png" 
               alt="WebShield AI Logo" 
-              className="w-full h-full object-contain" 
+              className="w-full h-full object-cover scale-[1.7]" 
             />
           </div>
           <span>WebShield AI</span>
