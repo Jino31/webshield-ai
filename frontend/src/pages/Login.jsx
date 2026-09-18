@@ -158,15 +158,15 @@ export default function Login() {
         setNotification({ type: 'success', message: 'Reset instructions sent successfully.' });
       } else if (isSignupRoute) {
         setNotification({ type: 'success', message: 'Account created successfully.' });
-        setTimeout(() => navigate('/scanner'), 700);
+        setTimeout(() => navigate('/Profile'), 700);
       } else {
         setNotification({ type: 'success', message: 'Signed in successfully.' });
-        setTimeout(() => navigate('/scanner'), 700);
+        setTimeout(() => navigate('/Profile'), 700);
       }
     }, 850);
   };
 
-  // Functional Google Firebase Authentication Handler
+  // Functional Google Firebase Authentication Handler -> Redirects to /Profile
   const handleGoogleAuth = async (e) => {
     e.preventDefault();
     if (isLoading) return;
@@ -184,7 +184,7 @@ export default function Login() {
       });
 
       setTimeout(() => {
-        navigate('/scanner');
+        navigate('/Profile');
       }, 1000);
     } catch (err) {
       console.error('Google Sign-In Error:', err);
