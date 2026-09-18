@@ -2,19 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
-import { 
-  Menu, 
-  X, 
-  History, 
-  Settings, 
-  LogOut, 
-  LogIn, 
-  UserCircle, 
-  User, 
-  AlertOctagon, 
-  TrendingUp, 
-  HelpCircle 
-} from 'lucide-react';
+import { Menu, X, History, Settings, LogOut, LogIn, UserCircle, User } from 'lucide-react';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +48,7 @@ export default function Navbar() {
   return (
     <nav className="w-full border-b border-[#231E33] bg-[#0A0A0F]/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
       {/* Left: Hamburger Menu & Brand */}
-      <div className="flex items-center gap-6 relative" ref={menuRef}>
+      <div className="flex items-center gap-4 relative" ref={menuRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="p-2 rounded-xl bg-[#13111C] hover:bg-[#1A1528] text-white border border-[#231E33] transition focus:outline-none cursor-pointer"
@@ -81,36 +69,9 @@ export default function Navbar() {
           <span>WebShield AI</span>
         </Link>
 
-        {/* Desktop Quick Links */}
-        <div className="hidden lg:flex items-center gap-1 ml-4 pl-4 border-l border-[#231E33]">
-          <button
-            onClick={() => navigate('/scam-report')}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-300 hover:text-white hover:bg-[#13111C] transition cursor-pointer"
-          >
-            <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
-            <span>Report a Scam</span>
-          </button>
-          
-          <button
-            onClick={() => navigate('/scan-trends')}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-300 hover:text-white hover:bg-[#13111C] transition cursor-pointer"
-          >
-            <TrendingUp className="w-3.5 h-3.5 text-[#22D3EE]" />
-            <span>Scan Trends</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/how-it-works')}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-300 hover:text-white hover:bg-[#13111C] transition cursor-pointer"
-          >
-            <HelpCircle className="w-3.5 h-3.5 text-[#8B5CF6]" />
-            <span>How It Works</span>
-          </button>
-        </div>
-
         {/* Navigation Dropdown Menu (Mobile / Collapsed) */}
         {isOpen && (
-          <div className="absolute top-14 left-0 w-60 bg-[#13111C] border border-[#231E33] rounded-2xl shadow-2xl p-2 z-50 animate-fade-in space-y-1">
+          <div className="absolute top-14 left-0 w-56 bg-[#13111C] border border-[#231E33] rounded-2xl shadow-2xl p-2 z-50 animate-fade-in space-y-1">
             <div className="px-3 py-2 text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">
               Navigation
             </div>
@@ -125,41 +86,6 @@ export default function Navbar() {
               <History className="w-4 h-4 text-[#8B5CF6]" />
               <span>Scan History</span>
             </button>
-
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                navigate('/scam-report');
-              }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-neutral-300 hover:text-white hover:bg-[#1A1528] transition text-left cursor-pointer"
-            >
-              <AlertOctagon className="w-4 h-4 text-rose-400" />
-              <span>Report a Scam</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                navigate('/scan-trends');
-              }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-neutral-300 hover:text-white hover:bg-[#1A1528] transition text-left cursor-pointer"
-            >
-              <TrendingUp className="w-4 h-4 text-[#22D3EE]" />
-              <span>Scan Trends</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                navigate('/how-it-works');
-              }}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-neutral-300 hover:text-white hover:bg-[#1A1528] transition text-left cursor-pointer"
-            >
-              <HelpCircle className="w-4 h-4 text-[#8B5CF6]" />
-              <span>How It Works</span>
-            </button>
-
-            <div className="border-t border-[#231E33] my-1 pt-1"></div>
 
             <button
               onClick={() => {

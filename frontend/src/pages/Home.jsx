@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Terminal } from 'lucide-react';
+import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap } from 'lucide-react';
 
 export default function Home() {
   const [urlInput, setUrlInput] = useState('');
@@ -15,7 +15,6 @@ export default function Home() {
     setTimeout(() => {
       const lowerUrl = targetUrl.toLowerCase();
       
-      // Basic heuristic rules for demonstration
       const hasIp = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(targetUrl);
       const isSuspiciousKeyword = /login|secure|update|account|verify|bank|signin|support/.test(lowerUrl);
       const isKnownSafe = /google|facebook|github|wikipedia|microsoft|apple|amazon/.test(lowerUrl);
@@ -70,6 +69,13 @@ export default function Home() {
     setScanResult(null);
   };
 
+  const scrollToHowItWorks = () => {
+    const section = document.getElementById('how-it-works');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 py-16 bg-[#0A0A0F] text-[#FAFAFA] overflow-x-hidden">
       {/* Background VFX Glow Orbs & Subtle Grid */}
@@ -89,9 +95,20 @@ export default function Home() {
           Detect Phishing & Fake Websites <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Instantly</span>
         </h1>
         
-        <p className="text-neutral-400 text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
+        <p className="text-neutral-400 text-lg md:text-xl max-w-2xl mb-8 leading-relaxed">
           Protect yourself against malicious links, spoofed domains, and online fraud using advanced lexical feature extraction and real-time classification models.
         </p>
+
+        {/* Action Buttons (Scan + How It Works Scroll) */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+          <button
+            type="button"
+            onClick={scrollToHowItWorks}
+            className="px-6 py-4 rounded-xl bg-[#13111C] hover:bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/40 text-neutral-300 hover:text-white text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 shadow-md"
+          >
+            <Zap className="w-4 h-4 text-[#8B5CF6]" /> How It Works
+          </button>
+        </div>
 
         {/* Interactive URL Scan Input Form */}
         <form onSubmit={handleScanSubmit} className="w-full max-w-2xl flex flex-col sm:flex-row gap-3 mb-6">
@@ -242,9 +259,9 @@ export default function Home() {
           </div>
         )}
 
-        {/* How It Works Section */}
+        {/* How It Works Section with ID for Smooth Scroll */}
         {!scanResult && (
-          <div className="w-full max-w-5xl bg-[#13111C]/60 backdrop-blur-xl border border-[#231E33] p-8 sm:p-12 rounded-3xl text-left shadow-2xl">
+          <div id="how-it-works" className="w-full max-w-5xl bg-[#13111C]/60 backdrop-blur-xl border border-[#231E33] p-8 sm:p-12 rounded-3xl text-left shadow-2xl scroll-mt-24">
             <div className="text-center max-w-xl mx-auto mb-12">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A1528] border border-[#2B2340] text-[#22D3EE] text-xs font-semibold mb-3 uppercase tracking-wider">
                 <Zap className="w-3.5 h-3.5" /> Simple 4-Step Architecture
