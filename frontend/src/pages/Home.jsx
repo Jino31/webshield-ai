@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Terminal } from 'lucide-react';
+import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Terminal, Database, Code2, ShieldCheck } from 'lucide-react';
 
 export default function Home() {
   const [urlInput, setUrlInput] = useState('');
@@ -213,92 +213,85 @@ export default function Home() {
           </div>
         )}
 
-        {/* Feature Highlights Grid */}
+        {/* How WebShield AI Actually Works Section */}
         {!scanResult && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left mb-20">
-            <div className="bg-[#13111C]/80 backdrop-blur-xl border border-[#231E33] hover:border-[#8B5CF6]/50 p-6 rounded-3xl transition-all shadow-xl shadow-purple-950/20">
-              <div className="w-10 h-10 rounded-xl bg-[#1A1528] border border-[#2B2340] flex items-center justify-center text-[#8B5CF6] mb-4">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-semibold text-[#FAFAFA] mb-2">Machine Learning Core</h3>
-              <p className="text-neutral-400 text-sm leading-relaxed">Trained on real-world security datasets utilizing Random Forest classification to predict threat probabilities.</p>
-            </div>
-
-            <div className="bg-[#13111C]/80 backdrop-blur-xl border border-[#231E33] hover:border-[#EC4899]/50 p-6 rounded-3xl transition-all shadow-xl shadow-purple-950/20">
-              <div className="w-10 h-10 rounded-xl bg-[#1A1528] border border-[#2B2340] flex items-center justify-center text-[#10B981] mb-4">
-                <CheckCircle2 className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-semibold text-[#FAFAFA] mb-2">Instant Lexical Analysis</h3>
-              <p className="text-neutral-400 text-sm leading-relaxed">Instantly evaluates URL length, IP address presence, dot/hyphen counts, and protocol security.</p>
-            </div>
-
-            <div className="bg-[#13111C]/80 backdrop-blur-xl border border-[#231E33] hover:border-[#8B5CF6]/50 p-6 rounded-3xl transition-all shadow-xl shadow-purple-950/20">
-              <div className="w-10 h-10 rounded-xl bg-[#1A1528] border border-[#2B2340] flex items-center justify-center text-[#EC4899] mb-4">
-                <Lock className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-semibold text-[#FAFAFA] mb-2">Secure & Logged</h3>
-              <p className="text-neutral-400 text-sm leading-relaxed">Powered by a robust backend architecture with database scan logging for comprehensive auditing.</p>
-            </div>
-          </div>
-        )}
-
-        {/* How It Works Section */}
-        {!scanResult && (
-          <div className="w-full max-w-5xl bg-[#13111C]/60 backdrop-blur-xl border border-[#231E33] p-8 sm:p-12 rounded-3xl text-left shadow-2xl">
-            <div className="text-center max-w-xl mx-auto mb-12">
+          <div className="w-full max-w-5xl bg-[#13111C]/60 backdrop-blur-xl border border-[#231E33] p-8 sm:p-12 rounded-3xl text-left shadow-2xl mb-12">
+            <div className="text-center max-w-2xl mx-auto mb-12">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A1528] border border-[#2B2340] text-[#22D3EE] text-xs font-semibold mb-3 uppercase tracking-wider">
-                <Zap className="w-3.5 h-3.5" /> Simple 4-Step Architecture
+                <Terminal className="w-3.5 h-3.5" /> Technical Pipeline & Architecture
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white">How WebShield AI Works</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white">How WebShield AI Detects Threats</h2>
               <p className="text-neutral-400 text-sm mt-2">
-                Our platform uses robust feature extraction and machine learning classification to evaluate suspicious links in milliseconds.
+                Our application bridges a high-performance React frontend with an automated machine learning classification backend to evaluate URLs in real-time.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-[#0A0A0F] border border-[#231E33] p-6 rounded-2xl relative">
-                <div className="absolute top-4 right-4 text-xs font-mono font-bold text-neutral-600">01</div>
-                <div className="w-10 h-10 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center text-[#22D3EE] mb-4">
-                  <Search className="w-5 h-5" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              
+              <div className="bg-[#0A0A0F] border border-[#231E33] p-6 rounded-2xl relative flex flex-col justify-between">
+                <div>
+                  <div className="absolute top-4 right-4 text-xs font-mono font-bold text-neutral-600">01</div>
+                  <div className="w-10 h-10 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center text-[#22D3EE] mb-4">
+                    <Search className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-white mb-1">1. Frontend Request</h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    The user enters a target URL into the React dashboard. Input validation sanitizes the string before evaluation.
+                  </p>
                 </div>
-                <h3 className="text-sm font-semibold text-white mb-1">1. Paste URL</h3>
-                <p className="text-xs text-neutral-400 leading-relaxed">
-                  Enter any suspicious web link or domain into the secure scanner interface.
-                </p>
+                <div className="mt-4 pt-3 border-t border-[#231E33]/60 text-[10px] font-mono text-[#22D3EE]">
+                  React &bull; Vite &bull; Tailwind
+                </div>
               </div>
 
-              <div className="bg-[#0A0A0F] border border-[#231E33] p-6 rounded-2xl relative">
-                <div className="absolute top-4 right-4 text-xs font-mono font-bold text-neutral-600">02</div>
-                <div className="w-10 h-10 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center text-[#8B5CF6] mb-4">
-                  <Layers className="w-5 h-5" />
+              <div className="bg-[#0A0A0F] border border-[#231E33] p-6 rounded-2xl relative flex flex-col justify-between">
+                <div>
+                  <div className="absolute top-4 right-4 text-xs font-mono font-bold text-neutral-600">02</div>
+                  <div className="w-10 h-10 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center text-[#8B5CF6] mb-4">
+                    <Code2 className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-white mb-1">2. Lexical Parsing</h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    The engine extracts key features: domain character length, presence of IP addresses, suspicious login keywords, and SSL protocols.
+                  </p>
                 </div>
-                <h3 className="text-sm font-semibold text-white mb-1">2. Feature Extraction</h3>
-                <p className="text-xs text-neutral-400 leading-relaxed">
-                  Lexical rules analyze structural properties like domain length, IP presence, and special keywords.
-                </p>
+                <div className="mt-4 pt-3 border-t border-[#231E33]/60 text-[10px] font-mono text-[#8B5CF6]">
+                  Feature Extraction Logic
+                </div>
               </div>
 
-              <div className="bg-[#0A0A0F] border border-[#231E33] p-6 rounded-2xl relative">
-                <div className="absolute top-4 right-4 text-xs font-mono font-bold text-neutral-600">03</div>
-                <div className="w-10 h-10 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center text-[#EC4899] mb-4">
-                  <Cpu className="w-5 h-5" />
+              <div className="bg-[#0A0A0F] border border-[#231E33] p-6 rounded-2xl relative flex flex-col justify-between">
+                <div>
+                  <div className="absolute top-4 right-4 text-xs font-mono font-bold text-neutral-600">03</div>
+                  <div className="w-10 h-10 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center text-[#EC4899] mb-4">
+                    <Cpu className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-white mb-1">3. ML Classification</h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    Extracted parameters are evaluated against trained classification models (such as Random Forest) to compute a phishing probability score.
+                  </p>
                 </div>
-                <h3 className="text-sm font-semibold text-white mb-1">3. ML Classification</h3>
-                <p className="text-xs text-neutral-400 leading-relaxed">
-                  Our trained Random Forest model evaluates the feature vector against known threat patterns.
-                </p>
+                <div className="mt-4 pt-3 border-t border-[#231E33]/60 text-[10px] font-mono text-[#EC4899]">
+                  Scikit-Learn &bull; Datasets
+                </div>
               </div>
 
-              <div className="bg-[#0A0A0F] border border-[#231E33] p-6 rounded-2xl relative">
-                <div className="absolute top-4 right-4 text-xs font-mono font-bold text-neutral-600">04</div>
-                <div className="w-10 h-10 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center text-emerald-400 mb-4">
-                  <Shield className="w-5 h-5" />
+              <div className="bg-[#0A0A0F] border border-[#231E33] p-6 rounded-2xl relative flex flex-col justify-between">
+                <div>
+                  <div className="absolute top-4 right-4 text-xs font-mono font-bold text-neutral-600">04</div>
+                  <div className="w-10 h-10 rounded-xl bg-[#13111C] border border-[#231E33] flex items-center justify-center text-emerald-400 mb-4">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-white mb-1">4. Secure Verdict</h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    The platform returns a structured risk assessment, confidence rating, and detailed telemetry view directly to the user interface.
+                  </p>
                 </div>
-                <h3 className="text-sm font-semibold text-white mb-1">4. Instant Verdict</h3>
-                <p className="text-xs text-neutral-400 leading-relaxed">
-                  Receive a clear risk score, confidence percentage, and detailed security breakdown instantly.
-                </p>
+                <div className="mt-4 pt-3 border-t border-[#231E33]/60 text-[10px] font-mono text-emerald-400">
+                  Real-time UI Rendering
+                </div>
               </div>
+
             </div>
           </div>
         )}
