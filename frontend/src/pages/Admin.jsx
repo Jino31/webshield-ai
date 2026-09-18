@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '../firebase';
 import { adminService } from '../services/adminService';
 import { 
   LayoutDashboard, 
@@ -18,22 +16,23 @@ import {
   Lock, 
   KeyRound, 
   AlertTriangle, 
-  Search, 
   RefreshCw, 
   CheckCircle2, 
   Server, 
   Menu, 
-  X,
-  Sliders,
-  Shield,
-  UserCheck
+  X
 } from 'lucide-react';
 
 export default function Admin() {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Strict Session Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('ws_admin_auth') === 'true';
+  });
+  const [passwordInput, setPasswordInput] = useState('');
+  const [authError, setAuthError] = useState(false);
+
   const [activeTab, setActiveTab] = useState('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
@@ -56,33 +55,31 @@ export default function Admin() {
     { id: 3, title: 'High Traffic Alert', time: '3h ago', unread: false },
   ]);
 
-  // Firebase Auth & Admin Verification
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setCurrentUser(user);
-        // Server-verified admin check or allow specific dev emails
-        // For demonstration robustness, we check if email exists or custom claims
-        const adminEmails = ['jino@webshield.ai', 'admin@webshield.ai'];
-        if (adminEmails.includes(user.email) || user.email?.includes('admin')) {
-          setIsAdmin(true);
-        } else {
-          // Fallback or demo rule: Allow if authenticated in test environment
-          setIsAdmin(true); 
-        }
-      } else {
-        setCurrentUser(null);
-        setIsAdmin(false);
-        navigate('/login', { replace: true });
-      }
-      setAuthLoading(false);
-    });
-    return () => unsubscribe();
-  }, [navigate]);
+  // Admin Password Configuration
+  const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'WebShieldAdmin2026!';
 
-  // Fetch admin telemetry data
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    if (passwordInput === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('ws_admin_auth', 'true');
+      setAuthError(false);
+      setPasswordInput('');
+    } else {
+      setAuthError(true);
+      setPasswordInput('');
+    }
+  };
+
+  const handleLockSession = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('ws_admin_auth');
+    setProfileDropdown(false);
+  };
+
+  // Fetch admin telemetry data only when authenticated
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!isAuthenticated) return;
     const fetchAdminData = async () => {
       setLoadingData(true);
       setErrorData(null);
@@ -109,31 +106,69 @@ export default function Admin() {
       }
     };
     fetchAdminData();
-  }, [isAdmin]);
+  }, [isAuthenticated]);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      navigate('/', { replace: true });
-    } catch (err) {
-      console.error('Sign out error:', err);
-    }
-  };
-
-  if (authLoading) {
+  // If not authenticated, render the secure password gate
+  if (!isAuthenticated) {
     return (
-      <div className="min-h-[calc(100vh-73px)] w-full flex items-center justify-center bg-[#05070A] text-[#FAFAFA]">
-        <div className="flex items-center gap-3 text-sm text-neutral-400 font-medium">
-          <Activity className="w-5 h-5 text-[#22D3EE] animate-spin" /> Verifying admin security clearance...
+      <div className="min-h-[calc(100vh-73px)] w-full bg-[#05070A] text-[#FAFAFA] flex items-center justify-center px-4">
+        <div className="relative z-10 w-full max-w-md bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-8 backdrop-blur-xl shadow-2xl space-y-6">
+          <div className="text-center space-y-2">
+            <div className="w-12 h-12 bg-[#22D3EE]/10 border border-[#22D3EE]/30 text-[#22D3EE] rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-cyan-950/40">
+              <Lock className="w-6 h-6" />
+            </div>
+            <h1 className="text-xl font-bold text-white tracking-tight">Restricted Admin Portal</h1>
+            <p className="text-xs text-neutral-400">Enter security clearance password to access the control center.</p>
+          </div>
+
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
+            {authError && (
+              <div className="p-3 bg-rose-950/40 border border-rose-800/60 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+                <span>Invalid admin password. Access denied.</span>
+              </div>
+            )}
+
+            <div>
+              <label htmlFor="admin-pass" className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">
+                Security Password
+              </label>
+              <div className="relative">
+                <KeyRound className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-500" />
+                <input
+                  id="admin-pass"
+                  type="password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="Enter admin password..."
+                  className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl pl-10 pr-4 py-3 text-white placeholder-neutral-600 focus:outline-none transition text-sm"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-[#22D3EE] to-blue-600 hover:opacity-90 text-black font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-cyan-950/40 cursor-pointer"
+            >
+              Authenticate Session
+            </button>
+          </form>
+
+          <div className="text-center pt-2">
+            <button
+              onClick={() => navigate('/')}
+              className="text-xs text-neutral-500 hover:text-neutral-300 transition cursor-pointer"
+            >
+              ← Return to Public Homepage
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!currentUser) {
-    return null;
-  }
-
+  // Authenticated Dashboard Layout
   return (
     <div className="min-h-[calc(100vh-73px)] w-full bg-[#05070A] text-[#FAFAFA] flex flex-col">
       
@@ -197,21 +232,17 @@ export default function Admin() {
               onClick={() => setProfileDropdown(!profileDropdown)}
               className="flex items-center gap-2 bg-[#13111C] hover:bg-[#1A1528] border border-neutral-800 px-3.5 py-2 rounded-xl text-xs font-medium text-white transition cursor-pointer"
             >
-              <span className="truncate max-w-[100px]">{currentUser.displayName || currentUser.email}</span>
+              <span>Administrator</span>
               <ChevronDown className="w-3.5 h-3.5 text-neutral-400" />
             </button>
 
             {profileDropdown && (
-              <div className="absolute right-0 top-12 w-52 bg-[#0D1117] border border-neutral-800 rounded-2xl shadow-2xl p-2 z-50 space-y-1">
-                <div className="px-3 py-2 border-b border-neutral-800 mb-1">
-                  <p className="text-xs font-semibold text-white truncate">{currentUser.displayName || 'Administrator'}</p>
-                  <p className="text-[10px] text-neutral-400 truncate">{currentUser.email}</p>
-                </div>
+              <div className="absolute right-0 top-12 w-48 bg-[#0D1117] border border-neutral-800 rounded-2xl shadow-2xl p-2 z-50">
                 <button
-                  onClick={handleSignOut}
+                  onClick={handleLockSession}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-rose-400 hover:bg-rose-950/30 transition text-left cursor-pointer"
                 >
-                  <LogOut className="w-3.5 h-3.5" /> Sign Out
+                  <LogOut className="w-3.5 h-3.5" /> Lock Session
                 </button>
               </div>
             )}
@@ -222,7 +253,7 @@ export default function Admin() {
       {/* Main Layout Grid */}
       <div className="flex-1 flex flex-col md:flex-row relative">
         
-        {/* Sidebar Navigation (Desktop & Mobile Drawer) */}
+        {/* Sidebar Navigation */}
         <aside className={`
           fixed md:relative z-20 inset-y-0 left-0 w-64 bg-[#0D1117] border-r border-neutral-800/80 p-4 flex flex-col gap-1 transition-transform duration-300
           ${mobileMenuOpen ? 'translate-x-0 top-16' : '-translate-x-full md:translate-x-0'}
@@ -294,29 +325,21 @@ export default function Admin() {
                     <div className="bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-5 shadow-lg">
                       <span className="text-[11px] text-neutral-500 uppercase tracking-wider block mb-1">Total Users</span>
                       <p className="text-2xl font-bold text-white">{stats?.totalUsers}</p>
-                      <span className="text-[10px] text-emerald-400 mt-2 inline-block">Active accounts</span>
                     </div>
-
                     <div className="bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-5 shadow-lg">
                       <span className="text-[11px] text-neutral-500 uppercase tracking-wider block mb-1">Total URL Scans</span>
                       <p className="text-2xl font-bold text-[#22D3EE]">{stats?.totalScans}</p>
-                      <span className="text-[10px] text-[#22D3EE] mt-2 inline-block">Detection rate: {stats?.detectionRate}</span>
                     </div>
-
                     <div className="bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-5 shadow-lg">
                       <span className="text-[11px] text-neutral-500 uppercase tracking-wider block mb-1">Safe URLs</span>
                       <p className="text-2xl font-bold text-emerald-400">{stats?.safeUrls}</p>
-                      <span className="text-[10px] text-emerald-400 mt-2 inline-block">Verified clean</span>
                     </div>
-
                     <div className="bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-5 shadow-lg">
                       <span className="text-[11px] text-neutral-500 uppercase tracking-wider block mb-1">Phishing Detected</span>
                       <p className="text-2xl font-bold text-rose-400">{stats?.phishingDetected}</p>
-                      <span className="text-[10px] text-rose-400 mt-2 inline-block">Blocked threats</span>
                     </div>
                   </div>
 
-                  {/* Recent Scans Table Preview */}
                   <div className="bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-6 shadow-lg space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider">Recent Scans</h3>
