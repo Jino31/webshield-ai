@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import History from './pages/History';
 import Settings from './pages/Settings';
+import Settings from './pages/Profile';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/signup" element={<Login />} />
             <Route path="/history" element={<History />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/Profile" element={<Profile />} />
           </Routes>
         </main>
       </div>
