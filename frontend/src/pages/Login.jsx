@@ -4,6 +4,8 @@ import {
   useNavigate,
   useLocation
 } from 'react-router-dom';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase';
 
 import {
   ArrowLeft,
@@ -164,10 +166,35 @@ export default function Login() {
     }, 850);
   };
 
-  const handleGoogleAuth = (e) => {
+  // Functional Google Firebase Authentication Handler
+  const handleGoogleAuth = async (e) => {
     e.preventDefault();
     if (isLoading) return;
-    setNotification({ type: 'error', message: 'Google authentication is not configured yet.' });
+
+    setIsLoading(true);
+    setNotification({ type: '', message: '' });
+
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      setNotification({ 
+        type: 'success', 
+        message: `Welcome back, ${user.displayName || user.email}!` 
+      });
+
+      setTimeout(() => {
+        navigate('/scanner');
+      }, 1000);
+    } catch (err) {
+      console.error('Google Sign-In Error:', err);
+      setNotification({ 
+        type: 'error', 
+        message: err.message || 'Failed to authenticate with Google.' 
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePlaceholderClick = (msg) => {
@@ -557,7 +584,7 @@ export default function Login() {
                   <div className="flex-grow border-t border-[#231E33]" />
                 </div>
 
-                {/* Google OAuth Placeholder */}
+                {/* Google OAuth Functional Button */}
                 <button
                   type="button"
                   disabled={isLoading}
