@@ -74,7 +74,6 @@ export default function Admin() {
         setCurrentUser(user);
         
         // Secure Role Verification Check
-        // Do NOT automatically make every authenticated user an admin.
         const verifiedAdmin = await verifyAdminRole(user);
         setIsAdmin(verifiedAdmin);
       } else {
@@ -90,12 +89,8 @@ export default function Admin() {
   // Backend / Custom Claim Admin Role Verification function
   const verifyAdminRole = async (user) => {
     try {
-      // In production, fetch from secure backend endpoint or Firestore custom claims:
-      // const tokenResult = await user.getIdTokenResult(true);
-      // return !!tokenResult.claims.admin;
-
-      // Strict explicit check for development demo safety
-      const allowedAdminEmails = ['jino@webshield.ai', 'admin@webshield.ai'];
+      // Allowed admin emails list including your email address
+      const allowedAdminEmails = ['jino@webshield.ai', 'admin@webshield.ai', 'jeffrinjinos1@gmail.com'];
       return allowedAdminEmails.includes(user.email);
     } catch (err) {
       console.error('Admin role verification failed:', err);
@@ -174,7 +169,6 @@ export default function Admin() {
   const handleUserActivity = useCallback(() => {
     if (!adminPasswordVerified) return;
     
-    // Reset timer on activity
     if (window.adminInactivityTimer) {
       clearTimeout(window.adminInactivityTimer);
     }
@@ -193,7 +187,7 @@ export default function Admin() {
       window.addEventListener(event, handleUserActivity);
     });
 
-    handleUserActivity(); // Initialize timer
+    handleUserActivity();
 
     return () => {
       events.forEach((event) => {
@@ -250,7 +244,7 @@ export default function Admin() {
   }
 
   if (!currentUser) {
-    return null; // Handled by useEffect redirect to /login
+    return null;
   }
 
   if (!isAdmin) {
