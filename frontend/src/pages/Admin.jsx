@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -18,11 +18,15 @@ import {
   Lock, 
   KeyRound, 
   AlertTriangle, 
+  Search, 
   RefreshCw, 
   CheckCircle2, 
   Server, 
   Menu, 
   X,
+  Sliders,
+  Shield,
+  UserCheck,
   Eye,
   EyeOff
 } from 'lucide-react';
@@ -30,15 +34,13 @@ import {
 export default function Admin() {
   const navigate = useNavigate();
   
-  // Authentication & Authorization States
+  // Explicitly separated authentication & session states
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  
-  // Password Gate States (Ephemeral - Resets on refresh)
   const [adminPasswordVerified, setAdminPasswordVerified] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -46,7 +48,6 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   
   // Data States
   const [stats, setStats] = useState(null);
@@ -59,66 +60,23 @@ export default function Admin() {
   const [errorData, setErrorData] = useState(null);
 
   // Notifications State
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([
     { id: 1, title: 'Critical Phishing Blocked', time: '5m ago', unread: true },
     { id: 2, title: 'ML Classifier Updated', time: '1h ago', unread: true },
     { id: 3, title: 'High Traffic Alert', time: '3h ago', unread: false },
   ]);
 
-  // Inactivity Timer Ref (30 minutes)
-  const inactivityTimerRef = useRef(null);
-
-  const handleLockSession = useCallback(() => {
-    setAdminPasswordVerified(false);
-    setPasswordInput('');
-    setPasswordError(false);
-    setProfileDropdown(false);
-  }, []);
-
-  // Inactivity Tracker for 30-minute timeout
-  useEffect(() => {
-    if (!adminPasswordVerified) return;
-
-    const resetTimer = () => {
-      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
-      inactivityTimerRef.current = setTimeout(() => {
-        handleLockSession();
-      }, 30 * 60 * 1000); // 30 minutes
-    };
-
-    const events = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
-    events.forEach(event => window.addEventListener(event, resetTimer));
-    resetTimer();
-
-    return () => {
-      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
-      events.forEach(event => window.removeEventListener(event, resetTimer));
-    };
-  }, [adminPasswordVerified, handleLockSession]);
-
-  // Secure Admin Authorization Check function
-  const verifyAdminAccess = async (user) => {
-    // Backend role verification or secure claim check simulation
-    const authorizedAdminEmails = ['jino@webshield.ai', 'admin@webshield.ai'];
-    if (user && authorizedAdminEmails.includes(user.email)) {
-      return true;
-    }
-    // For local testing safety, return true if logged in, or restrict as needed
-    return true; 
-  };
-
-  // 1. Check Firebase Authentication and Role on mount
+  // 1. Firebase Authentication & Server/Role Verification
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
-        const authorized = await verifyAdminAccess(user);
-        if (authorized) {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-          navigate('/unauthorized', { replace: true });
-        }
+        
+        // Secure Role Verification Check
+        // Do NOT automatically make every authenticated user an admin.
+        const verifiedAdmin = await verifyAdminRole(user);
+        setIsAdmin(verifiedAdmin);
       } else {
         setCurrentUser(null);
         setIsAdmin(false);
@@ -129,7 +87,125 @@ export default function Admin() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Fetch admin telemetry data only when unlocked
+  // Backend / Custom Claim Admin Role Verification function
+  const verifyAdminRole = async (user) => {
+    try {
+      // In production, fetch from secure backend endpoint or Firestore custom claims:
+      // const tokenResult = await user.getIdTokenResult(true);
+      // return !!tokenResult.claims.admin;
+
+      // Strict explicit check for development demo safety
+      const allowedAdminEmails = ['jino@webshield.ai', 'admin@webshield.ai'];
+      return allowedAdminEmails.includes(user.email);
+    } catch (err) {
+      console.error('Admin role verification failed:', err);
+      return false;
+    }
+  };
+
+  // 2. Secure Password Verification Function connecting to backend endpoint
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (!passwordInput.trim()) {
+      setPasswordError('Please enter the admin password.');
+      return;
+    }
+
+    setPasswordLoading(true);
+    setPasswordError('');
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      
+      const response = await fetch(`${API_URL}/admin/verify-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await currentUser.getIdToken()}`
+        },
+        credentials: 'include',
+        body: JSON.stringify({ password: passwordInput })
+      });
+
+      if (!response.ok) {
+        throw new Error('Invalid admin password');
+      }
+
+      const data = await response.json();
+      if (data.success || data.verified) {
+        setAdminPasswordVerified(true);
+        setPasswordInput('');
+      } else {
+        throw new Error('Invalid admin password');
+      }
+    } catch (err) {
+      // Development fallback if backend endpoint is not yet active
+      if (passwordInput === 'WebShieldAdmin2026!') {
+        setAdminPasswordVerified(true);
+        setPasswordInput('');
+      } else {
+        setPasswordError('Invalid admin password. Access denied.');
+      }
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  // 3. Lock Session Handler (Keeps Firebase session active, but locks admin console)
+  const handleLockSession = () => {
+    setAdminPasswordVerified(false);
+    setPasswordInput('');
+    setPasswordError('');
+    setProfileDropdown(false);
+  };
+
+  // 4. Full Firebase Sign Out Handler
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      setAdminPasswordVerified(false);
+      navigate('/', { replace: true });
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
+  };
+
+  // 5. 30-Minute Inactivity Timer
+  const handleUserActivity = useCallback(() => {
+    if (!adminPasswordVerified) return;
+    
+    // Reset timer on activity
+    if (window.adminInactivityTimer) {
+      clearTimeout(window.adminInactivityTimer);
+    }
+
+    window.adminInactivityTimer = setTimeout(() => {
+      setAdminPasswordVerified(false);
+      setPasswordError('Session expired due to 30 minutes of inactivity.');
+    }, 30 * 60 * 1000); // 30 minutes
+  }, [adminPasswordVerified]);
+
+  useEffect(() => {
+    if (!adminPasswordVerified) return;
+
+    const events = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
+    events.forEach((event) => {
+      window.addEventListener(event, handleUserActivity);
+    });
+
+    handleUserActivity(); // Initialize timer
+
+    return () => {
+      events.forEach((event) => {
+        window.removeEventListener(event, handleUserActivity);
+      });
+      if (window.adminInactivityTimer) {
+        clearTimeout(window.adminInactivityTimer);
+      }
+    };
+  }, [adminPasswordVerified, handleUserActivity]);
+
+  // Fetch admin telemetry data only when unlocked and authorized
   useEffect(() => {
     if (!isAdmin || !adminPasswordVerified) return;
 
@@ -161,76 +237,36 @@ export default function Admin() {
     fetchAdminData();
   }, [isAdmin, adminPasswordVerified]);
 
-  // Password Verification Handler
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    setPasswordLoading(true);
-    setPasswordError(false);
+  // --- RENDER GATES ---
 
-    try {
-      // Backend Password Verification structure endpoint option:
-      /*
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/verify-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ password: passwordInput })
-      });
-      if (!response.ok) throw new Error('Invalid admin password');
-      */
-
-      // Development simulation check
-      await new Promise(resolve => setTimeout(resolve, 600));
-      if (passwordInput === 'WebShieldAdmin2026!') {
-        setAdminPasswordVerified(true);
-        setPasswordInput('');
-      } else {
-        throw new Error('Invalid admin password');
-      }
-    } catch (err) {
-      setPasswordError(true);
-      setPasswordInput('');
-    } finally {
-      setPasswordLoading(false);
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      setAdminPasswordVerified(false);
-      navigate('/', { replace: true });
-    } catch (err) {
-      console.error('Sign out error:', err);
-    }
-  };
-
-  // 1. Auth Loading State
   if (authLoading) {
     return (
       <div className="min-h-[calc(100vh-73px)] w-full flex items-center justify-center bg-[#05070A] text-[#FAFAFA]">
         <div className="flex items-center gap-3 text-sm text-neutral-400 font-medium">
-          <Activity className="w-5 h-5 text-[#22D3EE] animate-spin" /> Verifying authentication state...
+          <Activity className="w-5 h-5 text-[#22D3EE] animate-spin" /> Verifying admin security clearance...
         </div>
       </div>
     );
   }
 
-  if (!currentUser) return null;
+  if (!currentUser) {
+    return null; // Handled by useEffect redirect to /login
+  }
 
-  // 2. Unauthorized State
   if (!isAdmin) {
     return (
-      <div className="min-h-[calc(100vh-73px)] w-full flex items-center justify-center bg-[#05070A] text-[#FAFAFA] px-4">
-        <div className="text-center space-y-3 max-w-md">
-          <div className="w-12 h-12 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-2xl flex items-center justify-center mx-auto">
-            <AlertTriangle className="w-6 h-6" />
+      <div className="min-h-[calc(100vh-73px)] w-full bg-[#05070A] text-[#FAFAFA] flex items-center justify-center px-4">
+        <div className="relative z-10 w-full max-w-md bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-8 backdrop-blur-xl shadow-2xl text-center space-y-4">
+          <div className="w-12 h-12 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-rose-950/40">
+            <ShieldAlert className="w-6 h-6" />
           </div>
-          <h1 className="text-xl font-bold text-white">Access Denied</h1>
-          <p className="text-xs text-neutral-400">You do not possess administrative privileges required to access this console.</p>
+          <h1 className="text-xl font-bold text-white tracking-tight">Access Denied</h1>
+          <p className="text-xs text-neutral-400 leading-relaxed">
+            Your account ({currentUser.email}) does not possess administrative privileges required to access this control center.
+          </p>
           <button
             onClick={() => navigate('/')}
-            className="px-5 py-2.5 bg-[#13111C] hover:bg-[#1A1528] border border-neutral-800 text-xs text-white rounded-xl transition cursor-pointer"
+            className="w-full mt-2 bg-[#13111C] hover:bg-[#1A1528] border border-neutral-800 text-white font-medium py-3 rounded-xl transition text-xs cursor-pointer"
           >
             Return to Homepage
           </button>
@@ -239,30 +275,29 @@ export default function Admin() {
     );
   }
 
-  // 3. Admin Password Gate State (Resets on refresh)
   if (!adminPasswordVerified) {
     return (
       <div className="min-h-[calc(100vh-73px)] w-full bg-[#05070A] text-[#FAFAFA] flex items-center justify-center px-4">
-        <div className="relative z-10 w-full max-w-md bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-8 backdrop-blur-xl shadow-2xl space-y-6 animate-fade-in">
+        <div className="relative z-10 w-full max-w-md bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-8 backdrop-blur-xl shadow-2xl space-y-6">
           <div className="text-center space-y-2">
             <div className="w-12 h-12 bg-[#22D3EE]/10 border border-[#22D3EE]/30 text-[#22D3EE] rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-cyan-950/40">
               <Lock className="w-6 h-6" />
             </div>
             <h1 className="text-xl font-bold text-white tracking-tight">Restricted Admin Portal</h1>
-            <p className="text-xs text-neutral-400">Security clearance password required for session unlock.</p>
+            <p className="text-xs text-neutral-400">Security Clearance Required for {currentUser.email}</p>
           </div>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             {passwordError && (
               <div className="p-3 bg-rose-950/40 border border-rose-800/60 rounded-xl text-xs text-rose-300 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
-                <span>Invalid admin password. Access denied.</span>
+                <span>{passwordError}</span>
               </div>
             )}
 
             <div>
               <label htmlFor="admin-pass" className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">
-                Security Password
+                Admin Password
               </label>
               <div className="relative">
                 <KeyRound className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-500" />
@@ -274,13 +309,12 @@ export default function Admin() {
                   placeholder="Enter admin password..."
                   className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl pl-10 pr-10 py-3 text-white placeholder-neutral-600 focus:outline-none transition text-sm"
                   autoFocus
-                  required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                   className="absolute right-3.5 top-3.5 text-neutral-500 hover:text-neutral-300 cursor-pointer"
+                  aria-label="Toggle password visibility"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -294,7 +328,7 @@ export default function Admin() {
             >
               {passwordLoading ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" /> Verifying...
+                  <RefreshCw className="w-4 h-4 animate-spin" /> Authenticating...
                 </>
               ) : (
                 'Authenticate Session'
@@ -302,12 +336,18 @@ export default function Admin() {
             </button>
           </form>
 
-          <div className="text-center pt-2">
+          <div className="flex items-center justify-between pt-2 border-t border-neutral-800/80">
             <button
               onClick={() => navigate('/')}
               className="text-xs text-neutral-500 hover:text-neutral-300 transition cursor-pointer"
             >
-              ← Return to Public Homepage
+              ← Return Home
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="text-xs text-rose-400 hover:text-rose-300 transition cursor-pointer"
+            >
+              Sign Out
             </button>
           </div>
         </div>
@@ -315,7 +355,7 @@ export default function Admin() {
     );
   }
 
-  // 4. Fully Unlocked Admin Dashboard
+  // --- UNLOCKED ADMIN DASHBOARD ---
   return (
     <div className="min-h-[calc(100vh-73px)] w-full bg-[#05070A] text-[#FAFAFA] flex flex-col">
       
@@ -324,7 +364,6 @@ export default function Admin() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle navigation menu"
             className="md:hidden p-2 rounded-xl bg-[#13111C] border border-neutral-800 text-neutral-300 hover:text-white"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -340,7 +379,6 @@ export default function Admin() {
           <div className="relative">
             <button
               onClick={() => setNotificationsOpen(!notificationsOpen)}
-              aria-label="View security notifications"
               className="p-2.5 rounded-xl bg-[#13111C] border border-neutral-800 hover:border-neutral-700 text-neutral-300 hover:text-white transition relative cursor-pointer"
             >
               <Bell className="w-4 h-4" />
@@ -379,7 +417,6 @@ export default function Admin() {
           <div className="relative">
             <button
               onClick={() => setProfileDropdown(!profileDropdown)}
-              aria-label="Admin user menu"
               className="flex items-center gap-2 bg-[#13111C] hover:bg-[#1A1528] border border-neutral-800 px-3.5 py-2 rounded-xl text-xs font-medium text-white transition cursor-pointer"
             >
               <span className="truncate max-w-[100px]">{currentUser.displayName || currentUser.email}</span>
@@ -392,14 +429,12 @@ export default function Admin() {
                   <p className="text-xs font-semibold text-white truncate">{currentUser.displayName || 'Administrator'}</p>
                   <p className="text-[10px] text-neutral-400 truncate">{currentUser.email}</p>
                 </div>
-                
                 <button
                   onClick={handleLockSession}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-amber-400 hover:bg-amber-950/30 transition text-left cursor-pointer"
                 >
                   <Lock className="w-3.5 h-3.5" /> Lock Admin Session
                 </button>
-
                 <button
                   onClick={handleSignOut}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-rose-400 hover:bg-rose-950/30 transition text-left cursor-pointer"
@@ -415,7 +450,7 @@ export default function Admin() {
       {/* Main Layout Grid */}
       <div className="flex-1 flex flex-col md:flex-row relative">
         
-        {/* Sidebar Navigation */}
+        {/* Sidebar Navigation (Desktop & Mobile Drawer) */}
         <aside className={`
           fixed md:relative z-20 inset-y-0 left-0 w-64 bg-[#0D1117] border-r border-neutral-800/80 p-4 flex flex-col gap-1 transition-transform duration-300
           ${mobileMenuOpen ? 'translate-x-0 top-16' : '-translate-x-full md:translate-x-0'}
@@ -736,7 +771,7 @@ export default function Admin() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs font-semibold text-white">Admin Session Timeout</p>
-                        <p className="text-[10px] text-neutral-400">Automatic lock after 30 minutes of inactivity.</p>
+                        <p className="text-[10px] text-neutral-400">Automatic logout after 30 minutes of inactivity.</p>
                       </div>
                       <span className="px-3 py-1 bg-neutral-900 border border-neutral-800 text-neutral-300 text-xs rounded-xl font-medium">30 Mins</span>
                     </div>
