@@ -6,6 +6,8 @@ import Login from './pages/Login';
 import History from './pages/History';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import ReportScam from './pages/ReportScam';
+import ScanTrends from './pages/ScanTrends';
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
             <Route path="/history" element={<History />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/Profile" element={<Profile />} />
+            <Route path="/scam-report" element={<ReportScam />} />
+            <Route path="/scan-trends" element={<ScanTrends />} />
           </Routes>
         </main>
       </div>
