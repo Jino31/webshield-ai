@@ -142,7 +142,7 @@ app.post('/api/assistant', async (req, res) => {
       }
     });
 
-    const reply = response.text() || "I am analyzing your query regarding WebShield AI.";
+    const reply = response.text || "I am analyzing your query regarding WebShield AI.";
     res.json({ success: true, reply });
 
   } catch (error) {
