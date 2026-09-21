@@ -224,7 +224,7 @@ export default function ShieldAIBot({ scanContext = null }) {
           </form>
 
           {/* Security Disclaimer */}
-          <div className="px-3 py-2 bg-[#05070A] text-[10px] text-neutral-400 text-center border-t border-neutral-900">
+          <div className="px-3 py-2 bg-[#05070A] text-[10px] text-neutral-300 font-medium text-center border-t border-neutral-900">
             AI guidance is informational and does not guarantee website safety.
           </div>
 
