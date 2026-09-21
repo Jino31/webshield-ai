@@ -9,6 +9,8 @@ import Profile from './pages/Profile';
 import ReportScam from './pages/ReportScam';
 import ScanTrends from './pages/ScanTrends';
 import Admin from './pages/Admin';
+// If you create a dedicated ShieldAI page, import it here:
+// import ShieldAI from './pages/ShieldAI';
 
 function App() {
   return (
@@ -17,7 +19,6 @@ function App() {
         <Navbar />
         <main className="flex-1 flex flex-col items-center">
           <Routes>
-            
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signin" element={<Login />} />
@@ -28,6 +29,8 @@ function App() {
             <Route path="/scam-report" element={<ReportScam />} />
             <Route path="/scan-trends" element={<ScanTrends />} />
             <Route path="/admin" element={<Admin />} />
+            {/* Dedicated route if applicable: */}
+            {/* <Route path="/shield-ai" element={<ShieldAI />} /> */}
           </Routes>
         </main>
       </div>

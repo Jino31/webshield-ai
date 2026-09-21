@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap } from 'lucide-react';
+import ShieldAIBot from '../components/ShieldAIBot'; // <-- Import ShieldAI bot
 
 export default function Home() {
   const [urlInput, setUrlInput] = useState('');
@@ -11,7 +12,6 @@ export default function Home() {
     setIsLoading(true);
     setScanResult(null);
 
-    // Simulate ML / Backend lexical analysis delay
     setTimeout(() => {
       const lowerUrl = targetUrl.toLowerCase();
       
@@ -99,7 +99,7 @@ export default function Home() {
           Protect yourself against malicious links, spoofed domains, and online fraud using advanced lexical feature extraction and real-time classification models.
         </p>
 
-        {/* Action Buttons (Scan + How It Works Scroll) */}
+        {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
           <button
             type="button"
@@ -259,9 +259,9 @@ export default function Home() {
           </div>
         )}
 
-        {/* How It Works Section with ID for Smooth Scroll */}
+        {/* How It Works Section */}
         {!scanResult && (
-          <div id="how-it-works" className="w-full max-w-5xl bg-[#13111C]/60 backdrop-blur-xl border border-[#231E33] p-8 sm:p-12 rounded-3xl text-left shadow-2xl scroll-mt-24">
+          <div id="how-it-works" className="w-full max-w-5xl bg-[#13111C]/60 backdrop-blur-xl border border-[#231E33] p-8 sm:p-12 rounded-3xl text-left shadow-2xl">
             <div className="text-center max-w-xl mx-auto mb-12">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1A1528] border border-[#2B2340] text-[#22D3EE] text-xs font-semibold mb-3 uppercase tracking-wider">
                 <Zap className="w-3.5 h-3.5" /> Simple 4-Step Architecture
@@ -320,6 +320,9 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Render ShieldAI Floating Assistant */}
+      <ShieldAIBot />
     </div>
   );
 }
