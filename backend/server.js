@@ -35,11 +35,9 @@ app.post('/api/scan', async (req, res) => {
   }
 
   try {
-    // Forward the request to the Python FastAPI ML service running on port 8000
     const mlResponse = await axios.post('http://127.0.0.1:8000/predict', { url });
     const result = mlResponse.data;
 
-    // Save scan log to MongoDB
     try {
       await ScanLog.create({
         url: result.url,
@@ -71,6 +69,55 @@ app.get('/api/history', async (req, res) => {
     res.json({ success: true, history });
   } catch (error) {
     res.status(500).json({ success: false, error: "Error fetching history" });
+  }
+});
+
+// ==========================================
+// NEW: ShieldSense Real-Time Assistant Route
+// ==========================================
+app.post('/api/assistant', async (req, res) => {
+  try {
+    const { message, scanContext } = req.body;
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    // Guardrail against sensitive credentials queries
+    const lowerMsg = message.toLowerCase();
+    const sensitiveTriggers = ['password', 'admin', 'firebase', 'secret', 'key', 'token', 'database', 'credential'];
+    if (sensitiveTriggers.some(trigger => lowerMsg.includes(trigger))) {
+      return res.json({
+        success: true,
+        reply: "I cannot provide private security credentials, database records, or secret configuration details. I can explain our system architecture at a high level."
+      });
+    }
+
+    let reply = "";
+
+    // Context-aware processing based on active URL scans from FastAPI/MongoDB
+    if (scanContext && (lowerMsg.includes('explain') || lowerMsg.includes('flagged') || lowerMsg.includes('result') || lowerMsg.includes('score'))) {
+      reply = `Based on our Random Forest classification analysis for "${scanContext.url}":
+      
+• Risk Level: ${scanContext.riskLevel}
+• Model Confidence: ${scanContext.confidence}%
+• Assessment: ${scanContext.description}
+
+Remember that AI guidance is informational and does not guarantee absolute safety. Always verify URLs before submitting sensitive credentials.`;
+    } else if (lowerMsg.includes('click') || lowerMsg.includes('phishing') || lowerMsg.includes('entered')) {
+      reply = `If you interacted with a suspicious or phishing link:
+1. Immediately close the browser tab and stop interacting with the site.
+2. Change your passwords immediately from a verified, secure device.
+3. Enable Multi-Factor Authentication (MFA) across your critical accounts.`;
+    } else if (lowerMsg.includes('work') || lowerMsg.includes('detect') || lowerMsg.includes('scan') || lowerMsg.includes('webshield')) {
+      reply = `WebShield AI uses a combination of lexical feature extraction (checking domain structure, length, and IP usage) and Random Forest classification models running via a high-performance Python microservice to predict threat probabilities in real time.`;
+    } else {
+      reply = `ShieldSense Real-Time Engine Active: I am monitoring your security queries. How can I help you analyze URL threat indicators or explain your recent scan results?`;
+    }
+
+    res.json({ success: true, reply });
+  } catch (error) {
+    console.error("Assistant route error:", error.message);
+    res.status(500).json({ success: false, error: "Failed to process assistant request" });
   }
 });
 
