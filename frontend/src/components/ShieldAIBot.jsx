@@ -13,6 +13,7 @@ export default function ShieldAIBot() {
   const [isTyping, setIsTyping] = useState(false);
   
   const messagesEndRef = useRef(null);
+  const chatRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -24,7 +25,21 @@ export default function ShieldAIBot() {
     }
   }, [messages, isOpen]);
 
-  // Knowledge base responses related to WebShield AI & fake website detection
+  // Close chat when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (chatRef.current && !chatRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   const getBotResponse = (query) => {
     const q = query.toLowerCase();
 
@@ -57,7 +72,6 @@ export default function ShieldAIBot() {
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate AI thinking delay
     setTimeout(() => {
       const botReply = getBotResponse(userText);
       setMessages([...newMessages, { sender: 'bot', text: botReply }]);
@@ -70,7 +84,7 @@ export default function ShieldAIBot() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-50" ref={chatRef}>
       {/* Floating Trigger Button */}
       {!isOpen && (
         <button
@@ -124,10 +138,10 @@ export default function ShieldAIBot() {
                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[82%] px-4 py-3 rounded-2xl text-xs leading-relaxed ${
+                  className={`max-w-[82%] px-4 py-3 rounded-2xl text-xs leading-relaxed font-normal ${
                     msg.sender === 'user'
                       ? 'bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white rounded-br-none shadow-md'
-                      : 'bg-[#13111C] border border-neutral-800 text-neutral-200 rounded-bl-none shadow-inner'
+                      : 'bg-[#13111C] border border-neutral-800 text-white rounded-bl-none shadow-inner'
                   }`}
                 >
                   {msg.text}
@@ -137,7 +151,7 @@ export default function ShieldAIBot() {
 
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-[#13111C] border border-neutral-800 px-4 py-3 rounded-2xl rounded-bl-none text-xs text-neutral-400 flex items-center gap-2">
+                <div className="bg-[#13111C] border border-neutral-800 px-4 py-3 rounded-2xl rounded-bl-none text-xs text-white flex items-center gap-2">
                   <Cpu className="w-3.5 h-3.5 text-[#22D3EE] animate-spin" /> ShieldAI is analyzing...
                 </div>
               </div>
@@ -155,7 +169,7 @@ export default function ShieldAIBot() {
               <button
                 key={idx}
                 onClick={() => handleQuickPrompt(prompt)}
-                className="px-2.5 py-1 rounded-lg bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-[10px] text-neutral-300 hover:text-white whitespace-nowrap transition cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-[10px] text-white whitespace-nowrap transition cursor-pointer"
               >
                 {prompt}
               </button>
@@ -169,7 +183,7 @@ export default function ShieldAIBot() {
               placeholder="Ask ShieldAI about phishing detection..."
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              className="flex-1 bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none transition"
+              className="flex-1 bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none transition"
             />
             <button
               type="submit"
