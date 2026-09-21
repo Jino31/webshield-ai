@@ -2,16 +2,37 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
+const { GoogleGenAI } = require('@google/genai');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Initialize Gemini Client
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection (Optional: will log a warning if URI is not provided yet)
+// Load custom WebShield AI Domain Knowledge Dataset from root dataset folder
+const knowledgeBasePath = path.join(__dirname, '..', 'dataset', 'webshield_knowledge.json');
+let knowledgeBase = [];
+try {
+  if (fs.existsSync(knowledgeBasePath)) {
+    const data = fs.readFileSync(knowledgeBasePath, 'utf8');
+    knowledgeBase = JSON.parse(data);
+    console.log("Loaded WebShield AI knowledge dataset successfully.");
+  } else {
+    console.log("Knowledge dataset not found at:", knowledgeBasePath);
+  }
+} catch (err) {
+  console.log("Could not load knowledge dataset:", err.message);
+}
+
+// MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/fake-website-detector";
 mongoose.connect(MONGO_URI)
   .then(() => console.log("Connected to MongoDB successfully"))
@@ -73,7 +94,7 @@ app.get('/api/history', async (req, res) => {
 });
 
 // ==========================================
-// NEW: ShieldSense Real-Time Assistant Route
+// SHIELDSENSE REAL-TIME CUSTOM AI ASSISTANT
 // ==========================================
 app.post('/api/assistant', async (req, res) => {
   try {
@@ -82,42 +103,54 @@ app.post('/api/assistant', async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Guardrail against sensitive credentials queries
+    // Security Guardrail against sensitive credentials queries
     const lowerMsg = message.toLowerCase();
     const sensitiveTriggers = ['password', 'admin', 'firebase', 'secret', 'key', 'token', 'database', 'credential'];
     if (sensitiveTriggers.some(trigger => lowerMsg.includes(trigger))) {
       return res.json({
         success: true,
-        reply: "I cannot provide private security credentials, database records, or secret configuration details. I can explain our system architecture at a high level."
+        reply: "I cannot provide private security credentials, database records, or secret configuration details. I can explain our system architecture or platform features at a high level."
       });
     }
 
-    let reply = "";
+    let systemInstruction = `You are ShieldSense, the dedicated, expert AI assistant exclusively for "WebShield AI", a platform specialized in detecting fake websites and phishing using Random Forest machine learning models and lexical analysis.
+    
+    CRITICAL BEHAVIORAL RULES:
+    1. You must ONLY answer questions related to WebShield AI, its features, its machine learning architecture, threat detection, cybersecurity best practices against phishing, or active user scan results.
+    2. If a user asks a question completely unrelated to WebShield AI or cybersecurity, you must decline politely: "I am ShieldSense, specialized exclusively in WebShield AI security and phishing detection. I can only answer questions related to our platform, URL scanning, and threat analysis."
+    3. Never disclose internal admin passwords, API keys, or raw database secrets.
+    4. Keep answers clear, professional, and well-structured.
 
-    // Context-aware processing based on active URL scans from FastAPI/MongoDB
-    if (scanContext && (lowerMsg.includes('explain') || lowerMsg.includes('flagged') || lowerMsg.includes('result') || lowerMsg.includes('score'))) {
-      reply = `Based on our Random Forest classification analysis for "${scanContext.url}":
-      
-• Risk Level: ${scanContext.riskLevel}
-• Model Confidence: ${scanContext.confidence}%
-• Assessment: ${scanContext.description}
+    Reference Knowledge Base Dataset:
+    ${JSON.stringify(knowledgeBase)}
+    `;
 
-Remember that AI guidance is informational and does not guarantee absolute safety. Always verify URLs before submitting sensitive credentials.`;
-    } else if (lowerMsg.includes('click') || lowerMsg.includes('phishing') || lowerMsg.includes('entered')) {
-      reply = `If you interacted with a suspicious or phishing link:
-1. Immediately close the browser tab and stop interacting with the site.
-2. Change your passwords immediately from a verified, secure device.
-3. Enable Multi-Factor Authentication (MFA) across your critical accounts.`;
-    } else if (lowerMsg.includes('work') || lowerMsg.includes('detect') || lowerMsg.includes('scan') || lowerMsg.includes('webshield')) {
-      reply = `WebShield AI uses a combination of lexical feature extraction (checking domain structure, length, and IP usage) and Random Forest classification models running via a high-performance Python microservice to predict threat probabilities in real time.`;
-    } else {
-      reply = `ShieldSense Real-Time Engine Active: I am monitoring your security queries. How can I help you analyze URL threat indicators or explain your recent scan results?`;
+    if (scanContext) {
+      systemInstruction += `\n\nActive Scan Context provided by user's recent scan:
+      - URL: ${scanContext.url}
+      - Risk Level: ${scanContext.riskLevel}
+      - Confidence Score: ${scanContext.confidence}%
+      - Assessment Description: ${scanContext.description}`;
     }
 
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: message,
+      config: {
+        systemInstruction: systemInstruction,
+        temperature: 0.3,
+      }
+    });
+
+    const reply = response.text() || "I am analyzing your query regarding WebShield AI.";
     res.json({ success: true, reply });
+
   } catch (error) {
-    console.error("Assistant route error:", error.message);
-    res.status(500).json({ success: false, error: "Failed to process assistant request" });
+    console.error("Custom Assistant API error:", error.message);
+    res.status(500).json({ 
+      success: false, 
+      reply: "I couldn't connect to the real-time AI security engine right now. Please ensure your backend .env file has a valid GEMINI_API_KEY." 
+    });
   }
 });
 

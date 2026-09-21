@@ -1,0 +1,27 @@
+[
+  {
+    "category": "Platform Overview",
+    "question": "What is WebShield AI?",
+    "answer": "WebShield AI is an advanced ML-based phishing detection platform designed to protect users against spoofed domains, fake login portals, and online fraud using lexical feature extraction and Random Forest classification models."
+  },
+  {
+    "category": "Detection Mechanism",
+    "question": "How does WebShield detect phishing?",
+    "answer": "WebShield uses a two-tier approach: 1) Instant lexical feature extraction checking URL length, IP address presence, special characters, and protocol security; 2) Machine learning classification via trained Random Forest models hosted on a Python FastAPI microservice."
+  },
+  {
+    "category": "Assistant Role",
+    "question": "What is ShieldSense?",
+    "answer": "ShieldSense is the official AI security assistant for WebShield AI. It functions as an explanation and security-assistance layer, helping users understand URL scan results and providing safety guidance without overriding core model predictions."
+  },
+  {
+    "category": "Security Architecture",
+    "question": "How is the Admin panel secured?",
+    "answer": "The admin control center at /admin is protected by Firebase authentication, server-verified admin role checks, a strict non-persisting password gate, and an automatic 30-minute inactivity session lock."
+  },
+  {
+    "category": "User Guidance",
+    "question": "What should I do if I clicked a phishing link?",
+    "answer": "1. Immediately close the browser tab and stop interacting with the site. 2. Do not enter credentials. 3. Change compromised passwords from a legitimate device. 4. Enable Multi-Factor Authentication (MFA)."
+  }
+]
