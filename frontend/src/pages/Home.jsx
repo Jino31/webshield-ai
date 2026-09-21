@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap } from 'lucide-react';
-import ShieldAIBot from '../components/ShieldAIBot'; // <-- Import ShieldAI bot
+import ShieldAIBot from '../components/ShieldAIBot'; // <-- ShieldSense assistant component
 
 export default function Home() {
   const [urlInput, setUrlInput] = useState('');
@@ -321,8 +321,8 @@ export default function Home() {
         )}
       </div>
 
-      {/* Render ShieldAI Floating Assistant */}
-      <ShieldAIBot />
+      {/* Render ShieldSense Assistant with Active Scan Context */}
+      <ShieldAIBot scanContext={scanResult} />
     </div>
   );
 }
