@@ -18,10 +18,7 @@ import {
   AlertTriangle,
   RefreshCw,
   CheckCircle2,
-  Menu,
   ArrowLeft,
-  Settings,
-  Palette,
   Sun,
   Moon,
   Sparkles,
@@ -42,9 +39,8 @@ export default function Admin() {
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
 
-  // UI States (6 Tabs)
+  // UI States (6 Tabs & Theme)
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [theme, setTheme] = useState('dark'); // 'light' | 'dark' | 'unique'
 
   // Telemetry Data
@@ -150,9 +146,9 @@ export default function Admin() {
   };
 
   const cardTheme = {
-    dark: 'bg-[#0D1117] border-neutral-800 text-white',
-    light: 'bg-white border-slate-200 text-slate-900 shadow-sm',
-    unique: 'bg-[#1A0B2E] border-purple-900/50 text-purple-100'
+    dark: 'bg-[#0D1117] border-neutral-800 text-white shadow-xl',
+    light: 'bg-white border-slate-200 text-slate-900 shadow-md',
+    unique: 'bg-[#1A0B2E] border-purple-900/50 text-purple-100 shadow-2xl shadow-purple-950/30'
   };
 
   if (authLoading) {
@@ -163,50 +159,65 @@ export default function Admin() {
     );
   }
 
-  // Key-Gated Unlock Screen (Always prompts on refresh)
+  // Beautiful Upgraded Key-Gated Unlock Screen
   if (!adminUnlocked) {
     return (
-      <div className="min-h-screen bg-[#05070A] text-white flex items-center justify-center px-4 relative">
-        <div className="w-full max-w-md bg-[#0D1117] border border-neutral-800 rounded-3xl p-8 shadow-2xl">
-          <div className="flex justify-center mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/30 flex items-center justify-center text-[#8B5CF6]">
-              <Lock className="w-6 h-6" />
-            </div>
-          </div>
-          <div className="text-center mb-6">
-            <h1 className="text-xl font-bold">Admin Authentication</h1>
-            <p className="text-xs text-neutral-400 mt-1">Enter your admin access key to continue.</p>
-          </div>
+      <div className="min-h-screen bg-[#05070A] text-white flex items-center justify-center px-4 relative overflow-hidden">
+        {/* Ambient Glow Effects */}
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#8B5CF6]/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#EC4899]/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
 
-          <form onSubmit={handleUnlock} className="space-y-4">
-            <div className="relative">
-              <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setPasswordError(''); }}
-                placeholder="Enter admin key"
-                className="w-full h-12 pl-10 pr-11 rounded-xl bg-[#05070A] border border-neutral-800 text-xs text-white outline-none focus:border-[#8B5CF6]"
-              />
-              <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white">
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-
-            {passwordError && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0" /> {passwordError}
+        <div className="w-full max-w-md relative z-10">
+          <div className="bg-[#0D1117]/90 backdrop-blur-2xl border border-neutral-800/80 rounded-3xl p-8 shadow-2xl shadow-purple-950/20">
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#8B5CF6]/20 to-[#EC4899]/20 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6] shadow-lg shadow-purple-900/20">
+                <ShieldCheck className="w-8 h-8" />
               </div>
-            )}
+            </div>
 
-            <button type="submit" disabled={unlocking} className="w-full h-12 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-semibold shadow-lg disabled:opacity-50">
-              {unlocking ? 'Verifying Key...' : 'Access Admin Dashboard'}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/30 text-[#C4B5FD] text-[10px] font-semibold uppercase tracking-wider mb-3">
+                <Lock className="w-3 h-3" /> Secure Gateway
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight text-white">Admin Authentication</h1>
+              <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+                Enter your administrative access key to unlock the WebShield AI control center.
+              </p>
+            </div>
+
+            <form onSubmit={handleUnlock} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-2">Access Key</label>
+                <div className="relative">
+                  <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); setPasswordError(''); }}
+                    placeholder="Enter admin secret key"
+                    className="w-full h-12 pl-10 pr-11 rounded-xl bg-[#05070A] border border-neutral-800 text-xs text-white placeholder:text-neutral-600 outline-none focus:border-[#8B5CF6] transition shadow-inner"
+                  />
+                  <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition">
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {passwordError && (
+                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2.5 animate-fadeIn">
+                  <AlertTriangle className="w-4 h-4 shrink-0" /> {passwordError}
+                </div>
+              )}
+
+              <button type="submit" disabled={unlocking} className="w-full h-12 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 text-white text-xs font-semibold shadow-lg shadow-purple-900/30 transition disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer">
+                {unlocking ? <><RefreshCw className="w-4 h-4 animate-spin" /> Verifying Key...</> : <><ShieldCheck className="w-4 h-4" /> Access Admin Dashboard</>}
+              </button>
+            </form>
+
+            <button onClick={() => navigate('/')} className="w-full mt-6 flex items-center justify-center gap-2 text-xs text-neutral-500 hover:text-white transition cursor-pointer">
+              <ArrowLeft className="w-3.5 h-3.5" /> Return to Home
             </button>
-          </form>
-
-          <button onClick={() => navigate('/')} className="w-full mt-4 flex items-center justify-center gap-2 text-xs text-neutral-500 hover:text-white">
-            <ArrowLeft className="w-3.5 h-3.5" /> Return to Home
-          </button>
+          </div>
         </div>
       </div>
     );
@@ -215,44 +226,36 @@ export default function Admin() {
   return (
     <div className={`min-h-screen w-full flex flex-col transition-colors duration-300 ${themeClasses[theme]}`}>
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#13111C] border border-[#8B5CF6]/40 text-white px-4 py-3 rounded-2xl shadow-2xl text-xs flex items-center gap-3">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#13111C] border border-[#8B5CF6]/40 text-white px-4 py-3 rounded-2xl shadow-2xl text-xs flex items-center gap-3 animate-fadeIn">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" /> {toast}
         </div>
       )}
 
-      {/* Header with Top-Left Buttons */}
-      <header className={`w-full h-16 border-b px-4 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white/80 border-slate-200' : 'bg-[#0D1117]/80 border-neutral-800'}`}>
-        <div className="flex items-center gap-3 relative">
-          {/* 3-Line Menu Button for Admin Settings */}
-          <button onClick={() => setSettingsOpen(v => !v)} className="p-2 rounded-xl border border-neutral-700/50 hover:bg-neutral-800/30 transition">
-            <Menu className="w-5 h-5" />
-          </button>
-
-          {settingsOpen && (
-            <div className={`absolute left-0 top-12 w-52 border rounded-2xl shadow-2xl p-3 z-50 space-y-2 ${cardTheme[theme]}`}>
-              <div className="flex items-center gap-2 text-xs font-semibold px-2 pb-1 border-b border-neutral-700/40">
-                <Settings className="w-3.5 h-3.5" /> Admin Settings
-              </div>
-              <div>
-                <p className="text-[10px] text-neutral-400 px-2 mb-1">Select Theme</p>
-                <div className="grid grid-cols-3 gap-1">
-                  <button onClick={() => setTheme('light')} className={`p-2 rounded-lg text-xs flex flex-col items-center gap-1 border ${theme === 'light' ? 'bg-purple-500/20 border-purple-500' : 'border-transparent'}`}><Sun className="w-3.5 h-3.5" /> Light</button>
-                  <button onClick={() => setTheme('dark')} className={`p-2 rounded-lg text-xs flex flex-col items-center gap-1 border ${theme === 'dark' ? 'bg-purple-500/20 border-purple-500' : 'border-transparent'}`}><Moon className="w-3.5 h-3.5" /> Dark</button>
-                  <button onClick={() => setTheme('unique')} className={`p-2 rounded-lg text-xs flex flex-col items-center gap-1 border ${theme === 'unique' ? 'bg-purple-500/20 border-purple-500' : 'border-transparent'}`}><Sparkles className="w-3.5 h-3.5" /> Unique</button>
-                </div>
-              </div>
-            </div>
-          )}
-
+      {/* Header with Top-Left Buttons & Direct Theme Selector */}
+      <header className={`w-full h-16 border-px px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white/90 border-slate-200' : theme === 'unique' ? 'bg-[#1A0B2E]/90 border-purple-900/40' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
+        <div className="flex items-center gap-3">
           {/* Back Button to Home */}
-          <button onClick={() => navigate('/')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-neutral-700/50 text-xs font-medium hover:bg-neutral-800/30 transition">
+          <button onClick={() => navigate('/')} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-neutral-700/50 text-xs font-medium hover:bg-neutral-800/30 transition cursor-pointer">
             <ArrowLeft className="w-4 h-4" /> Home
           </button>
 
-          <span className="font-bold text-sm tracking-tight ml-2">WebShield Admin</span>
+          {/* Direct Theme Switcher Buttons */}
+          <div className="hidden sm:flex items-center bg-black/20 border border-neutral-700/40 rounded-xl p-1 gap-1">
+            <button onClick={() => setTheme('light')} className={`px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 transition cursor-pointer ${theme === 'light' ? 'bg-white text-slate-900 shadow' : 'text-neutral-400 hover:text-white'}`}>
+              <Sun className="w-3 h-3" /> Light
+            </button>
+            <button onClick={() => setTheme('dark')} className={`px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 transition cursor-pointer ${theme === 'dark' ? 'bg-[#8B5CF6] text-white shadow' : 'text-neutral-400 hover:text-white'}`}>
+              <Moon className="w-3 h-3" /> Dark
+            </button>
+            <button onClick={() => setTheme('unique')} className={`px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 transition cursor-pointer ${theme === 'unique' ? 'bg-purple-600 text-white shadow' : 'text-neutral-400 hover:text-white'}`}>
+              <Sparkles className="w-3 h-3" /> Unique
+            </button>
+          </div>
+
+          <span className="font-bold text-sm tracking-tight ml-2 hidden md:inline">WebShield Admin</span>
         </div>
 
-        <button onClick={() => signOut(auth).then(() => navigate('/'))} className="flex items-center gap-2 text-xs text-rose-400 px-3 py-1.5 rounded-xl border border-rose-500/30 hover:bg-rose-500/10">
+        <button onClick={() => signOut(auth).then(() => navigate('/'))} className="flex items-center gap-2 text-xs text-rose-400 px-3.5 py-2 rounded-xl border border-rose-500/30 hover:bg-rose-500/10 transition cursor-pointer">
           <LogOut className="w-3.5 h-3.5" /> Sign Out
         </button>
       </header>
@@ -260,8 +263,8 @@ export default function Admin() {
       {/* Main Layout Area */}
       <div className="flex-1 flex flex-col md:flex-row">
         {/* Sidebar - 6 Requested Buttons */}
-        <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-white border-slate-200' : 'bg-[#0D1117] border-neutral-800'}`}>
-          <div className="px-3 py-2 text-[10px] font-semibold text-neutral-500 uppercase">Navigation</div>
+        <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-white border-slate-200' : theme === 'unique' ? 'bg-[#150726] border-purple-900/40' : 'bg-[#0D1117] border-neutral-800'}`}>
+          <div className="px-3 py-2 text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Navigation Console</div>
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'users', label: 'Users', icon: Users },
@@ -276,8 +279,8 @@ export default function Admin() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition text-left ${
-                  isActive ? 'bg-[#8B5CF6]/15 border border-[#8B5CF6]/40 text-[#C4B5FD]' : 'opacity-70 hover:opacity-100 hover:bg-neutral-800/40'
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition text-left cursor-pointer ${
+                  isActive ? 'bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 text-[#C4B5FD] shadow-lg shadow-purple-950/20' : 'opacity-70 hover:opacity-100 hover:bg-neutral-800/30'
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -354,7 +357,7 @@ export default function Admin() {
                   }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
                     <div><label className="block text-xs mb-1">Button Label</label><input type="text" value={adLabel} onChange={e => setAdLabel(e.target.value)} className="w-full h-11 px-4 rounded-xl bg-black/20 border border-neutral-700 text-xs outline-none" /></div>
                     <div><label className="block text-xs mb-1">Destination URL</label><input type="url" value={adUrl} onChange={e => setAdUrl(e.target.value)} className="w-full h-11 px-4 rounded-xl bg-black/20 border border-neutral-700 text-xs outline-none" /></div>
-                    <button type="submit" disabled={savingAd} className="px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-semibold rounded-xl">{savingAd ? 'Saving...' : 'Save AD Config'}</button>
+                    <button type="submit" disabled={savingAd} className="px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-semibold rounded-xl cursor-pointer">{savingAd ? 'Saving...' : 'Save AD Config'}</button>
                   </form>
                 </div>
               )}
@@ -376,7 +379,7 @@ export default function Admin() {
                   }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
                     <div><label className="block text-xs mb-1">Title</label><input type="text" value={annTitle} onChange={e => setAnnTitle(e.target.value)} className="w-full h-11 px-4 rounded-xl bg-black/20 border border-neutral-700 text-xs outline-none" /></div>
                     <div><label className="block text-xs mb-1">Message</label><textarea rows="3" value={annMessage} onChange={e => setAnnMessage(e.target.value)} className="w-full p-4 rounded-xl bg-black/20 border border-neutral-700 text-xs outline-none resize-none" /></div>
-                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-semibold rounded-xl">{publishingAnn ? 'Publishing...' : 'Publish Announcement'}</button>
+                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-semibold rounded-xl cursor-pointer">{publishingAnn ? 'Publishing...' : 'Publish Announcement'}</button>
                   </form>
                 </div>
               )}
@@ -408,7 +411,7 @@ export default function Admin() {
                         <div className="flex justify-between items-center text-[10px] opacity-60">
                           <span>{new Date(c.createdAt).toLocaleDateString()}</span>
                           {c.reviewed ? <span className="text-emerald-400">Reviewed ✓</span> : (
-                            <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline">Mark as Reviewed ✓</button>
+                            <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline cursor-pointer">Mark as Reviewed ✓</button>
                           )}
                         </div>
                       </div>
