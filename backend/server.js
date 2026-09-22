@@ -219,6 +219,7 @@ app.listen(PORT, () => {
 
 // Verify Admin Key
 // 1. Secure Password Unlock Endpoint (Key-only verification)
+// Secure Password Unlock Endpoint (Key-only verification without token middleware)
 app.post('/api/admin/unlock', async (req, res) => {
   try {
     const { password } = req.body;
