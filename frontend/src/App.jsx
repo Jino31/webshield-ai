@@ -11,6 +11,8 @@ import ScanTrends from './pages/ScanTrends';
 import Admin from './pages/Admin';
 // If you create a dedicated ShieldAI page, import it here:
 // import ShieldAI from './pages/ShieldAI';
+import About from './pages/About';
+import Feedback from './pages/Feedback';
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
             <Route path="/admin" element={<Admin />} />
             {/* Dedicated route if applicable: */}
             {/* <Route path="/shield-ai" element={<ShieldAI />} /> */}
+            <Route path="/about" element={<About />} />
+            <Route path="/feedback" element={<Feedback />} />
           </Routes>
         </main>
       </div>

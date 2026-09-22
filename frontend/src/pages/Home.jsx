@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
 import ShieldAIBot from '../components/ShieldAIBot'; // <-- ShieldSense assistant component
 
 export default function Home() {
+  const navigate = useNavigate();
   const [urlInput, setUrlInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [scanResult, setScanResult] = useState(null);
@@ -99,14 +101,30 @@ export default function Home() {
           Protect yourself against malicious links, spoofed domains, and online fraud using advanced lexical feature extraction and real-time classification models.
         </p>
 
-        {/* Action Buttons */}
+        {/* Action Buttons (Including About & Feedback) */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
           <button
             type="button"
             onClick={scrollToHowItWorks}
-            className="px-6 py-4 rounded-xl bg-[#13111C] hover:bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/40 text-neutral-300 hover:text-white text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 shadow-md"
+            className="px-5 py-3 rounded-xl bg-[#13111C] hover:bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/40 text-neutral-300 hover:text-white text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 shadow-md"
           >
             <Zap className="w-4 h-4 text-[#8B5CF6]" /> How It Works
+          </button>
+          
+          <button
+            type="button"
+            onClick={() => navigate('/about')}
+            className="px-5 py-3 rounded-xl bg-[#13111C] hover:bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/40 text-neutral-300 hover:text-white text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 shadow-md"
+          >
+            <Info className="w-4 h-4 text-[#22D3EE]" /> About
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/feedback')}
+            className="px-5 py-3 rounded-xl bg-[#13111C] hover:bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/40 text-neutral-300 hover:text-white text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 shadow-md"
+          >
+            <MessageSquare className="w-4 h-4 text-[#EC4899]" /> Feedback
           </button>
         </div>
 
