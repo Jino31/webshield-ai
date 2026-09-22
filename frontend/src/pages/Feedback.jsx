@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Shield, MessageSquare, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import { feedbackService } from '../services/feedbackService';
 
-// Optional: Import Firebase auth if configured in your project
-// import { auth } from '../firebase'; 
-
 const CATEGORIES = [
   'General Feedback',
   'False Positive',
@@ -36,19 +33,9 @@ export default function Feedback() {
   const [feedbackId, setFeedbackId] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
 
-  // Optional Firebase User detection
   useEffect(() => {
     try {
-      // If firebase auth is available globally or imported:
-      // const currentUser = auth?.currentUser;
-      // if (currentUser) {
-      //   setUserId(currentUser.uid);
-      //   setFormData(prev => ({
-      //     ...prev,
-      //     email: currentUser.email || prev.email,
-      //     name: currentUser.displayName || prev.name
-      //   }));
-      // }
+      // Optional Firebase Auth check if integrated
     } catch (err) {
       // Ignore if auth is not set up
     }
@@ -90,7 +77,6 @@ export default function Feedback() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear field-specific validation error upon change
     if (validationErrors[name]) {
       setValidationErrors(prev => ({ ...prev, [name]: null }));
     }
@@ -136,12 +122,10 @@ export default function Feedback() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0F] text-[#FAFAFA] flex flex-col justify-between p-4 sm:p-8 relative overflow-x-hidden">
-      {/* Background VFX Glow Orbs */}
       <div className="absolute top-1/4 left-10 w-[400px] h-[400px] bg-[#8B5CF6]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#EC4899]/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-xl mx-auto w-full pt-6 relative z-10">
-        {/* Navigation back */}
         <button 
           onClick={() => navigate('/')} 
           className="text-xs font-semibold text-[#8B5CF6] hover:text-[#C4B5FD] mb-6 flex items-center gap-2 transition-all cursor-pointer"
@@ -149,10 +133,7 @@ export default function Feedback() {
           <ArrowLeft className="w-4 h-4" /> Back to Home
         </button>
 
-        {/* Premium Cybersecurity Card */}
         <div className="bg-[#111118]/90 backdrop-blur-xl border border-[#27272F] rounded-3xl p-6 sm:p-8 shadow-2xl shadow-purple-950/20">
-          
-          {/* Header Area */}
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-2xl bg-[#1A1528] border border-[#2B2340] flex items-center justify-center text-[#8B5CF6] shadow-inner">
               <Shield className="w-6 h-6" />
@@ -168,7 +149,6 @@ export default function Feedback() {
             Your feedback helps us improve phishing detection accuracy, usability, and the ShieldSense AI experience.
           </p>
 
-          {/* Error Banner */}
           {status === 'error' && (
             <div role="alert" className="mb-6 p-4 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-3 animate-fadeIn">
               <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
@@ -179,7 +159,6 @@ export default function Feedback() {
             </div>
           )}
 
-          {/* Success State */}
           {status === 'success' ? (
             <div role="status" className="bg-[#0A0A0F] border border-[#27272F] p-8 rounded-2xl text-center space-y-4 animate-fadeIn">
               <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-[#10B981] mx-auto">
@@ -212,10 +191,7 @@ export default function Feedback() {
               </div>
             </div>
           ) : (
-            /* Form State */
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              
-              {/* Name Field */}
               <div>
                 <label htmlFor="name" className="block text-xs font-semibold text-[#FAFAFA] mb-1">
                   Your Name <span className="text-[#EC4899]">*</span>
@@ -229,7 +205,7 @@ export default function Feedback() {
                   disabled={status === 'submitting'}
                   aria-invalid={!!validationErrors.name}
                   aria-describedby="name-error"
-                  placeholder="S Jeffrin Jino"
+                  placeholder="Enter your full name"
                   className={`w-full bg-[#0A0A0F] border ${validationErrors.name ? 'border-rose-500' : 'border-[#27272F]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-white placeholder-neutral-600 transition-all disabled:opacity-50`}
                 />
                 {validationErrors.name && (
@@ -237,7 +213,6 @@ export default function Feedback() {
                 )}
               </div>
 
-              {/* Email Field */}
               <div>
                 <label htmlFor="email" className="block text-xs font-semibold text-[#FAFAFA] mb-1">
                   Email Address <span className="text-[#EC4899]">*</span>
@@ -259,7 +234,6 @@ export default function Feedback() {
                 )}
               </div>
 
-              {/* Category & Optional URL Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="category" className="block text-xs font-semibold text-[#FAFAFA] mb-1">
@@ -300,7 +274,6 @@ export default function Feedback() {
                 </div>
               </div>
 
-              {/* Message Field */}
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label htmlFor="message" className="block text-xs font-semibold text-[#FAFAFA]">
@@ -327,7 +300,6 @@ export default function Feedback() {
                 )}
               </div>
 
-              {/* Submit Button */}
               <button 
                 type="submit"
                 disabled={status === 'submitting'}
