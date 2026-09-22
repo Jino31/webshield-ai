@@ -17,7 +17,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 app.use(cors());
 app.use(express.json());
 
-// Load custom WebShield AI Domain Knowledge Dataset
+// Load custom WebShield AI Domain Knowledge Dataset from root dataset folder
 const knowledgeBasePath = path.join(__dirname, '..', 'dataset', 'webshield_knowledge.json');
 let knowledgeBase = [];
 try {
@@ -36,7 +36,7 @@ try {
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/fake-website-detector";
 mongoose.connect(MONGO_URI)
   .then(() => console.log("Connected to MongoDB successfully"))
-  .catch((err) => console.log("MongoDB connection warning (running without DB):", err.message));
+  .catch((err) => console.log("MongoDB connection warning:", err.message));
 
 // Scan History Schema
 const scanSchema = new mongoose.Schema({
@@ -46,10 +46,10 @@ const scanSchema = new mongoose.Schema({
   features: Object,
   createdAt: { type: Date, default: Date.now }
 });
-const ScanLog = mongoose.model('ScanLog', scanSchema);
+const ScanLog = mongoose.models.ScanLog || mongoose.model('ScanLog', scanSchema);
 
 // ==========================================
-// FEEDBACK SCHEMA & API ENDPOINTS
+// FEEDBACK SCHEMA & PUBLIC SUBMISSION ROUTE
 // ==========================================
 const feedbackSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
@@ -64,7 +64,6 @@ const feedbackSchema = new mongoose.Schema({
 
 const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
 
-// Public feedback submission route
 app.post('/api/feedback', async (req, res) => {
   try {
     const { name, email, category, message, websiteUrl, userId } = req.body;
@@ -85,14 +84,14 @@ app.post('/api/feedback', async (req, res) => {
 
     const feedbackId = `WS-${new Date().getFullYear()}-${newFeedback._id.toString().slice(-5).toUpperCase()}`;
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Feedback submitted successfully",
       feedbackId
     });
   } catch (error) {
     console.error("Feedback submission error:", error.message);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: "We couldn't process your feedback right now. Please try again later."
     });
@@ -158,11 +157,11 @@ app.post('/api/assistant', async (req, res) => {
     if (sensitiveTriggers.some(trigger => lowerMsg.includes(trigger))) {
       return res.json({
         success: true,
-        reply: "I cannot provide private security credentials, database records, or secret configuration details. I can explain our system architecture or platform features at a high level."
+        reply: "I cannot provide private security credentials, database records, or secret configuration details."
       });
     }
 
-    let systemInstruction = `You are ShieldSense, the dedicated, expert AI assistant exclusively for "WebShield AI". Reference Knowledge Base: ${JSON.stringify(knowledgeBase)}`;
+    let systemInstruction = `You are ShieldSense, the expert AI assistant for WebShield AI. Reference Knowledge Base: ${JSON.stringify(knowledgeBase)}`;
 
     if (scanContext) {
       systemInstruction += `\n\nActive Scan Context: URL: ${scanContext.url}, Risk Level: ${scanContext.riskLevel}`;
