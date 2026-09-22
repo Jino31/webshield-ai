@@ -169,7 +169,7 @@ const feedbackSchema = new mongoose.Schema({
   email: { type: String, required: true, trim: true, lowercase: true },
   category: { type: String, required: true },
   message: { type: String, required: true, maxlength: 1000 },
-  websiteUrl: { type: String, trim: true },
+  websiteUrl: { type: String, trim: true, default: null },
   userId: { type: String, default: null },
   createdAt: { type: Date, default: Date.now }
 });
@@ -179,7 +179,6 @@ app.post('/api/feedback', async (req, res) => {
   try {
     const { name, email, category, message, websiteUrl, userId } = req.body;
 
-    // Server-side validation
     if (!name || !email || !category || !message) {
       return res.status(400).json({ success: false, error: "All required fields must be filled." });
     }
@@ -188,17 +187,15 @@ app.post('/api/feedback', async (req, res) => {
       return res.status(400).json({ success: false, error: "Message exceeds 1000 character limit." });
     }
 
-    // Save to MongoDB
     const newFeedback = await FeedbackLog.create({
       name,
       email,
       category,
       message,
-      websiteUrl: websiteUrl || '',
+      websiteUrl: websiteUrl || null,
       userId: userId || null
     });
 
-    // Generate a unique reference ID for the user
     const feedbackId = `WS-${new Date().getFullYear()}-${newFeedback._id.toString().slice(-5).toUpperCase()}`;
 
     res.status(201).json({

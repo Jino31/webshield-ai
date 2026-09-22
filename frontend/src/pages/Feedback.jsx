@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Shield, MessageSquare, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Shield, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import { feedbackService } from '../services/feedbackService';
+
+// Optional: Import auth from your existing Firebase configuration if configured
+// import { auth } from '../firebase';
+// import { onAuthStateChanged } from 'firebase/auth';
 
 const CATEGORIES = [
   'General Feedback',
@@ -28,21 +32,43 @@ export default function Feedback() {
   });
 
   const [userId, setUserId] = useState(null);
+  const [isAuthenticatedUser, setIsAuthenticatedUser] = useState(false);
   const [status, setStatus] = useState('initial'); // 'initial', 'submitting', 'success', 'error'
   const [errorMessage, setErrorMessage] = useState('');
   const [feedbackId, setFeedbackId] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
 
+  // Firebase Auth listener with proper cleanup
   useEffect(() => {
+    let unsubscribe = () => {};
     try {
-      // Optional Firebase Auth check if integrated
+      // Uncomment below if Firebase auth is configured in your project:
+      /*
+      unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setUserId(user.uid);
+          setIsAuthenticatedUser(true);
+          setFormData(prev => ({
+            ...prev,
+            email: user.email || prev.email,
+            name: user.displayName || prev.name
+          }));
+        } else {
+          setUserId(null);
+          setIsAuthenticatedUser(false);
+        }
+      });
+      */
     } catch (err) {
-      // Ignore if auth is not set up
+      // Firebase auth not initialized or optional
     }
+
+    return () => unsubscribe();
   }, []);
 
   const validateForm = () => {
     const errors = {};
+    
     if (!formData.name.trim() || formData.name.trim().length < 2) {
       errors.name = 'Name must be at least 2 characters long.';
     }
@@ -64,7 +90,10 @@ export default function Feedback() {
 
     if (formData.websiteUrl.trim()) {
       try {
-        new URL(formData.websiteUrl);
+        const parsedUrl = new URL(formData.websiteUrl.trim());
+        if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+          errors.websiteUrl = 'Only HTTP and HTTPS URLs are allowed.';
+        }
       } catch (_) {
         errors.websiteUrl = 'Please enter a valid URL (e.g., https://example.com).';
       }
@@ -76,7 +105,15 @@ export default function Feedback() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Clear submission error state when user modifies form fields
+    if (status === 'error') {
+      setStatus('initial');
+      setErrorMessage('');
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
+    
     if (validationErrors[name]) {
       setValidationErrors(prev => ({ ...prev, [name]: null }));
     }
@@ -84,18 +121,23 @@ export default function Feedback() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (status === 'submitting') return;
     if (!validateForm()) return;
 
     setStatus('submitting');
     setErrorMessage('');
 
-    try {
-      const payload = {
-        ...formData,
-        userId: userId || null,
-        createdAt: new Date().toISOString()
-      };
+    const payload = {
+      name: formData.name.trim(),
+      email: formData.email.trim().toLowerCase(),
+      category: formData.category,
+      message: formData.message.trim(),
+      websiteUrl: formData.websiteUrl.trim() || null,
+      userId: userId || null,
+      createdAt: new Date().toISOString()
+    };
 
+    try {
       const response = await feedbackService.submitFeedback(payload);
       
       setStatus('success');
@@ -104,24 +146,27 @@ export default function Feedback() {
       }
     } catch (err) {
       setStatus('error');
-      setErrorMessage(err.message || 'We couldn’t submit your feedback right now. Please try again in a moment.');
+      setErrorMessage(err.message);
     }
   };
 
   const handleResetForm = () => {
     setStatus('initial');
+    setValidationErrors({});
+    setErrorMessage('');
+    setFeedbackId(null);
     setFormData({
-      name: '',
-      email: '',
+      name: isAuthenticatedUser ? formData.name : '',
+      email: isAuthenticatedUser ? formData.email : '',
       category: 'General Feedback',
       message: '',
       websiteUrl: ''
     });
-    setFeedbackId(null);
   };
 
   return (
     <div className="min-h-screen bg-[#0A0A0F] text-[#FAFAFA] flex flex-col justify-between p-4 sm:p-8 relative overflow-x-hidden">
+      {/* Background Glow Orbs */}
       <div className="absolute top-1/4 left-10 w-[400px] h-[400px] bg-[#8B5CF6]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#EC4899]/10 rounded-full blur-[120px] pointer-events-none" />
 
@@ -149,6 +194,7 @@ export default function Feedback() {
             Your feedback helps us improve phishing detection accuracy, usability, and the ShieldSense AI experience.
           </p>
 
+          {/* Error Banner */}
           {status === 'error' && (
             <div role="alert" className="mb-6 p-4 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-3 animate-fadeIn">
               <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
@@ -159,6 +205,7 @@ export default function Feedback() {
             </div>
           )}
 
+          {/* Success Screen */}
           {status === 'success' ? (
             <div role="status" className="bg-[#0A0A0F] border border-[#27272F] p-8 rounded-2xl text-center space-y-4 animate-fadeIn">
               <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-[#10B981] mx-auto">
@@ -192,6 +239,8 @@ export default function Feedback() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              
+              {/* Name Field */}
               <div>
                 <label htmlFor="name" className="block text-xs font-semibold text-[#FAFAFA] mb-1">
                   Your Name <span className="text-[#EC4899]">*</span>
@@ -200,11 +249,12 @@ export default function Feedback() {
                   type="text" 
                   id="name"
                   name="name"
+                  autoComplete="name"
                   value={formData.name}
                   onChange={handleChange}
                   disabled={status === 'submitting'}
                   aria-invalid={!!validationErrors.name}
-                  aria-describedby="name-error"
+                  aria-describedby={validationErrors.name ? 'name-error' : undefined}
                   placeholder="Enter your full name"
                   className={`w-full bg-[#0A0A0F] border ${validationErrors.name ? 'border-rose-500' : 'border-[#27272F]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-white placeholder-neutral-600 transition-all disabled:opacity-50`}
                 />
@@ -213,6 +263,7 @@ export default function Feedback() {
                 )}
               </div>
 
+              {/* Email Field */}
               <div>
                 <label htmlFor="email" className="block text-xs font-semibold text-[#FAFAFA] mb-1">
                   Email Address <span className="text-[#EC4899]">*</span>
@@ -221,11 +272,12 @@ export default function Feedback() {
                   type="email" 
                   id="email"
                   name="email"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
                   disabled={status === 'submitting'}
                   aria-invalid={!!validationErrors.email}
-                  aria-describedby="email-error"
+                  aria-describedby={validationErrors.email ? 'email-error' : undefined}
                   placeholder="name@example.com"
                   className={`w-full bg-[#0A0A0F] border ${validationErrors.email ? 'border-rose-500' : 'border-[#27272F]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-white placeholder-neutral-600 transition-all disabled:opacity-50`}
                 />
@@ -234,6 +286,7 @@ export default function Feedback() {
                 )}
               </div>
 
+              {/* Category & Optional URL Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="category" className="block text-xs font-semibold text-[#FAFAFA] mb-1">
@@ -245,6 +298,7 @@ export default function Feedback() {
                     value={formData.category}
                     onChange={handleChange}
                     disabled={status === 'submitting'}
+                    aria-invalid={!!validationErrors.category}
                     className="w-full bg-[#0A0A0F] border border-[#27272F] rounded-xl px-3 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-white transition-all disabled:opacity-50 cursor-pointer"
                   >
                     {CATEGORIES.map(cat => (
@@ -261,25 +315,28 @@ export default function Feedback() {
                     type="url" 
                     id="websiteUrl"
                     name="websiteUrl"
+                    autoComplete="url"
                     value={formData.websiteUrl}
                     onChange={handleChange}
                     disabled={status === 'submitting'}
                     aria-invalid={!!validationErrors.websiteUrl}
+                    aria-describedby={validationErrors.websiteUrl ? 'url-error' : undefined}
                     placeholder="https://suspicious-site.com"
                     className={`w-full bg-[#0A0A0F] border ${validationErrors.websiteUrl ? 'border-rose-500' : 'border-[#27272F]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-white placeholder-neutral-600 transition-all disabled:opacity-50`}
                   />
                   {validationErrors.websiteUrl && (
-                    <p role="alert" className="text-rose-400 text-[11px] mt-1">{validationErrors.websiteUrl}</p>
+                    <p id="url-error" role="alert" className="text-rose-400 text-[11px] mt-1">{validationErrors.websiteUrl}</p>
                   )}
                 </div>
               </div>
 
+              {/* Message Field */}
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label htmlFor="message" className="block text-xs font-semibold text-[#FAFAFA]">
                     Your Message <span className="text-[#EC4899]">*</span>
                   </label>
-                  <span className={`text-[11px] font-mono ${formData.message.length > 1000 ? 'text-rose-400 font-bold' : 'text-[#A1A1AA]'}`}>
+                  <span className={`text-[11px] font-mono ${formData.message.length >= 950 ? 'text-amber-400 font-bold' : 'text-[#A1A1AA]'}`}>
                     {formData.message.length} / 1000
                   </span>
                 </div>
@@ -287,11 +344,12 @@ export default function Feedback() {
                   id="message"
                   name="message"
                   rows="4"
+                  maxLength={1000}
                   value={formData.message}
                   onChange={handleChange}
                   disabled={status === 'submitting'}
                   aria-invalid={!!validationErrors.message}
-                  aria-describedby="message-error"
+                  aria-describedby={validationErrors.message ? 'message-error' : undefined}
                   placeholder="Describe your feedback, report a false positive, or suggest a feature (min. 10 characters)..."
                   className={`w-full bg-[#0A0A0F] border ${validationErrors.message ? 'border-rose-500' : 'border-[#27272F]'} rounded-xl p-4 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-white placeholder-neutral-600 resize-none transition-all disabled:opacity-50`}
                 />
@@ -300,10 +358,13 @@ export default function Feedback() {
                 )}
               </div>
 
+              {/* Submit Button */}
               <button 
                 type="submit"
                 disabled={status === 'submitting'}
-                className="w-full py-3.5 px-6 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 disabled:opacity-50 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-purple-950/40 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                className={`w-full py-3.5 px-6 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-purple-950/40 flex items-center justify-center gap-2 ${
+                  status === 'submitting' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-[0.99]'
+                }`}
               >
                 {status === 'submitting' ? (
                   <>
