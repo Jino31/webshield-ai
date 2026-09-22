@@ -155,7 +155,7 @@ app.post('/api/assistant', async (req, res) => {
 });
 
 // ==========================================
-// FEEDBACK API ENDPOINT
+// FEEDBACK API ENDPOINT (Robust & Error-Proof)
 // ==========================================
 const feedbackSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
@@ -164,9 +164,11 @@ const feedbackSchema = new mongoose.Schema({
   message: { type: String, required: true, maxlength: 1000 },
   websiteUrl: { type: String, trim: true, default: null },
   userId: { type: String, default: null },
+  reviewed: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
-const FeedbackLog = mongoose.model('FeedbackLog', feedbackSchema);
+
+const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
 
 app.post('/api/feedback', async (req, res) => {
   try {
@@ -186,7 +188,8 @@ app.post('/api/feedback', async (req, res) => {
       category,
       message,
       websiteUrl: websiteUrl || null,
-      userId: userId || null
+      userId: userId || null,
+      reviewed: false
     });
 
     const feedbackId = `WS-${new Date().getFullYear()}-${newFeedback._id.toString().slice(-5).toUpperCase()}`;
@@ -203,14 +206,6 @@ app.post('/api/feedback', async (req, res) => {
       error: "We couldn't process your feedback right now. Please try again later."
     });
   }
-});
-
-app.get('/', (req, res) => {
-  res.send("Express Backend for Fake Website Detection is running.");
-});
-
-app.listen(PORT, () => {
-  console.log(`Backend server active on http://localhost:${PORT}`);
 });
 
 // ==========================================
