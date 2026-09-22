@@ -64,6 +64,22 @@ const feedbackSchema = new mongoose.Schema({
 
 const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
 
+// ==========================================
+// FEEDBACK API ENDPOINT (Bulletproofed)
+// ==========================================
+const feedbackSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, trim: true, lowercase: true },
+  category: { type: String, required: true },
+  message: { type: String, required: true, maxlength: 1000 },
+  websiteUrl: { type: String, trim: true, default: null },
+  userId: { type: String, default: null },
+  reviewed: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
+
 app.post('/api/feedback', async (req, res) => {
   try {
     const { name, email, category, message, websiteUrl, userId } = req.body;
@@ -73,11 +89,11 @@ app.post('/api/feedback', async (req, res) => {
     }
 
     const newFeedback = await FeedbackLog.create({
-      name,
-      email,
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
       category,
-      message,
-      websiteUrl: websiteUrl || null,
+      message: message.trim(),
+      websiteUrl: websiteUrl ? websiteUrl.trim() : null,
       userId: userId || null,
       reviewed: false
     });
@@ -97,7 +113,6 @@ app.post('/api/feedback', async (req, res) => {
     });
   }
 });
-
 // Main Scan Route: Forwards URL to Python FastAPI Microservice
 app.post('/api/scan', async (req, res) => {
   const { url } = req.body;
