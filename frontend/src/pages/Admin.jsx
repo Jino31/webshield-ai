@@ -97,7 +97,6 @@ export default function Admin() {
       await adminService.unlockAdmin(password);
       setPassword('');
       
-      // Trigger 3-second Welcome Animation before showing dashboard
       setUnlocking(false);
       setShowWelcomeAnimation(true);
       setTimeout(() => {
@@ -147,13 +146,13 @@ export default function Admin() {
   const themeClasses = {
     dark: 'bg-[#05070A] text-[#FAFAFA]',
     light: 'bg-slate-100 text-slate-900',
-    unique: 'bg-[#120822] text-[#F3E8FF]'
+    unique: 'bg-[#0F051D] text-[#FAFAFA]'
   };
 
   const cardTheme = {
     dark: 'bg-[#0D1117] border-neutral-800 text-white shadow-xl',
     light: 'bg-white border-slate-200 text-slate-900 shadow-md',
-    unique: 'bg-[#1A0B2E] border-purple-900/50 text-purple-100 shadow-2xl shadow-purple-950/30'
+    unique: 'bg-[#180830] border-fuchsia-500/40 text-white shadow-2xl shadow-purple-950/40'
   };
 
   if (authLoading) {
@@ -193,14 +192,12 @@ export default function Admin() {
   if (!adminUnlocked) {
     return (
       <div className="fixed inset-0 w-screen h-screen bg-[#05070A] text-white flex items-center justify-center p-4 relative z-50 overflow-hidden">
-        {/* Top-Left Home Button */}
         <div className="absolute top-6 left-6 z-20">
           <button onClick={() => navigate('/')} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D1117]/80 backdrop-blur-xl border border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50 transition cursor-pointer shadow-lg">
             <ArrowLeft className="w-4 h-4" /> Back to Home
           </button>
         </div>
 
-        {/* Ambient Glow Effects */}
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#8B5CF6]/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
         <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#EC4899]/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
 
@@ -264,22 +261,36 @@ export default function Admin() {
         </div>
       )}
 
-      {/* Header with Top-Left Back Button & Theme Switcher */}
-      <header className={`w-full h-16 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white/90 border-slate-200' : theme === 'unique' ? 'bg-[#1A0B2E]/90 border-purple-900/40' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
+      {/* Header with Top-Left Back Button & Upgraded Unique Lighting Theme Selector */}
+      <header className={`w-full h-16 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white/90 border-slate-200' : theme === 'unique' ? 'bg-[#150528]/95 border-fuchsia-500/30 shadow-lg shadow-purple-950/40' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/')} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-neutral-700/50 text-xs font-medium hover:bg-neutral-800/30 transition cursor-pointer">
             <ArrowLeft className="w-4 h-4" /> Home
           </button>
 
-          <div className="hidden sm:flex items-center bg-black/20 border border-neutral-700/40 rounded-xl p-1 gap-1">
+          {/* Theme Switcher */}
+          <div className="hidden sm:flex items-center bg-black/30 border border-neutral-700/40 rounded-xl p-1 gap-1">
             <button onClick={() => setTheme('light')} className={`px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 transition cursor-pointer ${theme === 'light' ? 'bg-white text-slate-900 shadow' : 'text-neutral-400 hover:text-white'}`}>
               <Sun className="w-3 h-3" /> Light
             </button>
             <button onClick={() => setTheme('dark')} className={`px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 transition cursor-pointer ${theme === 'dark' ? 'bg-[#8B5CF6] text-white shadow' : 'text-neutral-400 hover:text-white'}`}>
               <Moon className="w-3 h-3" /> Dark
             </button>
-            <button onClick={() => setTheme('unique')} className={`px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 transition cursor-pointer ${theme === 'unique' ? 'bg-purple-600 text-white shadow' : 'text-neutral-400 hover:text-white'}`}>
-              <Sparkles className="w-3 h-3" /> Unique
+
+            {/* Upgraded Unique Button with Glowing Lighting Effect & Darker High-Contrast Text */}
+            <button 
+              onClick={() => setTheme('unique')} 
+              className={`relative px-3 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all duration-300 cursor-pointer overflow-hidden ${
+                theme === 'unique' 
+                  ? 'bg-gradient-to-r from-fuchsia-400 via-pink-400 to-amber-300 text-slate-950 shadow-lg shadow-fuchsia-500/50 ring-2 ring-fuchsia-300 scale-105' 
+                  : 'text-fuchsia-300 hover:text-white bg-fuchsia-950/30 border border-fuchsia-500/30 hover:border-fuchsia-400'
+              }`}
+            >
+              {theme === 'unique' && (
+                <span className="absolute inset-0 bg-white/25 animate-pulse pointer-events-none" />
+              )}
+              <Sparkles className={`w-3.5 h-3.5 ${theme === 'unique' ? 'text-slate-950 animate-spin' : 'text-fuchsia-400'}`} style={{ animationDuration: '4s' }} /> 
+              <span>Unique</span>
             </button>
           </div>
 
@@ -294,8 +305,8 @@ export default function Admin() {
       {/* Main Layout Area */}
       <div className="flex-1 flex flex-col md:flex-row">
         {/* Sidebar - 6 Requested Buttons */}
-        <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-white border-slate-200' : theme === 'unique' ? 'bg-[#150726] border-purple-900/40' : 'bg-[#0D1117] border-neutral-800'}`}>
-          <div className="px-3 py-2 text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">Navigation Console</div>
+        <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-white border-slate-200' : theme === 'unique' ? 'bg-[#120422] border-fuchsia-500/30' : 'bg-[#0D1117] border-neutral-800'}`}>
+          <div className="px-3 py-2 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">Navigation Console</div>
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'users', label: 'Users', icon: Users },
@@ -311,7 +322,11 @@ export default function Admin() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition text-left cursor-pointer ${
-                  isActive ? 'bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 text-[#C4B5FD] shadow-lg shadow-purple-950/20' : 'opacity-70 hover:opacity-100 hover:bg-neutral-800/30'
+                  isActive 
+                    ? theme === 'unique' 
+                      ? 'bg-gradient-to-r from-fuchsia-600/30 to-purple-600/30 border border-fuchsia-500/60 text-fuchsia-200 shadow-lg shadow-fuchsia-950/50 font-bold' 
+                      : 'bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 text-[#C4B5FD] shadow-lg shadow-purple-950/20' 
+                    : 'opacity-70 hover:opacity-100 hover:bg-neutral-800/30'
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -338,10 +353,10 @@ export default function Admin() {
                 <div className="space-y-6">
                   <h1 className="text-2xl font-bold tracking-tight">Dashboard Overview</h1>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-60">Total Users</span><p className="text-2xl font-bold mt-1">{stats?.totalUsers ?? 42}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-60">Total Scans</span><p className="text-2xl font-bold text-[#8B5CF6] mt-1">{stats?.totalScans ?? 0}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-60">Safe URLs</span><p className="text-2xl font-bold text-emerald-400 mt-1">{stats?.safeUrls ?? 0}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-60">Threats Blocked</span><p className="text-2xl font-bold text-rose-400 mt-1">{stats?.phishingDetected ?? 0}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-70">Total Users</span><p className="text-2xl font-bold mt-1">{stats?.totalUsers ?? 42}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-70">Total Scans</span><p className="text-2xl font-bold text-[#8B5CF6] mt-1">{stats?.totalScans ?? 0}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-70">Safe URLs</span><p className="text-2xl font-bold text-emerald-400 mt-1">{stats?.safeUrls ?? 0}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-70">Threats Blocked</span><p className="text-2xl font-bold text-rose-400 mt-1">{stats?.phishingDetected ?? 0}</p></div>
                   </div>
                 </div>
               )}
@@ -353,7 +368,7 @@ export default function Admin() {
                   <div className={`border rounded-2xl p-6 ${cardTheme[theme]}`}>
                     <table className="w-full text-left text-xs">
                       <thead>
-                        <tr className="border-b border-neutral-700/50 opacity-60">
+                        <tr className="border-b border-neutral-700/50 opacity-70">
                           <th className="pb-3">User</th>
                           <th className="pb-3">Role</th>
                           <th className="pb-3">Status</th>
@@ -362,7 +377,7 @@ export default function Admin() {
                       <tbody className="divide-y divide-neutral-700/30">
                         {usersList.map(u => (
                           <tr key={u.id} className="py-3">
-                            <td className="py-3"><p className="font-semibold">{u.name}</p><p className="text-[10px] opacity-60">{u.email}</p></td>
+                            <td className="py-3"><p className="font-semibold">{u.name}</p><p className="text-[10px] opacity-70">{u.email}</p></td>
                             <td className="py-3">{u.role}</td>
                             <td className="py-3"><span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400">{u.status}</span></td>
                           </tr>
@@ -422,7 +437,7 @@ export default function Admin() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {health.map((h, i) => (
                       <div key={i} className={`border rounded-2xl p-5 flex items-center justify-between ${cardTheme[theme]}`}>
-                        <div><p className="text-xs font-semibold">{h.service}</p><p className="text-[10px] opacity-60">Latency: {h.latency}</p></div>
+                        <div><p className="text-xs font-semibold">{h.service}</p><p className="text-[10px] opacity-70">Latency: {h.latency}</p></div>
                         <span className="px-2.5 py-1 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400">{h.status}</span>
                       </div>
                     ))}
@@ -438,15 +453,15 @@ export default function Admin() {
                     {commentsList.length > 0 ? commentsList.map(c => (
                       <div key={c._id} className={`border rounded-2xl p-5 space-y-2 ${cardTheme[theme]}`}>
                         <div className="flex justify-between"><span className="text-xs font-bold">{c.name} ({c.email})</span><span className="text-[10px] text-[#8B5CF6]">{c.category}</span></div>
-                        <p className="text-xs opacity-80 bg-black/20 p-3 rounded-xl">"{c.message}"</p>
-                        <div className="flex justify-between items-center text-[10px] opacity-60">
+                        <p className="text-xs opacity-90 bg-black/20 p-3 rounded-xl">"{c.message}"</p>
+                        <div className="flex justify-between items-center text-[10px] opacity-70">
                           <span>{new Date(c.createdAt).toLocaleDateString()}</span>
                           {c.reviewed ? <span className="text-emerald-400">Reviewed ✓</span> : (
                             <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline cursor-pointer">Mark as Reviewed ✓</button>
                           )}
                         </div>
                       </div>
-                    )) : <p className="text-xs opacity-60">No feedback comments received yet.</p>}
+                    )) : <p className="text-xs opacity-70">No feedback comments received yet.</p>}
                   </div>
                 </div>
               )}
