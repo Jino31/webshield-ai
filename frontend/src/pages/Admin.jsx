@@ -25,7 +25,8 @@ import {
   Lock,
   LogOut,
   Palette,
-  ChevronDown
+  ChevronDown,
+  Send
 } from 'lucide-react';
 
 export default function Admin() {
@@ -148,13 +149,13 @@ export default function Admin() {
 
   const themeClasses = {
     dark: 'bg-[#05070A] text-[#FAFAFA]',
-    light: 'bg-slate-100 text-slate-900',
+    light: 'bg-slate-100 text-slate-950',
     unique: 'bg-[#0A0216] text-white selection:bg-fuchsia-500 selection:text-white'
   };
 
   const cardTheme = {
     dark: 'bg-[#0D1117] border-neutral-800 text-white shadow-xl',
-    light: 'bg-white border-slate-200 text-slate-900 shadow-md',
+    light: 'bg-white border-slate-300 text-slate-900 shadow-md',
     unique: 'bg-gradient-to-br from-[#1B0536] to-[#0E011C] border-fuchsia-500/40 text-fuchsia-100 shadow-2xl shadow-fuchsia-950/50 backdrop-blur-xl'
   };
 
@@ -265,12 +266,12 @@ export default function Admin() {
       )}
 
       {/* Header with Top-Left Back Button & Top-Right Theme Dropdown & Sign Out */}
-      <header className={`w-full h-16 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white/90 border-slate-200' : theme === 'unique' ? 'bg-[#120224]/95 border-fuchsia-500/40 shadow-lg shadow-fuchsia-950/50' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
+      <header className={`w-full h-16 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white border-slate-300 text-slate-900 shadow-sm' : theme === 'unique' ? 'bg-[#120224]/95 border-fuchsia-500/40 shadow-lg shadow-fuchsia-950/50' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/')} className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-neutral-700/50 text-xs font-medium hover:bg-neutral-800/30 transition cursor-pointer">
+          <button onClick={() => navigate('/')} className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer ${theme === 'light' ? 'border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200' : 'border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/30'}`}>
             <ArrowLeft className="w-4 h-4" /> Home
           </button>
-          <span className="font-bold text-sm tracking-tight ml-2">WebShield Admin</span>
+          <span className={`font-bold text-sm tracking-tight ml-2 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>WebShield Admin</span>
         </div>
 
         {/* Right Corner Controls: Theme Dropdown & Sign Out */}
@@ -282,6 +283,8 @@ export default function Admin() {
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${
                 theme === 'unique'
                   ? 'bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white border-fuchsia-400 shadow-lg shadow-fuchsia-500/40 animate-pulse'
+                  : theme === 'light'
+                  ? 'bg-slate-200 border-slate-300 text-slate-900 hover:bg-slate-300'
                   : 'bg-black/20 border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/40'
               }`}
             >
@@ -294,13 +297,13 @@ export default function Admin() {
               <div className={`absolute right-0 top-12 w-44 border rounded-2xl shadow-2xl p-2 z-50 space-y-1 ${cardTheme[theme]}`}>
                 <button
                   onClick={() => { setTheme('light'); setThemeDropdownOpen(false); }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${theme === 'light' ? 'bg-purple-500/20 text-purple-600 font-bold' : 'hover:bg-neutral-800/30'}`}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${theme === 'light' ? 'bg-purple-500/20 text-purple-700 font-bold' : 'hover:bg-neutral-800/20'}`}
                 >
                   <Sun className="w-3.5 h-3.5" /> Light
                 </button>
                 <button
                   onClick={() => { setTheme('dark'); setThemeDropdownOpen(false); }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${theme === 'dark' ? 'bg-[#8B5CF6]/30 text-[#C4B5FD] font-bold' : 'hover:bg-neutral-800/30'}`}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${theme === 'dark' ? 'bg-[#8B5CF6]/30 text-[#C4B5FD] font-bold' : 'hover:bg-neutral-800/20'}`}
                 >
                   <Moon className="w-3.5 h-3.5" /> Dark
                 </button>
@@ -314,7 +317,7 @@ export default function Admin() {
             )}
           </div>
 
-          <button onClick={() => signOut(auth).then(() => navigate('/'))} className="flex items-center gap-2 text-xs text-rose-400 px-3.5 py-2 rounded-xl border border-rose-500/30 hover:bg-rose-500/10 transition cursor-pointer">
+          <button onClick={() => signOut(auth).then(() => navigate('/'))} className={`flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border transition cursor-pointer ${theme === 'light' ? 'border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-100' : 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10'}`}>
             <LogOut className="w-3.5 h-3.5" /> Sign Out
           </button>
         </div>
@@ -323,8 +326,8 @@ export default function Admin() {
       {/* Main Layout Area */}
       <div className="flex-1 flex flex-col md:flex-row">
         {/* Sidebar - 6 Requested Buttons */}
-        <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-white border-slate-200' : theme === 'unique' ? 'bg-[#0E021A] border-fuchsia-500/30' : 'bg-[#0D1117] border-neutral-800'}`}>
-          <div className="px-3 py-2 text-[10px] font-semibold text-neutral-400 uppercase tracking-wider">Navigation Console</div>
+        <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-slate-50 border-slate-300' : theme === 'unique' ? 'bg-[#0E021A] border-fuchsia-500/30' : 'bg-[#0D1117] border-neutral-800'}`}>
+          <div className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Navigation Console</div>
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'users', label: 'Users', icon: Users },
@@ -339,12 +342,16 @@ export default function Admin() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-medium transition text-left cursor-pointer ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition text-left cursor-pointer ${
                   isActive 
                     ? theme === 'unique' 
                       ? 'bg-gradient-to-r from-fuchsia-600/40 to-purple-600/40 border border-fuchsia-500 text-white shadow-lg shadow-fuchsia-950/60 font-bold ring-1 ring-fuchsia-400/50' 
+                      : theme === 'light'
+                      ? 'bg-purple-600 border border-purple-700 text-white shadow-md font-bold'
                       : 'bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 text-[#C4B5FD] shadow-lg shadow-purple-950/20' 
-                    : 'opacity-70 hover:opacity-100 hover:bg-neutral-800/30'
+                    : theme === 'light' 
+                    ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/60'
+                    : 'opacity-70 hover:opacity-100 hover:bg-neutral-800/30 text-neutral-300'
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -357,11 +364,11 @@ export default function Admin() {
         {/* Content View */}
         <main className="flex-1 p-6 space-y-6 overflow-y-auto">
           {loadingData ? (
-            <div className="flex items-center justify-center h-64 text-xs">
+            <div className={`flex items-center justify-center h-64 text-xs font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-neutral-300'}`}>
               <RefreshCw className="w-5 h-5 animate-spin text-[#8B5CF6] mr-2" /> Loading telemetry...
             </div>
           ) : errorData ? (
-            <div className="p-6 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-300 text-xs text-center">
+            <div className="p-6 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-600 text-xs text-center font-semibold">
               {errorData}
             </div>
           ) : (
@@ -369,12 +376,12 @@ export default function Admin() {
               {/* 1. DASHBOARD */}
               {activeTab === 'dashboard' && (
                 <div className="space-y-6">
-                  <h1 className="text-2xl font-bold tracking-tight">Dashboard Overview</h1>
+                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>Dashboard Overview</h1>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-70">Total Users</span><p className="text-2xl font-bold mt-1">{stats?.totalUsers ?? 42}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-70">Total Scans</span><p className="text-2xl font-bold text-[#8B5CF6] mt-1">{stats?.totalScans ?? 0}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-70">Safe URLs</span><p className="text-2xl font-bold text-emerald-400 mt-1">{stats?.safeUrls ?? 0}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className="text-[11px] opacity-70">Threats Blocked</span><p className="text-2xl font-bold text-rose-400 mt-1">{stats?.phishingDetected ?? 0}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Users</span><p className={`text-2xl font-black mt-1 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{stats?.totalUsers ?? 42}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Scans</span><p className="text-2xl font-black text-[#8B5CF6] mt-1">{stats?.totalScans ?? 0}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Safe URLs</span><p className="text-2xl font-black text-emerald-500 mt-1">{stats?.safeUrls ?? 0}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Threats Blocked</span><p className="text-2xl font-black text-rose-500 mt-1">{stats?.phishingDetected ?? 0}</p></div>
                   </div>
                 </div>
               )}
@@ -382,22 +389,22 @@ export default function Admin() {
               {/* 2. USERS */}
               {activeTab === 'users' && (
                 <div className="space-y-6">
-                  <h1 className="text-2xl font-bold tracking-tight">User Accounts</h1>
+                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>User Accounts</h1>
                   <div className={`border rounded-2xl p-6 ${cardTheme[theme]}`}>
                     <table className="w-full text-left text-xs">
                       <thead>
-                        <tr className="border-b border-neutral-700/50 opacity-70">
+                        <tr className={`border-b font-bold uppercase tracking-wider ${theme === 'light' ? 'border-slate-300 text-slate-700' : 'border-neutral-700/50 opacity-70'}`}>
                           <th className="pb-3">User</th>
                           <th className="pb-3">Role</th>
                           <th className="pb-3">Status</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-neutral-700/30">
+                      <tbody className={`divide-y font-medium ${theme === 'light' ? 'divide-slate-200 text-slate-900' : 'divide-neutral-700/30'}`}>
                         {usersList.map(u => (
                           <tr key={u.id} className="py-3">
-                            <td className="py-3"><p className="font-semibold">{u.name}</p><p className="text-[10px] opacity-70">{u.email}</p></td>
+                            <td className="py-3"><p className={`font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{u.name}</p><p className={`text-[10px] font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>{u.email}</p></td>
                             <td className="py-3">{u.role}</td>
-                            <td className="py-3"><span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400">{u.status}</span></td>
+                            <td className="py-3"><span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">{u.status}</span></td>
                           </tr>
                         ))}
                       </tbody>
@@ -409,7 +416,7 @@ export default function Admin() {
               {/* 3. AD */}
               {activeTab === 'ad' && (
                 <div className="space-y-6">
-                  <h1 className="text-2xl font-bold tracking-tight">AD Configuration</h1>
+                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>AD Configuration</h1>
                   <form onSubmit={async (e) => {
                     e.preventDefault();
                     setSavingAd(true);
@@ -419,9 +426,9 @@ export default function Admin() {
                     } catch { showToast('Failed to update AD.'); }
                     finally { setSavingAd(false); }
                   }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
-                    <div><label className="block text-xs mb-1">Button Label</label><input type="text" value={adLabel} onChange={e => setAdLabel(e.target.value)} className="w-full h-11 px-4 rounded-xl bg-black/20 border border-neutral-700 text-xs outline-none" /></div>
-                    <div><label className="block text-xs mb-1">Destination URL</label><input type="url" value={adUrl} onChange={e => setAdUrl(e.target.value)} className="w-full h-11 px-4 rounded-xl bg-black/20 border border-neutral-700 text-xs outline-none" /></div>
-                    <button type="submit" disabled={savingAd} className="px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-semibold rounded-xl cursor-pointer">{savingAd ? 'Saving...' : 'Save AD Config'}</button>
+                    <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Button Label</label><input type="text" value={adLabel} onChange={e => setAdLabel(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
+                    <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Destination URL</label><input type="url" value={adUrl} onChange={e => setAdUrl(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
+                    <button type="submit" disabled={savingAd} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg cursor-pointer">{savingAd ? 'Saving...' : 'Save AD Config'}</button>
                   </form>
                 </div>
               )}
@@ -429,7 +436,7 @@ export default function Admin() {
               {/* 4. ANNOUNCEMENT */}
               {activeTab === 'announcement' && (
                 <div className="space-y-6">
-                  <h1 className="text-2xl font-bold tracking-tight">Platform Announcement</h1>
+                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>Platform Announcement</h1>
                   <form onSubmit={async (e) => {
                     e.preventDefault();
                     if (!annTitle || !annMessage) return showToast('Fill all fields.');
@@ -441,9 +448,9 @@ export default function Admin() {
                     } catch { showToast('Publish failed.'); }
                     finally { setPublishingAnn(false); }
                   }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
-                    <div><label className="block text-xs mb-1">Title</label><input type="text" value={annTitle} onChange={e => setAnnTitle(e.target.value)} className="w-full h-11 px-4 rounded-xl bg-black/20 border border-neutral-700 text-xs outline-none" /></div>
-                    <div><label className="block text-xs mb-1">Message</label><textarea rows="3" value={annMessage} onChange={e => setAnnMessage(e.target.value)} className="w-full p-4 rounded-xl bg-black/20 border border-neutral-700 text-xs outline-none resize-none" /></div>
-                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-semibold rounded-xl cursor-pointer">{publishingAnn ? 'Publishing...' : 'Publish Announcement'}</button>
+                    <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Title</label><input type="text" value={annTitle} onChange={e => setAnnTitle(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
+                    <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Message</label><textarea rows="3" value={annMessage} onChange={e => setAnnMessage(e.target.value)} className={`w-full p-4 rounded-xl border text-xs font-semibold outline-none resize-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
+                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg cursor-pointer">{publishingAnn ? 'Publishing...' : 'Publish Announcement'}</button>
                   </form>
                 </div>
               )}
@@ -451,35 +458,50 @@ export default function Admin() {
               {/* 5. MONITOR SYSTEM */}
               {activeTab === 'monitor' && (
                 <div className="space-y-6">
-                  <h1 className="text-2xl font-bold tracking-tight">System Monitor</h1>
+                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>System Monitor</h1>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {health.map((h, i) => (
                       <div key={i} className={`border rounded-2xl p-5 flex items-center justify-between ${cardTheme[theme]}`}>
-                        <div><p className="text-xs font-semibold">{h.service}</p><p className="text-[10px] opacity-70">Latency: {h.latency}</p></div>
-                        <span className="px-2.5 py-1 rounded-full text-[10px] bg-emerald-500/10 text-emerald-400">{h.status}</span>
+                        <div><p className={`text-xs font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{h.service}</p><p className={`text-[10px] font-semibold mt-0.5 ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Latency: {h.latency}</p></div>
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">{h.status}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* 6. COMMENT RECEIVER */}
+              {/* 6. COMMENT RECEIVER WITH FEEDBACK BUTTON */}
               {activeTab === 'comments' && (
                 <div className="space-y-6">
-                  <h1 className="text-2xl font-bold tracking-tight">User Comment Receiver</h1>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>User Comment Receiver</h1>
+                      <p className={`text-xs font-medium mt-1 ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Review and manage incoming user feedback messages.</p>
+                    </div>
+                    {/* New Feedback Action Button */}
+                    <button onClick={() => showToast('Feedback inbox is synchronized in real-time.')} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg hover:opacity-90 transition cursor-pointer">
+                      <Send className="w-3.5 h-3.5" /> Feedback Inbox ({commentsList.length})
+                    </button>
+                  </div>
+
                   <div className="space-y-3">
                     {commentsList.length > 0 ? commentsList.map(c => (
-                      <div key={c._id} className={`border rounded-2xl p-5 space-y-2 ${cardTheme[theme]}`}>
-                        <div className="flex justify-between"><span className="text-xs font-bold">{c.name} ({c.email})</span><span className="text-[10px] text-[#8B5CF6]">{c.category}</span></div>
-                        <p className="text-xs opacity-90 bg-black/20 p-3 rounded-xl">"{c.message}"</p>
-                        <div className="flex justify-between items-center text-[10px] opacity-70">
-                          <span>{new Date(c.createdAt).toLocaleDateString()}</span>
-                          {c.reviewed ? <span className="text-emerald-400">Reviewed ✓</span> : (
-                            <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline cursor-pointer">Mark as Reviewed ✓</button>
+                      <div key={c._id} className={`border rounded-2xl p-5 space-y-2.5 ${cardTheme[theme]}`}>
+                        <div className="flex justify-between items-center">
+                          <span className={`text-xs font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{c.name} <span className={`font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>({c.email})</span></span>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/15 text-purple-600 border border-purple-500/30">{c.category}</span>
+                        </div>
+                        <p className={`text-xs font-semibold p-3.5 rounded-xl border ${theme === 'light' ? 'bg-slate-100 border-slate-300 text-slate-900' : 'bg-black/20 border-neutral-700/50 text-neutral-200'}`}>
+                          "{c.message}"
+                        </p>
+                        <div className={`flex justify-between items-center text-[10px] font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>
+                          <span>Submitted {new Date(c.createdAt).toLocaleDateString()}</span>
+                          {c.reviewed ? <span className="text-emerald-500 font-bold">Reviewed ✓</span> : (
+                            <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline font-bold cursor-pointer">Mark as Reviewed ✓</button>
                           )}
                         </div>
                       </div>
-                    )) : <p className="text-xs opacity-70">No feedback comments received yet.</p>}
+                    )) : <p className={`text-xs font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>No feedback comments received yet.</p>}
                   </div>
                 </div>
               )}
