@@ -154,8 +154,17 @@ app.post('/api/assistant', async (req, res) => {
   }
 });
 
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
 // ==========================================
-// FEEDBACK API ENDPOINT (Robust & Error-Proof)
+// FEEDBACK SCHEMA & API ENDPOINTS
 // ==========================================
 const feedbackSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
@@ -170,6 +179,7 @@ const feedbackSchema = new mongoose.Schema({
 
 const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
 
+// 1. Public endpoint to submit feedback
 app.post('/api/feedback', async (req, res) => {
   try {
     const { name, email, category, message, websiteUrl, userId } = req.body;
@@ -205,6 +215,28 @@ app.post('/api/feedback', async (req, res) => {
       success: false,
       error: "We couldn't process your feedback right now. Please try again later."
     });
+  }
+});
+
+// 2. Admin endpoint to fetch all feedback comments in real time
+app.get('/api/admin/comments', async (req, res) => {
+  try {
+    const comments = await FeedbackLog.find().sort({ createdAt: -1 }).limit(50);
+    res.json({ success: true, comments: comments || [] });
+  } catch (error) {
+    console.error("Error fetching comments:", error.message);
+    res.status(500).json({ success: false, error: "Failed to fetch comments." });
+  }
+});
+
+// 3. Admin endpoint to mark comment as reviewed
+app.patch('/api/admin/comments/:id/review', async (req, res) => {
+  try {
+    await FeedbackLog.findByIdAndUpdate(req.params.id, { reviewed: true });
+    res.json({ success: true, message: "Comment marked as reviewed." });
+  } catch (error) {
+    console.error("Failed to update comment:", error.message);
+    res.status(500).json({ success: false, error: "Failed to update comment status." });
   }
 });
 
