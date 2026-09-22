@@ -44,6 +44,7 @@ const ADMIN_SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
 const AUTHORIZED_ADMIN_EMAILS = [
   'jino@webshield.ai',
   'admin@webshield.ai',
+  'jeffrinjinos1@gmail.com'
 ];
 
 export default function Admin() {
