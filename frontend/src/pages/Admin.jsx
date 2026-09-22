@@ -158,7 +158,6 @@ export default function Admin() {
         setIsAdmin(false);
         setAdminUnlocked(false);
         setAuthLoading(false);
-        navigate('/login', { replace: true });
         return;
       }
 
@@ -172,7 +171,6 @@ export default function Admin() {
         setIsAdmin(false);
         setAdminUnlocked(false);
         setAuthLoading(false);
-        navigate('/', { replace: true });
         return;
       }
 
@@ -182,7 +180,7 @@ export default function Admin() {
     });
 
     return () => unsubscribe();
-  }, [navigate, checkAdminSession]);
+  }, [checkAdminSession]);
 
   // ============================================================
   // ADMIN PASSWORD UNLOCK
@@ -312,7 +310,7 @@ export default function Admin() {
   };
 
   // ============================================================
-  // RENDER STATES (LOADING & ACCESS GUARDS)
+  // RENDER STATES (LOADING & EXPLICIT ACCESS GUARDS)
   // ============================================================
   if (authLoading) {
     return (
@@ -330,8 +328,54 @@ export default function Admin() {
     );
   }
 
-  if (!currentUser || !isAdmin) {
-    return null;
+  // If user is not logged in at all, show clear prompt or redirect
+  if (!currentUser) {
+    return (
+      <div role="alert" className="min-h-screen bg-[#05070A] text-[#FAFAFA] flex flex-col items-center justify-center p-6">
+        <div className="bg-[#0D1117] border border-neutral-800 p-8 rounded-3xl text-center shadow-2xl max-w-md w-full space-y-4">
+          <div className="w-14 h-14 bg-[#8B5CF6]/10 border border-[#8B5CF6]/30 rounded-2xl flex items-center justify-center text-[#8B5CF6] mx-auto">
+            <Lock className="w-7 h-7" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-white mb-1">Authentication Required</h1>
+            <p className="text-xs text-neutral-400 leading-relaxed">
+              Please sign in with an authorized administrator account to access this area.
+            </p>
+          </div>
+          <button 
+            onClick={() => navigate('/login', { replace: true })}
+            className="w-full py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white rounded-xl text-xs font-semibold transition cursor-pointer shadow-lg shadow-purple-950/40"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // If user is logged in but NOT on the allowlist, show an explicit Access Denied screen
+  if (!isAdmin) {
+    return (
+      <div role="alert" className="min-h-screen bg-[#05070A] text-[#FAFAFA] flex flex-col items-center justify-center p-6">
+        <div className="bg-[#0D1117] border border-rose-500/30 p-8 rounded-3xl text-center shadow-2xl max-w-md w-full space-y-4">
+          <div className="w-14 h-14 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-400 mx-auto">
+            <ShieldAlert className="w-8 h-8" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-white mb-1">Access Denied</h1>
+            <p className="text-xs text-neutral-400 leading-relaxed">
+              Logged in as <span className="text-white font-mono">{currentUser.email}</span>. Administrator privileges are required to access this area.
+            </p>
+          </div>
+          <button 
+            onClick={() => navigate('/', { replace: true })}
+            className="w-full py-3 bg-[#13111C] hover:bg-[#1A1528] border border-neutral-800 text-white rounded-xl text-xs font-semibold transition cursor-pointer"
+          >
+            Return to Home
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!adminUnlocked) {
