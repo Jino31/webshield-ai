@@ -17,7 +17,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 app.use(cors());
 app.use(express.json());
 
-// Load custom WebShield AI Domain Knowledge Dataset from root dataset folder
+// Load custom WebShield AI Domain Knowledge Dataset
 const knowledgeBasePath = path.join(__dirname, '..', 'dataset', 'webshield_knowledge.json');
 let knowledgeBase = [];
 try {
@@ -47,6 +47,57 @@ const scanSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 const ScanLog = mongoose.model('ScanLog', scanSchema);
+
+// ==========================================
+// FEEDBACK SCHEMA & API ENDPOINTS
+// ==========================================
+const feedbackSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, trim: true, lowercase: true },
+  category: { type: String, required: true },
+  message: { type: String, required: true, maxlength: 1000 },
+  websiteUrl: { type: String, trim: true, default: null },
+  userId: { type: String, default: null },
+  reviewed: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
+
+// Public feedback submission route
+app.post('/api/feedback', async (req, res) => {
+  try {
+    const { name, email, category, message, websiteUrl, userId } = req.body;
+
+    if (!name || !email || !category || !message) {
+      return res.status(400).json({ success: false, error: "All required fields must be filled." });
+    }
+
+    const newFeedback = await FeedbackLog.create({
+      name,
+      email,
+      category,
+      message,
+      websiteUrl: websiteUrl || null,
+      userId: userId || null,
+      reviewed: false
+    });
+
+    const feedbackId = `WS-${new Date().getFullYear()}-${newFeedback._id.toString().slice(-5).toUpperCase()}`;
+
+    res.status(201).json({
+      success: true,
+      message: "Feedback submitted successfully",
+      feedbackId
+    });
+  } catch (error) {
+    console.error("Feedback submission error:", error.message);
+    res.status(500).json({
+      success: false,
+      error: "We couldn't process your feedback right now. Please try again later."
+    });
+  }
+});
 
 // Main Scan Route: Forwards URL to Python FastAPI Microservice
 app.post('/api/scan', async (req, res) => {
@@ -83,7 +134,6 @@ app.post('/api/scan', async (req, res) => {
   }
 });
 
-// Route to fetch recent scans
 app.get('/api/history', async (req, res) => {
   try {
     const history = await ScanLog.find().sort({ createdAt: -1 }).limit(10);
@@ -103,7 +153,6 @@ app.post('/api/assistant', async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Security Guardrail against sensitive credentials queries
     const lowerMsg = message.toLowerCase();
     const sensitiveTriggers = ['password', 'admin', 'firebase', 'secret', 'key', 'token', 'database', 'credential'];
     if (sensitiveTriggers.some(trigger => lowerMsg.includes(trigger))) {
@@ -113,24 +162,10 @@ app.post('/api/assistant', async (req, res) => {
       });
     }
 
-    let systemInstruction = `You are ShieldSense, the dedicated, expert AI assistant exclusively for "WebShield AI", a platform specialized in detecting fake websites and phishing using Random Forest machine learning models and lexical analysis.
-    
-    CRITICAL BEHAVIORAL RULES:
-    1. You must ONLY answer questions related to WebShield AI, its features, its machine learning architecture, threat detection, cybersecurity best practices against phishing, or active user scan results.
-    2. If a user asks a question completely unrelated to WebShield AI or cybersecurity, you must decline politely: "I am ShieldSense, specialized exclusively in WebShield AI security and phishing detection. I can only answer questions related to our platform, URL scanning, and threat analysis."
-    3. Never disclose internal admin passwords, API keys, or raw database secrets.
-    4. Keep answers clear, professional, and well-structured.
-
-    Reference Knowledge Base Dataset:
-    ${JSON.stringify(knowledgeBase)}
-    `;
+    let systemInstruction = `You are ShieldSense, the dedicated, expert AI assistant exclusively for "WebShield AI". Reference Knowledge Base: ${JSON.stringify(knowledgeBase)}`;
 
     if (scanContext) {
-      systemInstruction += `\n\nActive Scan Context provided by user's recent scan:
-      - URL: ${scanContext.url}
-      - Risk Level: ${scanContext.riskLevel}
-      - Confidence Score: ${scanContext.confidence}%
-      - Assessment Description: ${scanContext.description}`;
+      systemInstruction += `\n\nActive Scan Context: URL: ${scanContext.url}, Risk Level: ${scanContext.riskLevel}`;
     }
 
     const response = await ai.models.generateContent({
@@ -149,74 +184,14 @@ app.post('/api/assistant', async (req, res) => {
     console.error("Custom Assistant API error:", error.message);
     res.status(500).json({ 
       success: false, 
-      reply: "I couldn't connect to the real-time AI security engine right now. Please ensure your backend .env file has a valid GEMINI_API_KEY." 
-    });
-  }
-});
-
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-require('dotenv').config();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// ==========================================
-// FEEDBACK API ENDPOINT (Bulletproofed)
-// ==========================================
-const feedbackSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, trim: true, lowercase: true },
-  category: { type: String, required: true },
-  message: { type: String, required: true, maxlength: 1000 },
-  websiteUrl: { type: String, trim: true, default: null },
-  userId: { type: String, default: null },
-  reviewed: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now }
-});
-
-const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
-
-app.post('/api/feedback', async (req, res) => {
-  try {
-    const { name, email, category, message, websiteUrl, userId } = req.body;
-
-    if (!name || !email || !category || !message) {
-      return res.status(400).json({ success: false, error: "All required fields must be filled." });
-    }
-
-    const newFeedback = await FeedbackLog.create({
-      name,
-      email,
-      category,
-      message,
-      websiteUrl: websiteUrl || null,
-      userId: userId || null,
-      reviewed: false
-    });
-
-    const feedbackId = `WS-${new Date().getFullYear()}-${newFeedback._id.toString().slice(-5).toUpperCase()}`;
-
-    res.status(201).json({
-      success: true,
-      message: "Feedback submitted successfully",
-      feedbackId
-    });
-  } catch (error) {
-    console.error("Feedback submission error:", error.message);
-    res.status(500).json({
-      success: false,
-      error: "We couldn't process your feedback right now. Please try again later."
+      reply: "I couldn't connect to the real-time AI security engine right now." 
     });
   }
 });
 
 // ==========================================
-// REAL-TIME ADMIN ENDPOINTS (Error-Proofed)
+// REAL-TIME ADMIN ENDPOINTS
 // ==========================================
-
 app.post('/api/admin/unlock', async (req, res) => {
   try {
     const { password } = req.body;
@@ -337,4 +312,8 @@ app.put('/api/admin/ad-config', async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: "Failed to update AD configuration." });
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`WebShield Backend running on port ${PORT}`);
 });
