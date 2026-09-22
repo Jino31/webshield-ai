@@ -10,3 +10,150 @@ html {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* Smooth transition for theme switching */
+html,
+body,
+nav,
+div,
+aside,
+main,
+section,
+header,
+footer {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease;
+}
+
+/* ----------------------------------------------------
+   GeeksforGeeks (GFG) Theme Toggle Icon & Button Styles
+   ---------------------------------------------------- */
+.gfg-theme-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.gfg-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  line-height: 1;
+  font-style: normal;
+  vertical-align: middle;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+}
+
+.gfg-theme-btn:hover .gfg-icon {
+  transform: rotate(18deg) scale(1.1);
+}
+
+.gfg-theme-btn:active .gfg-icon {
+  transform: rotate(-25deg) scale(0.92);
+}
+
+/* ----------------------------------------------------
+   Light Theme System Overrides for WebShield AI
+   ---------------------------------------------------- */
+[data-theme="light"],
+html.light,
+body.light {
+  color-scheme: light;
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+}
+
+/* Background & Canvas */
+[data-theme="light"] body,
+[data-theme="light"] #root,
+[data-theme="light"] .min-h-screen,
+[data-theme="light"] [class*="min-h-screen"],
+[data-theme="light"] [class*="bg-[#0A0A0F]"],
+[data-theme="light"] [class*="bg-[#05070A]"] {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+}
+
+/* Navbar light styling */
+[data-theme="light"] nav,
+[data-theme="light"] [class*="bg-[#0A0A0F]/80"] {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Elevated Cards & Panels */
+[data-theme="light"] [class*="bg-[#13111C]"],
+[data-theme="light"] [class*="bg-[#111118]"],
+[data-theme="light"] [class*="bg-[#0D1117]"] {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 4px 6px -2px rgba(15, 23, 42, 0.02) !important;
+}
+
+/* Insets, Sub-containers & Badges */
+[data-theme="light"] [class*="bg-[#1A1528]"],
+[data-theme="light"] [class*="bg-neutral-900"] {
+  background-color: #F1F5F9 !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Borders */
+[data-theme="light"] [class*="border-[#231E33]"],
+[data-theme="light"] [class*="border-[#27272F]"],
+[data-theme="light"] [class*="border-[#2B2340]"],
+[data-theme="light"] [class*="border-neutral-800"] {
+  border-color: #E2E8F0 !important;
+}
+
+/* Text Hierarchy */
+[data-theme="light"] [class*="text-white"],
+[data-theme="light"] [class*="text-[#FFFFFF]"],
+[data-theme="light"] [class*="text-[#FAFAFA]"] {
+  color: #0F172A !important;
+}
+
+[data-theme="light"] [class*="text-neutral-300"],
+[data-theme="light"] [class*="text-neutral-400"],
+[data-theme="light"] [class*="text-[#A1A1AA]"] {
+  color: #475569 !important;
+}
+
+[data-theme="light"] [class*="text-neutral-500"] {
+  color: #64748B !important;
+}
+
+/* Form inputs & controls */
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: #94A3B8 !important;
+}
+
+/* Interactive item hovers */
+[data-theme="light"] [class*="hover:bg-[#1A1528]"]:hover,
+[data-theme="light"] [class*="hover:bg-[#13111C]"]:hover {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+}
+
+/* Tooltips and Dropdowns */
+[data-theme="light"] .shadow-2xl,
+[data-theme="light"] .shadow-xl {
+  box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.08) !important;
+}

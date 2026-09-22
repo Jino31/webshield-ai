@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { adminService } from '../services/adminService';
+import { useTheme } from '../context/ThemeContext';
 
 import {
   LayoutDashboard,
@@ -45,7 +46,7 @@ export default function Admin() {
 
   // UI States (6 Tabs & Theme Dropdown)
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [theme, setTheme] = useState('dark'); // 'light' | 'dark' | 'unique'
+  const { theme, setTheme } = useTheme();
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
 
   // Telemetry Data

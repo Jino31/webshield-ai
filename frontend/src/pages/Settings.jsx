@@ -14,11 +14,14 @@ import {
   Sliders, 
   ArrowLeft,
   ChevronRight,
-  Activity
+  Activity,
+  Palette
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Settings() {
   const navigate = useNavigate();
+  const { theme, setTheme, isDark, toggleTheme } = useTheme();
   
   // Active settings navigation tab
   const [activeTab, setActiveTab] = useState('security');
@@ -125,6 +128,7 @@ export default function Settings() {
   const navItems = [
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'scanner', label: 'Scanner', icon: Search },
+    { id: 'appearance', label: 'Appearance & Theme', icon: Palette },
     { id: 'ai', label: 'AI Detection', icon: Cpu },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'privacy', label: 'Privacy', icon: Lock },
@@ -305,6 +309,87 @@ export default function Settings() {
                   </div>
                 </div>
               </>
+            )}
+
+            {/* APPEARANCE & THEME TAB VIEW */}
+            {activeTab === 'appearance' && (
+              <div>
+                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+                  <Palette className="w-4 h-4" /> Appearance & Theme Preferences
+                </h2>
+                
+                <p className="text-xs text-neutral-400 mb-6">
+                  Select your preferred UI color scheme. WebShield AI includes a fast GeeksforGeeks-style theme toggle available both here and in the top navigation bar.
+                </p>
+
+                {/* Theme Selection Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                  
+                  {/* Dark Mode Option */}
+                  <div 
+                    onClick={() => setTheme('dark')}
+                    className={`p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
+                      isDark 
+                        ? 'bg-[#13111C] border-[#8B5CF6] shadow-lg shadow-purple-950/40 ring-1 ring-[#8B5CF6]' 
+                        : 'bg-[#05070A] border-neutral-800/80 hover:border-neutral-700 opacity-80'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-[#1A1528] border border-[#2B2340] flex items-center justify-center text-[#8B5CF6]">
+                        <i className="gfg-icon gfg-icon_light-mode text-amber-400" />
+                      </div>
+                      {isDark && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 text-[#C4B5FD] text-[10px] font-bold font-mono">
+                          ACTIVE
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-sm font-bold text-white mb-1">Cyber SecOps Dark</h3>
+                    <p className="text-xs text-neutral-400">Deep obsidian background (#0A0A0F) with glowing cyan & purple threat telemetry.</p>
+                  </div>
+
+                  {/* Light Mode Option */}
+                  <div 
+                    onClick={() => setTheme('light')}
+                    className={`p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
+                      !isDark 
+                        ? 'bg-white border-[#8B5CF6] shadow-lg shadow-purple-950/20 ring-1 ring-[#8B5CF6]' 
+                        : 'bg-[#05070A] border-neutral-800/80 hover:border-neutral-700 opacity-80'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800">
+                        <i className="gfg-icon gfg-icon_dark-mode" />
+                      </div>
+                      {!isDark && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 text-[#8B5CF6] text-[10px] font-bold font-mono">
+                          ACTIVE
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-sm font-bold text-white mb-1">Daylight Clarity Light</h3>
+                    <p className="text-xs text-neutral-400">Clean slate canvas (#F8FAFC) with elevated white cards and high-contrast typography.</p>
+                  </div>
+
+                </div>
+
+                {/* Quick Toggle Component Preview */}
+                <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between flex-wrap gap-4">
+                  <div>
+                    <h4 className="text-xs font-semibold text-white">GeeksforGeeks Navbar Theme Switcher</h4>
+                    <p className="text-[11px] text-neutral-400 mt-0.5">Click to toggle instantaneously across the whole platform.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={toggleTheme}
+                    className="gfg-theme-btn flex items-center gap-2.5 px-4 py-2 rounded-xl border border-neutral-800 bg-[#13111C] hover:bg-[#1A1528] text-xs font-semibold text-white transition cursor-pointer"
+                  >
+                    <i className={`gfg-icon ${isDark ? 'gfg-icon_light-mode' : 'gfg-icon_dark-mode'}`} />
+                    <span>Switch to {isDark ? 'Light' : 'Dark'} Mode</span>
+                  </button>
+                </div>
+
+              </div>
             )}
 
             {/* SYSTEM TAB VIEW */}
