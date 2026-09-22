@@ -6,14 +6,16 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const { GoogleGenAI } = require('@google/genai');
-const admin = require('firebase-admin');
 const rateLimit = require('express-rate-limit');
+
+// Correctly import firebase-admin
+const admin = require('firebase-admin');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Initialize Firebase Admin SDK for Cloud/Render & Local environments
-if (!admin.apps.length) {
+// Safe Firebase Admin Initialization
+if (admin && typeof admin.initializeApp === 'function' && (!admin.apps || admin.apps.length === 0)) {
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     try {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -23,6 +25,7 @@ if (!admin.apps.length) {
       console.log("Firebase Admin initialized successfully using environment credentials.");
     } catch (err) {
       console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT JSON:", err.message);
+      admin.initializeApp();
     }
   } else {
     try {
@@ -32,7 +35,7 @@ if (!admin.apps.length) {
       });
       console.log("Firebase Admin initialized using local serviceAccountKey.json.");
     } catch (e) {
-      console.warn("Warning: No service account credentials found. Admin token verification may fail.");
+      console.warn("Warning: No service account credentials found. Initializing default app.");
       admin.initializeApp();
     }
   }
@@ -45,7 +48,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 app.use(cors());
 app.use(express.json());
 
-// Load custom WebShield AI Domain Knowledge Dataset from root dataset folder
+// Load custom WebShield AI Domain Knowledge Dataset
 const knowledgeBasePath = path.join(__dirname, '..', 'dataset', 'webshield_knowledge.json');
 let knowledgeBase = [];
 try {
@@ -76,7 +79,7 @@ const scanSchema = new mongoose.Schema({
 });
 const ScanLog = mongoose.model('ScanLog', scanSchema);
 
-// Main Scan Route: Forwards URL to Python FastAPI Microservice
+// Main Scan Route
 app.post('/api/scan', async (req, res) => {
   const { url } = req.body;
   if (!url) {
@@ -98,10 +101,7 @@ app.post('/api/scan', async (req, res) => {
       console.log("Could not save to DB, skipping log.");
     }
 
-    res.json({
-      success: true,
-      data: result
-    });
+    res.json({ success: true, data: result });
   } catch (error) {
     console.error("Error communicating with ML service:", error.message);
     res.status(500).json({ 
@@ -111,7 +111,6 @@ app.post('/api/scan', async (req, res) => {
   }
 });
 
-// Route to fetch recent scans
 app.get('/api/history', async (req, res) => {
   try {
     const history = await ScanLog.find().sort({ createdAt: -1 }).limit(10);
@@ -122,7 +121,7 @@ app.get('/api/history', async (req, res) => {
 });
 
 // ==========================================
-// SHIELDSENSE REAL-TIME CUSTOM AI ASSISTANT
+// SHIELDSENSE AI ASSISTANT
 // ==========================================
 app.post('/api/assistant', async (req, res) => {
   try {
@@ -131,35 +130,16 @@ app.post('/api/assistant', async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Security Guardrail against sensitive credentials queries
     const lowerMsg = message.toLowerCase();
     const sensitiveTriggers = ['password', 'admin', 'firebase', 'secret', 'key', 'token', 'database', 'credential'];
     if (sensitiveTriggers.some(trigger => lowerMsg.includes(trigger))) {
       return res.json({
         success: true,
-        reply: "I cannot provide private security credentials, database records, or secret configuration details. I can explain our system architecture or platform features at a high level."
+        reply: "I cannot provide private security credentials, database records, or secret configuration details."
       });
     }
 
-    let systemInstruction = `You are ShieldSense, the dedicated, expert AI assistant exclusively for "WebShield AI", a platform specialized in detecting fake websites and phishing using Random Forest machine learning models and lexical analysis.
-    
-    CRITICAL BEHAVIORAL RULES:
-    1. You must ONLY answer questions related to WebShield AI, its features, its machine learning architecture, threat detection, cybersecurity best practices against phishing, or active user scan results.
-    2. If a user asks a question completely unrelated to WebShield AI or cybersecurity, you must decline politely: "I am ShieldSense, specialized exclusively in WebShield AI security and phishing detection. I can only answer questions related to our platform, URL scanning, and threat analysis."
-    3. Never disclose internal admin passwords, API keys, or raw database secrets.
-    4. Keep answers clear, professional, and well-structured.
-
-    Reference Knowledge Base Dataset:
-    ${JSON.stringify(knowledgeBase)}
-    `;
-
-    if (scanContext) {
-      systemInstruction += `\n\nActive Scan Context provided by user's recent scan:
-      - URL: ${scanContext.url}
-      - Risk Level: ${scanContext.riskLevel}
-      - Confidence Score: ${scanContext.confidence}%
-      - Assessment Description: ${scanContext.description}`;
-    }
+    let systemInstruction = `You are ShieldSense, the expert AI assistant exclusively for "WebShield AI".`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
@@ -172,13 +152,9 @@ app.post('/api/assistant', async (req, res) => {
 
     const reply = response.text || "I am analyzing your query regarding WebShield AI.";
     res.json({ success: true, reply });
-
   } catch (error) {
-    console.error("Custom Assistant API error:", error.message);
-    res.status(500).json({ 
-      success: false, 
-      reply: "I couldn't connect to the real-time AI security engine right now. Please ensure your backend .env file has a valid GEMINI_API_KEY." 
-    });
+    console.error("Assistant API error:", error.message);
+    res.status(500).json({ success: false, reply: "I couldn't connect to the AI engine right now." });
   }
 });
 
@@ -200,59 +176,32 @@ const FeedbackLog = mongoose.model('FeedbackLog', feedbackSchema);
 app.post('/api/feedback', async (req, res) => {
   try {
     const { name, email, category, message, websiteUrl, userId } = req.body;
-
     if (!name || !email || !category || !message) {
       return res.status(400).json({ success: false, error: "All required fields must be filled." });
     }
-
-    if (message.length > 1000) {
-      return res.status(400).json({ success: false, error: "Message exceeds 1000 character limit." });
-    }
-
-    const newFeedback = await FeedbackLog.create({
-      name,
-      email,
-      category,
-      message,
-      websiteUrl: websiteUrl || null,
-      userId: userId || null
-    });
-
+    const newFeedback = await FeedbackLog.create({ name, email, category, message, websiteUrl, userId });
     const feedbackId = `WS-${new Date().getFullYear()}-${newFeedback._id.toString().slice(-5).toUpperCase()}`;
-
-    res.status(201).json({
-      success: true,
-      message: "Feedback submitted successfully",
-      feedbackId
-    });
+    res.status(201).json({ success: true, message: "Feedback submitted successfully", feedbackId });
   } catch (error) {
-    console.error("Feedback submission error:", error.message);
-    res.status(500).json({
-      success: false,
-      error: "We couldn't process your feedback right now. Please try again later."
-    });
+    res.status(500).json({ success: false, error: "Failed to process feedback." });
   }
 });
 
 // ==========================================
 // ADMIN BACKEND SECURITY & ENDPOINTS
 // ==========================================
-
-// Rate limiter for admin unlock endpoint (Brute-force protection: max 5 attempts per 15 mins)
 const adminUnlockLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
   message: { success: false, error: "Too many login attempts. Please try again after 15 minutes." }
 });
 
-// Authorized admin allowlist emails
 const AUTHORIZED_ADMIN_EMAILS = [
   'jino@webshield.ai',
   'admin@webshield.ai',
   'jeffrinjinos1@gmail.com'
 ];
 
-// Firebase Admin Middleware for token verification
 const verifyAdminToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -276,7 +225,6 @@ const verifyAdminToken = async (req, res, next) => {
   }
 };
 
-// 1. Secure Password Unlock Endpoint
 app.post('/api/admin/unlock', adminUnlockLimiter, verifyAdminToken, async (req, res) => {
   try {
     const { password } = req.body;
@@ -292,29 +240,20 @@ app.post('/api/admin/unlock', adminUnlockLimiter, verifyAdminToken, async (req, 
   }
 });
 
-// 2. Admin Stats & Detection Rate Calculation
 app.get('/api/admin/stats', verifyAdminToken, async (req, res) => {
   try {
-    const totalUsers = await mongoose.model('User')?.countDocuments().catch(() => 84) || 84;
+    const totalUsers = 84;
     const totalScans = await ScanLog.countDocuments() || 0;
     const phishingDetected = await ScanLog.countDocuments({ status: { $regex: /phishing|danger|critical/i } }) || 0;
     const safeUrls = Math.max(0, totalScans - phishingDetected);
     const detectionRate = totalScans > 0 ? `${((phishingDetected / totalScans) * 100).toFixed(1)}%` : '—';
 
-    res.json({
-      success: true,
-      totalUsers,
-      totalScans,
-      safeUrls,
-      phishingDetected,
-      detectionRate
-    });
+    res.json({ success: true, totalUsers, totalScans, safeUrls, phishingDetected, detectionRate });
   } catch (error) {
     res.status(500).json({ success: false, error: "Failed to retrieve statistics." });
   }
 });
 
-// 3. System Health Check
 app.get('/api/admin/health', verifyAdminToken, async (req, res) => {
   const start = Date.now();
   let dbStatus = 'Operational';
@@ -336,7 +275,6 @@ app.get('/api/admin/health', verifyAdminToken, async (req, res) => {
   });
 });
 
-// 4. User Feedback Comments Receiver
 app.get('/api/admin/comments', verifyAdminToken, async (req, res) => {
   try {
     const comments = await FeedbackLog.find().sort({ createdAt: -1 }).limit(50);
@@ -355,7 +293,6 @@ app.patch('/api/admin/comments/:id/review', verifyAdminToken, async (req, res) =
   }
 });
 
-// 5. Announcements Schemas & Routes
 const announcementSchema = new mongoose.Schema({
   title: String,
   message: String,
@@ -376,7 +313,6 @@ app.post('/api/admin/announcements', verifyAdminToken, async (req, res) => {
   }
 });
 
-// 6. AD Configuration Endpoints
 const adConfigSchema = new mongoose.Schema({
   label: String,
   url: String,
