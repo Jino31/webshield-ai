@@ -218,6 +218,7 @@ app.listen(PORT, () => {
 // ==========================================
 
 // Verify Admin Key
+// 1. Secure Password Unlock Endpoint (Key-only verification)
 app.post('/api/admin/unlock', async (req, res) => {
   try {
     const { password } = req.body;
@@ -229,7 +230,7 @@ app.post('/api/admin/unlock', async (req, res) => {
 
     res.json({ success: true, message: "Admin access granted." });
   } catch (error) {
-    res.status(500).json({ success: false, error: "Server error during verification." });
+    res.status(500).json({ success: false, error: "Internal server error during verification." });
   }
 });
 
