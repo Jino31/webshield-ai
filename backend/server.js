@@ -161,3 +161,56 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Backend server active on http://localhost:${PORT}`);
 });
+// ==========================================
+// FEEDBACK API ENDPOINT
+// ==========================================
+const feedbackSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, trim: true, lowercase: true },
+  category: { type: String, required: true },
+  message: { type: String, required: true, maxlength: 1000 },
+  websiteUrl: { type: String, trim: true },
+  userId: { type: String, default: null },
+  createdAt: { type: Date, default: Date.now }
+});
+const FeedbackLog = mongoose.model('FeedbackLog', feedbackSchema);
+
+app.post('/api/feedback', async (req, res) => {
+  try {
+    const { name, email, category, message, websiteUrl, userId } = req.body;
+
+    // Server-side validation
+    if (!name || !email || !category || !message) {
+      return res.status(400).json({ success: false, error: "All required fields must be filled." });
+    }
+
+    if (message.length > 1000) {
+      return res.status(400).json({ success: false, error: "Message exceeds 1000 character limit." });
+    }
+
+    // Save to MongoDB
+    const newFeedback = await FeedbackLog.create({
+      name,
+      email,
+      category,
+      message,
+      websiteUrl: websiteUrl || '',
+      userId: userId || null
+    });
+
+    // Generate a unique reference ID for the user
+    const feedbackId = `WS-${new Date().getFullYear()}-${newFeedback._id.toString().slice(-5).toUpperCase()}`;
+
+    res.status(201).json({
+      success: true,
+      message: "Feedback submitted successfully",
+      feedbackId
+    });
+  } catch (error) {
+    console.error("Feedback submission error:", error.message);
+    res.status(500).json({
+      success: false,
+      error: "We couldn't process your feedback right now. Please try again later."
+    });
+  }
+});
