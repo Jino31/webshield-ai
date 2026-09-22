@@ -160,9 +160,10 @@ export default function Admin() {
   }
 
   // Beautiful Upgraded Key-Gated Unlock Screen
+// Beautiful Upgraded Key-Gated Unlock Screen (Full Viewport Fix)
   if (!adminUnlocked) {
     return (
-      <div className="min-h-screen bg-[#05070A] text-white flex items-center justify-center px-4 relative overflow-hidden">
+      <div className="fixed inset-0 w-screen h-screen bg-[#05070A] text-white flex items-center justify-center p-4 relative z-50 overflow-hidden">
         {/* Ambient Glow Effects */}
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#8B5CF6]/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
         <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#EC4899]/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
@@ -197,7 +198,7 @@ export default function Admin() {
                     placeholder="Enter admin secret key"
                     className="w-full h-12 pl-10 pr-11 rounded-xl bg-[#05070A] border border-neutral-800 text-xs text-white placeholder:text-neutral-600 outline-none focus:border-[#8B5CF6] transition shadow-inner"
                   />
-                  <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition">
+                  <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition cursor-pointer">
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
