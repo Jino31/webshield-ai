@@ -6,9 +6,37 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const { GoogleGenAI } = require('@google/genai');
+const admin = require('firebase-admin');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Initialize Firebase Admin SDK for Cloud/Render & Local environments
+if (!admin.apps.length) {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    try {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      console.log("Firebase Admin initialized successfully using environment credentials.");
+    } catch (err) {
+      console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT JSON:", err.message);
+    }
+  } else {
+    try {
+      const serviceAccount = require('./serviceAccountKey.json');
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      console.log("Firebase Admin initialized using local serviceAccountKey.json.");
+    } catch (e) {
+      console.warn("Warning: No service account credentials found. Admin token verification may fail.");
+      admin.initializeApp();
+    }
+  }
+}
 
 // Initialize Gemini Client
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -154,13 +182,6 @@ app.post('/api/assistant', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
-  res.send("Express Backend for Fake Website Detection is running.");
-});
-
-app.listen(PORT, () => {
-  console.log(`Backend server active on http://localhost:${PORT}`);
-});
 // ==========================================
 // FEEDBACK API ENDPOINT
 // ==========================================
@@ -171,6 +192,7 @@ const feedbackSchema = new mongoose.Schema({
   message: { type: String, required: true, maxlength: 1000 },
   websiteUrl: { type: String, trim: true, default: null },
   userId: { type: String, default: null },
+  reviewed: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 const FeedbackLog = mongoose.model('FeedbackLog', feedbackSchema);
@@ -215,7 +237,6 @@ app.post('/api/feedback', async (req, res) => {
 // ==========================================
 // ADMIN BACKEND SECURITY & ENDPOINTS
 // ==========================================
-const rateLimit = require('express-rate-limit');
 
 // Rate limiter for admin unlock endpoint (Brute-force protection: max 5 attempts per 15 mins)
 const adminUnlockLimiter = rateLimit({
@@ -265,7 +286,6 @@ app.post('/api/admin/unlock', adminUnlockLimiter, verifyAdminToken, async (req, 
       return res.status(401).json({ success: false, error: "Invalid administrator credentials" });
     }
 
-    // Generate a temporary secure token/session flag tied to the user
     res.json({ success: true, message: "Admin authentication verified successfully" });
   } catch (error) {
     res.status(500).json({ success: false, error: "Internal server error during verification." });
@@ -275,10 +295,10 @@ app.post('/api/admin/unlock', adminUnlockLimiter, verifyAdminToken, async (req, 
 // 2. Admin Stats & Detection Rate Calculation
 app.get('/api/admin/stats', verifyAdminToken, async (req, res) => {
   try {
-    const totalUsers = await mongoose.model('User')?.countDocuments() || 84;
-    const totalScans = await ScanLog.countDocuments() || 1248;
-    const phishingDetected = await ScanLog.countDocuments({ status: { $regex: /phishing|danger/i } }) || 312;
-    const safeUrls = totalScans - phishingDetected;
+    const totalUsers = await mongoose.model('User')?.countDocuments().catch(() => 84) || 84;
+    const totalScans = await ScanLog.countDocuments() || 0;
+    const phishingDetected = await ScanLog.countDocuments({ status: { $regex: /phishing|danger|critical/i } }) || 0;
+    const safeUrls = Math.max(0, totalScans - phishingDetected);
     const detectionRate = totalScans > 0 ? `${((phishingDetected / totalScans) * 100).toFixed(1)}%` : '—';
 
     res.json({
@@ -294,7 +314,7 @@ app.get('/api/admin/stats', verifyAdminToken, async (req, res) => {
   }
 });
 
-// 3. System Health Check (Dynamic backend latency & service ping)
+// 3. System Health Check
 app.get('/api/admin/health', verifyAdminToken, async (req, res) => {
   const start = Date.now();
   let dbStatus = 'Operational';
@@ -389,4 +409,12 @@ app.put('/api/admin/ad-config', verifyAdminToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: "Failed to update AD configuration." });
   }
+});
+
+app.get('/', (req, res) => {
+  res.send("Express Backend for Fake Website Detection is running.");
+});
+
+app.listen(PORT, () => {
+  console.log(`Backend server active on http://localhost:${PORT}`);
 });
