@@ -110,19 +110,29 @@ export default function Admin() {
     }
   };
 
+  // Optimized Non-Blocking Data Fetcher
   const fetchRealtimeData = useCallback(async () => {
     if (!adminUnlocked) return;
-    setLoadingData(true);
+    
+    if (!stats) {
+      setLoadingData(true);
+    }
     setErrorData(null);
+
     try {
-      const [sData, uData, hData, cData, adData] = await Promise.all([
-        adminService.getAdminStats(),
-        adminService.getUsers(),
-        adminService.getSystemHealth(),
-        adminService.getComments(),
-        adminService.getAdConfig()
-      ]);
+      // 1. Fetch critical stats first so the page renders instantly
+      const sData = await adminService.getAdminStats().catch(() => null);
       setStats(sData);
+      setLoadingData(false);
+
+      // 2. Fetch secondary lists lazily in the background
+      const [uData, hData, cData, adData] = await Promise.all([
+        adminService.getUsers().catch(() => []),
+        adminService.getSystemHealth().catch(() => []),
+        adminService.getComments().catch(() => []),
+        adminService.getAdConfig().catch(() => null)
+      ]);
+
       setUsersList(uData);
       setHealth(hData);
       setCommentsList(cData);
@@ -133,10 +143,9 @@ export default function Admin() {
       }
     } catch (err) {
       setErrorData('Failed to connect to backend server.');
-    } finally {
       setLoadingData(false);
     }
-  }, [adminUnlocked]);
+  }, [adminUnlocked, stats]);
 
   useEffect(() => {
     fetchRealtimeData();
@@ -166,11 +175,9 @@ export default function Admin() {
   if (showWelcomeAnimation) {
     return (
       <div className="fixed inset-0 w-screen h-screen bg-[#07070B] text-white flex flex-col items-center justify-center z-50 overflow-hidden">
-        {/* Ambient Luxury Gradient Orbs */}
         <div className="absolute w-[600px] h-[600px] bg-gradient-to-tr from-[#8B5CF6]/20 via-[#EC4899]/15 to-transparent rounded-full blur-[160px] animate-pulse pointer-events-none" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.08)_0,transparent_75%)] pointer-events-none" />
 
-        {/* Luxury Glassmorphic Card Container */}
         <div className="relative z-10 flex flex-col items-center p-12 rounded-[32px] bg-[#12111A]/60 border border-white/10 backdrop-blur-2xl shadow-[0_0_100px_rgba(139,92,246,0.25)] animate-fadeIn">
           <div className="relative mb-6">
             <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] blur-2xl rounded-full opacity-70 animate-pulse" />
@@ -265,7 +272,7 @@ export default function Admin() {
         </div>
       )}
 
-      {/* Header with Top-Left Back Button & Top-Right Sign Out (Theme dropdown buttons completely removed) */}
+      {/* Header */}
       <header className={`w-full h-16 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white border-slate-300 text-slate-900 shadow-sm' : theme === 'unique' ? 'bg-[#120224]/95 border-fuchsia-500/40 shadow-lg shadow-fuchsia-950/50' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/')} className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer ${theme === 'light' ? 'border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200' : 'border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/30'}`}>
@@ -283,7 +290,7 @@ export default function Admin() {
 
       {/* Main Layout Area */}
       <div className="flex-1 flex flex-col md:flex-row">
-        {/* Sidebar - 6 Navigation Tabs */}
+        {/* Sidebar */}
         <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-slate-50 border-slate-300' : theme === 'unique' ? 'bg-[#0E021A] border-fuchsia-500/30' : 'bg-[#0D1117] border-neutral-800'}`}>
           <div className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Navigation Console</div>
           {[
@@ -321,7 +328,7 @@ export default function Admin() {
 
         {/* Content View */}
         <main className="flex-1 p-6 space-y-6 overflow-y-auto">
-          {loadingData ? (
+          {loadingData && !stats ? (
             <div className={`flex items-center justify-center h-64 text-xs font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-neutral-300'}`}>
               <RefreshCw className="w-5 h-5 animate-spin text-[#8B5CF6] mr-2" /> Loading telemetry...
             </div>
