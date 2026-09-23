@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare, Loader2 } from 'lucide-react';
+import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
 import ShieldAIBot from '../components/ShieldAIBot'; // <-- Separate ShieldSense assistant component
 import { useTheme } from '../context/ThemeContext';
 
@@ -13,6 +13,8 @@ const scanStages = [
   'Running security classification...',
   'Generating final risk assessment...'
 ];
+
+const stageProgressMap = [5, 20, 35, 50, 65, 82, 95];
 
 export default function Home() {
   const navigate = useNavigate();
@@ -27,29 +29,28 @@ export default function Home() {
   const [scanStep, setScanStep] = useState(0);
   const [progress, setProgress] = useState(0);
 
-  // Progressive Scan Stage & Progress Bar Effect
+  // Synchronized Stage & Deterministic Progress Timer
   useEffect(() => {
-    let stageInterval;
-    let progressInterval;
-
+    let timers = [];
     if (isLoading) {
       setScanStep(0);
       setProgress(5);
 
-      stageInterval = setInterval(() => {
-        setScanStep((prev) => (prev < scanStages.length - 1 ? prev + 1 : prev));
-      }, 350);
-
-      progressInterval = setInterval(() => {
-        setProgress((prev) => (prev < 95 ? prev + Math.floor(Math.random() * 12) + 5 : prev));
-      }, 250);
+      const stageIntervalTime = 428; // ~3000ms total across 7 stages
+      scanStages.forEach((_, index) => {
+        if (index === 0) return;
+        const timer = setTimeout(() => {
+          setScanStep(index);
+          setProgress(stageProgressMap[index]);
+        }, index * stageIntervalTime);
+        timers.push(timer);
+      });
     } else {
       setProgress(100);
     }
 
     return () => {
-      clearInterval(stageInterval);
-      clearInterval(progressInterval);
+      timers.forEach(clearTimeout);
     };
   }, [isLoading]);
 
@@ -78,11 +79,13 @@ export default function Home() {
     setValidationError('');
     setApiError('');
     setScanResult(null);
+    setScanStep(0);
+    setProgress(5);
     setIsLoading(true);
 
     try {
-      // Synchronized duration matching stage transitions (~2.6s)
-      await new Promise((resolve) => setTimeout(resolve, 2600));
+      // Synchronized ~3-second security analysis duration
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       const lowerUrl = trimmedUrl.toLowerCase();
       
       const hasIp = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(trimmedUrl);
@@ -120,6 +123,7 @@ export default function Home() {
       setApiError('Unable to analyze this URL right now. Please try again.');
     } finally {
       setIsLoading(false);
+      setProgress(100);
     }
   };
 
@@ -141,6 +145,7 @@ export default function Home() {
     setApiError('');
     setScanStep(0);
     setProgress(0);
+    setIsLoading(false);
   };
 
   const scrollToHowItWorks = () => {
@@ -154,6 +159,22 @@ export default function Home() {
     <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-between px-4 sm:px-8 lg:px-12 pt-16 transition-colors duration-300 overflow-x-hidden ${
       isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
     }`}>
+      {/* Inline Keyframe Styles for Reliable Standalone Animation */}
+      <style>{`
+        @keyframes webshield-spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        @keyframes webshield-spin-reverse {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(-360deg); }
+        }
+        @keyframes webshield-pulse-glow {
+          0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6)); }
+          50% { opacity: 0.85; transform: scale(1.05); filter: drop-shadow(0 0 16px rgba(236, 72, 153, 0.8)); }
+        }
+      </style>
+
       {/* Background VFX Glow Orbs & Subtle Grid */}
       <div className={`absolute inset-0 pointer-events-none ${
         isDark 
@@ -301,9 +322,18 @@ export default function Home() {
               : 'bg-white border-purple-200 shadow-purple-200/50'
           }`}>
             <div className="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full border-2 border-dashed border-[#8B5CF6] animate-spin" />
-              <div className="absolute inset-2 rounded-full border-2 border-transparent border-t-[#EC4899] border-b-[#8B5CF6] animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }} />
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#1A1528] text-[#8B5CF6]' : 'bg-purple-50 text-purple-600'} animate-pulse shadow-md`}>
+              <div 
+                className="absolute inset-0 rounded-full border-2 border-dashed border-[#8B5CF6]" 
+                style={{ animation: 'webshield-spin 4s linear infinite' }} 
+              />
+              <div 
+                className="absolute inset-2 rounded-full border-2 border-transparent border-t-[#EC4899] border-b-[#8B5CF6]" 
+                style={{ animation: 'webshield-spin-reverse 2.5s linear infinite' }} 
+              />
+              <div 
+                className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#1A1528] text-[#8B5CF6]' : 'bg-purple-50 text-purple-600'} shadow-md`}
+                style={{ animation: 'webshield-pulse-glow 2s ease-in-out infinite' }}
+              >
                 <Shield className="w-5 h-5" />
               </div>
             </div>
@@ -312,7 +342,7 @@ export default function Home() {
               WebShield Threat Intelligence Analysis
             </h3>
             
-            <p className="text-xs text-[#8B5CF6] font-mono mb-6 h-5 transition-all duration-200">
+            <p className="text-xs text-[#8B5CF6] font-mono mb-6 h-5 transition-all duration-300">
               {scanStages[scanStep]}
             </p>
 
