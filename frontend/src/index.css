@@ -78,6 +78,8 @@ body.light {
 [data-theme="light"] [class*="min-h-screen"],
 [data-theme="light"] [class*="bg-[#0A0A0F]"],
 [data-theme="light"] [class*="bg-[#07090E]"],
+[data-theme="light"] [class*="bg-[#080C14]"],
+[data-theme="light"] [class*="bg-[#0B0F17]"],
 [data-theme="light"] [class*="bg-[#05070A]"] {
   background-color: #F8FAFC !important;
   color: #0F172A !important;
@@ -85,6 +87,8 @@ body.light {
 
 /* Navbar light styling */
 [data-theme="light"] nav,
+[data-theme="light"] [class*="bg-[#0A0A0F]/90"],
+[data-theme="light"] [class*="bg-[#0A0A0F]/85"],
 [data-theme="light"] [class*="bg-[#0A0A0F]/80"],
 [data-theme="light"] [class*="bg-[#07090E]/85"] {
   background-color: rgba(255, 255, 255, 0.9) !important;
@@ -96,6 +100,7 @@ body.light {
 [data-theme="light"] [class*="bg-[#13111C]"],
 [data-theme="light"] [class*="bg-[#111118]"],
 [data-theme="light"] [class*="bg-[#0D1117]"],
+[data-theme="light"] [class*="bg-[#111827]"],
 [data-theme="light"] [class*="bg-[#0C1220]"],
 [data-theme="light"] [class*="bg-[#0E1528]"],
 [data-theme="light"] [class*="bg-[#080D1A]"],

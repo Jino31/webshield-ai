@@ -56,7 +56,7 @@ export default function CyberSpace3D() {
         y: (Math.random() - 0.5) * height * 2,
         z: Math.random() * WORLD_DEPTH,
         size: Math.random() * 2.2 + 0.8,
-        colorType: Math.random() > 0.4 ? 'cyan' : Math.random() > 0.5 ? 'indigo' : 'emerald',
+        colorType: Math.random() > 0.4 ? 'purple' : Math.random() > 0.5 ? 'pink' : 'purple',
         speedOffset: Math.random() * 0.4 + 0.8
       });
     }
@@ -103,7 +103,7 @@ export default function CyberSpace3D() {
         rotZ: 0,
         speedRotX: 0.008,
         speedRotY: 0.012,
-        color: '#06B6D4'
+        color: '#8B5CF6'
       },
       {
         type: 'cube',
@@ -118,7 +118,7 @@ export default function CyberSpace3D() {
         rotZ: 0.2,
         speedRotX: -0.007,
         speedRotY: 0.01,
-        color: '#6366F1'
+        color: '#EC4899'
       },
       {
         type: 'octa',
@@ -133,7 +133,7 @@ export default function CyberSpace3D() {
         rotZ: 0.3,
         speedRotX: 0.01,
         speedRotY: -0.009,
-        color: '#00F0FF'
+        color: '#A78BFA'
       },
       {
         type: 'cube',
@@ -148,7 +148,7 @@ export default function CyberSpace3D() {
         rotZ: 0.1,
         speedRotX: 0.006,
         speedRotY: 0.011,
-        color: '#3B82F6'
+        color: '#F472B6'
       }
     ];
 

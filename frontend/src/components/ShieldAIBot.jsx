@@ -125,11 +125,11 @@ export default function ShieldAIBot({ scanContext = null }) {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-3 bg-gradient-to-r from-cyan-400 via-sky-500 to-indigo-600 p-0.5 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer shadow-cyan-950/40"
+          className="group relative flex items-center gap-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] p-0.5 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer shadow-purple-950/40"
           aria-label="Open ShieldSense AI Security Assistant"
         >
-          <div className="flex items-center gap-3 bg-[#080D1A] px-5 py-3.5 rounded-2xl text-white font-semibold text-sm tracking-wide">
-            <div className="w-7 h-7 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400 animate-pulse">
+          <div className="flex items-center gap-3 bg-[#13111C] px-5 py-3.5 rounded-2xl text-white font-semibold text-sm tracking-wide">
+            <div className="w-7 h-7 rounded-lg bg-[#8B5CF6]/20 flex items-center justify-center text-[#8B5CF6] animate-pulse">
               <Bot className="w-4 h-4" />
             </div>
             <span>Ask ShieldSense</span>
@@ -140,17 +140,17 @@ export default function ShieldAIBot({ scanContext = null }) {
 
       {/* Chat Window Container */}
       {isOpen && (
-        <div className="w-[calc(100vw-2rem)] max-w-[420px] h-[560px] bg-[#080D1A]/95 border border-[#16223A] rounded-3xl shadow-2xl shadow-cyan-950/30 flex flex-col overflow-hidden animate-fade-in backdrop-blur-2xl">
+        <div className="w-[calc(100vw-2rem)] max-w-[420px] h-[560px] bg-[#13111C]/95 border border-[#231E33] rounded-3xl shadow-2xl shadow-purple-950/30 flex flex-col overflow-hidden animate-fade-in backdrop-blur-2xl">
 
           {/* Chat Header */}
-          <div className="px-5 py-4 bg-[#0C1220] border-b border-[#16223A] flex items-center justify-between">
+          <div className="px-5 py-4 bg-[#13111C] border-b border-[#231E33] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#8B5CF6] to-[#EC4899] flex items-center justify-center text-white shadow-md">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white tracking-wide flex items-center gap-1.5">
-                  ShieldSense <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                <h3 className="text-sm font-bold text-[#FAFAFA] tracking-wide flex items-center gap-1.5">
+                  ShieldSense <Sparkles className="w-3.5 h-3.5 text-[#EC4899]" />
                 </h3>
                 <p className="text-xs text-emerald-400 flex items-center gap-1.5 mt-0.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Online • AI Navigator & Assistant
@@ -159,7 +159,7 @@ export default function ShieldAIBot({ scanContext = null }) {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition cursor-pointer"
+              className="p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-[#1A1528] transition cursor-pointer"
               aria-label="Close chat"
             >
               <X className="w-5 h-5" />
@@ -167,8 +167,8 @@ export default function ShieldAIBot({ scanContext = null }) {
           </div>
 
           {/* Scan Context Status Indicator */}
-          <div className="px-4 py-2.5 bg-[#050914]/90 border-b border-[#16223A]/80 flex items-center justify-between text-xs">
-            <span className="text-slate-300 flex items-center gap-2">
+          <div className="px-4 py-2.5 bg-[#1A1528] border-b border-[#231E33] flex items-center justify-between text-xs">
+            <span className="text-neutral-300 flex items-center gap-2">
               {scanContext ? (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -176,7 +176,7 @@ export default function ShieldAIBot({ scanContext = null }) {
                 </>
               ) : (
                 <>
-                  <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0" />
+                  <ShieldCheck className="w-4 h-4 text-neutral-400 shrink-0" />
                   <span>Type a page name to jump anywhere</span>
                 </>
               )}
@@ -184,7 +184,7 @@ export default function ShieldAIBot({ scanContext = null }) {
           </div>
 
           {/* Messages Scroll Area */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#050914]/60">
+          <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#0A0A0F]">
             {messages.map((msg, index) => (
               <div
                 key={index}
@@ -192,8 +192,8 @@ export default function ShieldAIBot({ scanContext = null }) {
               >
                 <div
                   className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed font-normal whitespace-pre-wrap ${msg.sender === 'user'
-                    ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white rounded-br-none shadow-md font-medium'
-                    : 'bg-[#0C1220] border border-[#16223A] text-white rounded-bl-none shadow-inner'
+                    ? 'bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white rounded-br-none shadow-md font-medium'
+                    : 'bg-[#13111C] border border-[#231E33] text-[#FAFAFA] rounded-bl-none shadow-inner'
                     }`}
                 >
                   {msg.text}
@@ -203,12 +203,12 @@ export default function ShieldAIBot({ scanContext = null }) {
 
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-[#0C1220] border border-[#16223A] px-4 py-3 rounded-2xl rounded-bl-none text-sm text-white flex items-center gap-2.5">
-                  <span className="text-cyan-400 font-medium">ShieldSense is processing</span>
+                <div className="bg-[#13111C] border border-[#231E33] px-4 py-3 rounded-2xl rounded-bl-none text-sm text-[#FAFAFA] flex items-center gap-2.5">
+                  <span className="text-[#8B5CF6] font-medium">ShieldSense is processing</span>
                   <span className="flex gap-1">
-                    <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></span>
+                    <span className="w-2 h-2 bg-[#8B5CF6] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-2 h-2 bg-[#8B5CF6] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-2 h-2 bg-[#8B5CF6] rounded-full animate-bounce"></span>
                   </span>
                 </div>
               </div>
@@ -217,38 +217,38 @@ export default function ShieldAIBot({ scanContext = null }) {
           </div>
 
           {/* Quick Page Shortcut Pills */}
-          <div className="px-4 py-2.5 bg-[#0C1220]/80 border-t border-[#16223A] flex gap-2 overflow-x-auto no-scrollbar">
-            <button onClick={() => handleQuickPrompt("admin")} className="px-3 py-1.5 rounded-xl bg-[#050914] border border-[#16223A] hover:border-cyan-500/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+          <div className="px-4 py-2.5 bg-[#13111C] border-t border-[#231E33] flex gap-2 overflow-x-auto no-scrollbar">
+            <button onClick={() => handleQuickPrompt("admin")} className="px-3 py-1.5 rounded-xl bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/50 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
               Admin 🛡️
             </button>
-            <button onClick={() => handleQuickPrompt("profile")} className="px-3 py-1.5 rounded-xl bg-[#050914] border border-[#16223A] hover:border-cyan-500/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+            <button onClick={() => handleQuickPrompt("profile")} className="px-3 py-1.5 rounded-xl bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/50 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
               Profile 👤
             </button>
-            <button onClick={() => handleQuickPrompt("settings")} className="px-3 py-1.5 rounded-xl bg-[#050914] border border-[#16223A] hover:border-cyan-500/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+            <button onClick={() => handleQuickPrompt("settings")} className="px-3 py-1.5 rounded-xl bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/50 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
               Settings ⚙️
             </button>
-            <button onClick={() => handleQuickPrompt("history")} className="px-3 py-1.5 rounded-xl bg-[#050914] border border-[#16223A] hover:border-cyan-500/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+            <button onClick={() => handleQuickPrompt("history")} className="px-3 py-1.5 rounded-xl bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/50 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
               History 📊
             </button>
-            <button onClick={() => handleQuickPrompt("feedback")} className="px-3 py-1.5 rounded-xl bg-[#050914] border border-[#16223A] hover:border-cyan-500/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+            <button onClick={() => handleQuickPrompt("feedback")} className="px-3 py-1.5 rounded-xl bg-[#1A1528] border border-[#231E33] hover:border-[#8B5CF6]/50 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
               Feedback 💬
             </button>
           </div>
 
           {/* Chat Input Form */}
-          <form onSubmit={handleSendMessage} className="p-3.5 bg-[#0C1220] border-t border-[#16223A] flex items-center gap-2">
+          <form onSubmit={handleSendMessage} className="p-3.5 bg-[#13111C] border-t border-[#231E33] flex items-center gap-2">
             <input
               type="text"
               placeholder="Type page name or security question..."
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               disabled={isTyping}
-              className="flex-1 bg-[#050914] border border-[#16223A] focus:border-cyan-400 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-400 focus:outline-none transition disabled:opacity-50"
+              className="flex-1 bg-[#1A1528] border border-[#231E33] focus:border-[#8B5CF6] rounded-xl px-4 py-3 text-sm text-[#FAFAFA] placeholder-neutral-500 focus:outline-none transition disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={isTyping || !inputMessage.trim()}
-              className="p-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:opacity-90 disabled:opacity-50 text-white transition cursor-pointer shadow-md"
+              className="p-3 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 disabled:opacity-50 text-white transition cursor-pointer shadow-md"
               aria-label="Send message"
             >
               <Send className="w-4 h-4" />
@@ -256,7 +256,7 @@ export default function ShieldAIBot({ scanContext = null }) {
           </form>
 
           {/* Security Disclaimer */}
-          <div className="px-3 py-2 bg-[#05070A] text-[10px] text-neutral-300 font-medium text-center border-t border-neutral-900">
+          <div className="px-3 py-2 bg-[#0A0A0F] text-[10px] text-neutral-400 font-medium text-center border-t border-[#231E33]">
             Type any page name (e.g. admin, profile, history) to jump instantly.
           </div>
 
