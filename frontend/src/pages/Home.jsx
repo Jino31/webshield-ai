@@ -25,6 +25,23 @@ export default function Home() {
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState('');
 
+  // 3-Second Introductory Entrance Animation State (Played once per session)
+  const [showIntroAnimation, setShowIntroAnimation] = useState(() => {
+    const hasSeenIntro = sessionStorage.getItem('webshield_intro_played');
+    return !hasSeenIntro;
+  });
+
+  // Handle intro animation timer
+  useEffect(() => {
+    if (showIntroAnimation) {
+      sessionStorage.setItem('webshield_intro_played', 'true');
+      const timer = setTimeout(() => {
+        setShowIntroAnimation(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showIntroAnimation]);
+
   // Scanning Animation States
   const [scanStep, setScanStep] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -158,6 +175,26 @@ export default function Home() {
     <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-between px-4 sm:px-8 lg:px-12 pt-16 transition-colors duration-300 overflow-x-hidden animate-fadeIn ${
       isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
     }`}>
+      {/* 3-Second Cinematic Intro Overlay (Played once per session) */}
+      {showIntroAnimation && (
+        <div className="fixed inset-0 z-[150] bg-[#0A0A0F] flex flex-col items-center justify-center animate-fadeOut">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15)_0,transparent_70%)] pointer-events-none" />
+          <div className="relative flex flex-col items-center space-y-4 animate-cinematicReveal">
+            <div className="relative">
+              <div className="absolute inset-0 bg-[#8B5CF6]/50 blur-3xl rounded-full animate-pulse" />
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#EC4899] flex items-center justify-center text-white text-3xl shadow-[0_0_40px_rgba(139,92,246,0.8)] relative z-15 border border-purple-400/40">
+                🛡️
+              </div>
+            </div>
+            <div className="flex items-center font-extrabold text-3xl md:text-5xl tracking-tighter">
+              <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.4)]">WebShield</span>
+              <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent ml-2">AI</span>
+            </div>
+            <p className="text-neutral-400 text-xs font-mono uppercase tracking-widest mt-2 animate-pulse">Initializing Threat Intelligence Core...</p>
+          </div>
+        </div>
+      )}
+
       {/* Background VFX Glow Orbs & Subtle Grid */}
       <div className={`absolute inset-0 pointer-events-none ${
         isDark 
@@ -564,8 +601,8 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Render ShieldSense Assistant */}
-      <ShieldAIBot scanContext={scanResult} />
+      {/* Render ShieldSense Assistant conditionally only AFTER the introductory animation completes */}
+      {!showIntroAnimation && <ShieldAIBot scanContext={scanResult} />}
 
       {/* CSS Keyframes & Animation Utilities */}
       <style>{`
@@ -577,11 +614,24 @@ export default function Home() {
           animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        .animate-fadeOut {
+          animation: fadeOut 0.4s ease-in-out 2.6s forwards;
+        }
+
         @keyframes cinematicReveal {
           0% {
             opacity: 0;
-            transform: scale(0.95) translateY(15px);
-            filter: blur(8px);
+            transform: scale(0.7) translateY(20px);
+            filter: blur(10px);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.05) translateY(0);
+            filter: blur(0px);
           }
           100% {
             opacity: 1;
@@ -590,7 +640,7 @@ export default function Home() {
           }
         }
         .animate-cinematicReveal {
-          animation: cinematicReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: cinematicReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes slideDownStagger1 {
