@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import Scanner from './pages/Scanner';
 import Login from './pages/Login';
 import History from './pages/History';
 import Settings from './pages/Settings';
@@ -13,6 +14,8 @@ import Admin from './pages/Admin';
 import About from './pages/About';
 import Feedback from './pages/Feedback';
 import ShieldSenseAI from './components/ShieldAIBot';
+import CyberSpace3D from './components/CyberSpace3D';
+import CyberHUD from './components/CyberHUD';
 
 function AppContent() {
   const { isDark } = useTheme();
@@ -87,9 +90,17 @@ function AppContent() {
       )}
 
       <Navbar />
-      <main className="flex-1 flex flex-col items-center w-full">
+
+      {/* Dynamic 3D Perspective Grid, Floating Polyhedra & Scroll Stars Canvas */}
+      <CyberSpace3D />
+
+      {/* Cyber 3D Scroll Depth Indicator & Sector Navigation HUD */}
+      {!isAdminRoute && <CyberHUD />}
+
+      <main className="flex-1 flex flex-col items-center w-full relative z-10">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/scanner" element={<Scanner />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Login />} />
           <Route path="/signup" element={<Login />} />

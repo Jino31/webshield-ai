@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, AlertOctagon, ShieldCheck, Globe, Send, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, AlertOctagon, ShieldCheck, Globe, Send, Loader2, CheckCircle2, AlertTriangle, Link2 } from 'lucide-react';
+import { scamReportService } from '../services/scamReportService';
 
 export default function ReportScam() {
   const navigate = useNavigate();
   const [url, setUrl] = useState('');
   const [category, setCategory] = useState('phishing');
   const [description, setDescription] = useState('');
+  const [proofUrl, setProofUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [verified, setVerified] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!url.trim()) {
       setError('Please enter a valid URL or website link.');
@@ -20,11 +23,20 @@ export default function ReportScam() {
     setError('');
     setIsLoading(true);
 
-    // Simulate secure backend submission
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const res = await scamReportService.submitReport({
+        url: url.trim(),
+        category,
+        description: description.trim(),
+        proofUrl: proofUrl.trim() || null
+      });
+      setVerified(res.verified);
       setSubmitted(true);
-    }, 1000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -65,13 +77,16 @@ export default function ReportScam() {
             </div>
             <h2 className="text-lg font-bold text-white">Report Received Successfully</h2>
             <p className="text-xs text-neutral-400 max-w-md mx-auto leading-relaxed">
-              Thank you for contributing to WebShield AI security database. Our automated threat models will analyze the URL and add it to our detection blocks if verified.
+              {verified
+                ? "Thank you for contributing to WebShield AI's security database. This report is verified and now counts toward this site's public risk score."
+                : "Thanks for the report. Add a description or a proof link next time so it counts toward the site's public risk score — for now it's saved for admin review."}
             </p>
             <button
               onClick={() => {
                 setSubmitted(false);
                 setUrl('');
                 setDescription('');
+                setProofUrl('');
               }}
               className="mt-4 px-5 py-2.5 bg-[#13111C] hover:bg-[#1A1528] border border-neutral-800 text-xs font-medium text-white rounded-xl transition cursor-pointer"
             >
@@ -134,6 +149,26 @@ export default function ReportScam() {
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl p-4 text-white placeholder-neutral-600 focus:outline-none transition text-sm resize-none"
               />
+            </div>
+
+            <div>
+              <label htmlFor="scam-proof" className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">
+                Proof Link (Screenshot, Email, Chat Log)
+              </label>
+              <div className="relative">
+                <Link2 className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-500" />
+                <input
+                  id="scam-proof"
+                  type="text"
+                  placeholder="Link to a screenshot (Drive, Imgur, etc.)"
+                  value={proofUrl}
+                  onChange={(e) => setProofUrl(e.target.value)}
+                  className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl pl-10 pr-4 py-3 text-white placeholder-neutral-600 focus:outline-none transition text-sm"
+                />
+              </div>
+              <p className="text-[11px] text-neutral-500 mt-1.5">
+                Description (20+ chars) or a proof link is needed for this report to count toward the site's risk score.
+              </p>
             </div>
 
             <button

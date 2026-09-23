@@ -7,14 +7,14 @@ export default function ShieldAIBot({ scanContext = null }) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { 
-      sender: 'bot', 
-      text: 'Hello! I am ShieldSense, your AI security assistant. You can ask me questions about security, or type a page name (e.g., "admin", "profile", "settings", "history") to jump right there!' 
+    {
+      sender: 'bot',
+      text: 'Hello! I am ShieldSense, your AI security assistant. I can help explain URL scan results, security metrics, or web protection concepts.'
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  
+
   const messagesEndRef = useRef(null);
   const chatRef = useRef(null);
 
@@ -73,7 +73,7 @@ export default function ShieldAIBot({ scanContext = null }) {
     const userText = inputMessage.trim();
     const lowerText = userText.toLowerCase();
     const userMessage = { sender: 'user', text: userText };
-    
+
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsTyping(true);
@@ -90,7 +90,7 @@ export default function ShieldAIBot({ scanContext = null }) {
 
       if (matchedRoute) {
         setMessages(prev => [
-          ...prev, 
+          ...prev,
           { sender: 'bot', text: `Taking you to the ${matchedRoute.name} page right now! 🚀` }
         ]);
         setIsTyping(false);
@@ -106,7 +106,7 @@ export default function ShieldAIBot({ scanContext = null }) {
       setMessages(prev => [...prev, { sender: 'bot', text: responseText }]);
     } catch (err) {
       setMessages(prev => [
-        ...prev, 
+        ...prev,
         { sender: 'bot', text: "I couldn't connect to the security assistant right now. Please try again in a moment." }
       ]);
     } finally {
@@ -141,7 +141,7 @@ export default function ShieldAIBot({ scanContext = null }) {
       {/* Chat Window Container */}
       {isOpen && (
         <div className="w-[calc(100vw-2rem)] max-w-[420px] h-[560px] bg-[#0D1117] border border-neutral-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in backdrop-blur-2xl">
-          
+
           {/* Chat Header */}
           <div className="px-5 py-4 bg-[#13111C] border-b border-neutral-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -191,11 +191,10 @@ export default function ShieldAIBot({ scanContext = null }) {
                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed font-normal whitespace-pre-wrap ${
-                    msg.sender === 'user'
-                      ? 'bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white rounded-br-none shadow-md font-medium'
-                      : 'bg-[#13111C] border border-neutral-800 text-white rounded-bl-none shadow-inner'
-                  }`}
+                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed font-normal whitespace-pre-wrap ${msg.sender === 'user'
+                    ? 'bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white rounded-br-none shadow-md font-medium'
+                    : 'bg-[#13111C] border border-neutral-800 text-white rounded-bl-none shadow-inner'
+                    }`}
                 >
                   {msg.text}
                 </div>
