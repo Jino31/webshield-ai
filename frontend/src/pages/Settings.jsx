@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ShieldAIBot from '../components/ShieldAIBot';
+import TiltCard3D from '../components/TiltCard3D';
 import { 
   Shield, 
   Search, 
