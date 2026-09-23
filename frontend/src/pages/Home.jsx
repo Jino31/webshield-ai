@@ -129,15 +129,6 @@ export default function Home() {
       }`} />
 
       <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-5xl mx-auto w-full flex-1">
-        {/* Hero Badge */}
-        <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 uppercase tracking-wider shadow-md transition-all ${
-          isDark 
-            ? 'bg-[#13111C] border border-[#8B5CF6]/30 text-[#C4B5FD] shadow-purple-950/25' 
-            : 'bg-white border border-purple-200 text-purple-700 shadow-purple-200/50'
-        }`}>
-          <Cpu className="w-3.5 h-3.5 text-[#8B5CF6]" /> Powered by Machine Learning Security Analysis
-        </div>
-
         {/* Hero Title */}
         <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight transition-colors ${
           isDark ? 'text-white' : 'text-slate-900'
