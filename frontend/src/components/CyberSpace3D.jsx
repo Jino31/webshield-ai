@@ -15,7 +15,7 @@ export default function CyberSpace3D() {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    // Physics & Interaction States for Scroll & Swipe
+    // Smooth physics variables
     let targetScrollY = window.scrollY || window.pageYOffset || 0;
     let currentScrollY = targetScrollY;
     let scrollVelocity = 0;
@@ -25,9 +25,8 @@ export default function CyberSpace3D() {
     let mouseX = 0;
     let mouseY = 0;
 
-    // Touch Swipe Tracking for Mobile/Tablets
-    let touchStartY = 0;
-    let touchVelocity = 0;
+    // Interactive Shockwave Ripples (Fired on click)
+    const ripples = [];
 
     const handleScroll = () => {
       targetScrollY = window.scrollY || window.pageYOffset || 0;
@@ -38,19 +37,14 @@ export default function CyberSpace3D() {
       targetMouseY = (e.clientY - height / 2) / (height / 2);
     };
 
-    const handleTouchStart = (e) => {
-      if (e.touches && e.touches[0]) {
-        touchStartY = e.touches[0].clientY;
-      }
-    };
-
-    const handleTouchMove = (e) => {
-      if (e.touches && e.touches[0]) {
-        const deltaY = e.touches[0].clientY - touchStartY;
-        touchVelocity = deltaY * 0.05;
-        targetScrollY -= touchVelocity;
-        touchStartY = e.touches[0].clientY;
-      }
+    const handleClick = (e) => {
+      ripples.push({
+        x: e.clientX,
+        y: e.clientY,
+        radius: 10,
+        maxRadius: Math.max(width, height) * 0.6,
+        alpha: 0.8
+      });
     };
 
     const handleResize = () => {
@@ -60,33 +54,60 @@ export default function CyberSpace3D() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('click', handleClick);
     window.addEventListener('resize', handleResize);
 
-    // Upgraded Threat-Node Matrix Particles
-    const NODE_COUNT = 85;
-    const nodes = [];
-    const WORLD_DEPTH = 2000;
+    // Particle Matrix Setup
+    const PARTICLE_COUNT = 110;
+    const particles = [];
+    const WORLD_DEPTH = 2200;
 
-    for (let i = 0; i < NODE_COUNT; i++) {
-      nodes.push({
-        x: (Math.random() - 0.5) * width * 2.5,
-        y: (Math.random() - 0.5) * height * 2.5,
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: (Math.random() - 0.5) * width * 2.2,
+        y: (Math.random() - 0.5) * height * 2.2,
         z: Math.random() * WORLD_DEPTH,
-        size: Math.random() * 2.8 + 1,
-        type: i % 4 === 0 ? 'threat' : i % 3 === 0 ? 'shield' : 'data',
-        speed: Math.random() * 0.6 + 0.5,
-        angle: Math.random() * Math.PI * 2
+        size: Math.random() * 2.5 + 0.6,
+        colorType: Math.random() > 0.5 ? 'primary' : 'secondary',
+        speedOffset: Math.random() * 0.5 + 0.8
       });
+    }
+
+    // Wireframe Octahedron & Cube Geometries
+    const octaVertices = [[0,1,0],[0,-1,0],[1,0,0],[-1,0,0],[0,0,1],[0,0,-1]];
+    const octaEdges = [[0,2],[0,3],[0,4],[0,5],[1,2],[1,3],[1,4],[1,5],[2,4],[4,3],[3,5],[5,2]];
+
+    const cubeVertices = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+    const cubeEdges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+
+    const floatingObjects = [
+      { vertices: octaVertices, edges: octaEdges, x: -width * 0.38, y: -120, z: 450, scale: 70, rotX: 0.2, rotY: 0.3, speedRotX: 0.007, speedRotY: 0.01, color: '#8B5CF6' },
+      { vertices: cubeVertices, edges: cubeEdges, x: width * 0.38, y: 140, z: 800, scale: 60, rotX: 0.4, rotY: 0.1, speedRotX: -0.006, speedRotY: 0.009, color: '#EC4899' },
+      { vertices: octaVertices, edges: octaEdges, x: width * 0.3, y: -260, z: 1200, scale: 85, rotX: 0.1, rotY: 0.5, speedRotX: 0.009, speedRotY: -0.008, color: '#A78BFA' }
+    ];
+
+    function rotate3D(vertex, rx, ry, rz) {
+      let [x, y, z] = vertex;
+      let y1 = y * Math.cos(rx) - z * Math.sin(rx);
+      let z1 = y * Math.sin(rx) + z * Math.cos(rx);
+      let x2 = x * Math.cos(ry) + z1 * Math.sin(ry);
+      let z2 = -x * Math.sin(ry) + z1 * Math.cos(ry);
+      return [x2 * Math.cos(rz) - y1 * Math.sin(rz), x2 * Math.sin(rz) + y1 * Math.cos(rz), z2];
+    }
+
+    const FOCAL_LENGTH = 580;
+    function project3D(x, y, z, cx, cy) {
+      if (z <= 10) return null;
+      const scale = FOCAL_LENGTH / z;
+      return { px: cx + x * scale, py: cy + y * scale, scale, visible: z > 10 && z < 2600 };
     }
 
     let tick = 0;
 
     const render = () => {
       tick++;
-      mouseX += (targetMouseX - mouseX) * 0.07;
-      mouseY += (targetMouseY - mouseY) * 0.07;
+      mouseX += (targetMouseX - mouseX) * 0.06;
+      mouseY += (targetMouseY - mouseY) * 0.06;
 
       const prevScrollY = currentScrollY;
       currentScrollY += (targetScrollY - currentScrollY) * 0.08;
@@ -94,87 +115,145 @@ export default function CyberSpace3D() {
 
       ctx.clearRect(0, 0, width, height);
 
-      const cx = width / 2 + mouseX * 50;
-      const cy = height / 2 + mouseY * 40;
+      const cx = width / 2 + mouseX * 45;
+      const cy = height / 2 + mouseY * 35;
 
-      // 1. Dynamic Cyber Grid (Reacts directly to scroll & swipe speed)
-      const gridFloorY = 360;
-      const gridZStart = 120;
-      const gridZEnd = 1600;
-      const gridSpacingX = 140;
-      const gridCrossInterval = 120;
-      const scrollSpeedBoost = scrollVelocity * 1.2;
-      const streamOffset = (currentScrollY * 0.85 + tick * 0.7 + scrollSpeedBoost) % gridCrossInterval;
+      // 1. RENDER INTERACTIVE SHOCKWAVE RIPPLES
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const r = ripples[i];
+        r.radius += 8;
+        r.alpha *= 0.95;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = isDark ? `rgba(139, 92, 246, ${r.alpha})` : `rgba(139, 92, 246, ${r.alpha * 0.7})`;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.restore();
+
+        if (r.alpha < 0.02 || r.radius > r.maxRadius) {
+          ripples.splice(i, 1);
+        }
+      }
+
+      // 2. CYBER FLOOR PERSPECTIVE GRID
+      const gridFloorY = 340;
+      const gridZStart = 100;
+      const gridZEnd = 1700;
+      const gridSpacingX = 150;
+      const gridCrossInterval = 130;
+      const streamOffset = (currentScrollY * 0.9 + tick * 0.9) % gridCrossInterval;
 
       ctx.save();
-      const lineColor = 'rgba(139, 92, 246, ';
+      const primaryColor = isDark ? 'rgba(139, 92, 246, ' : 'rgba(139, 92, 246, ';
+      const accentColor = isDark ? 'rgba(236, 72, 153, ' : 'rgba(236, 72, 153, ';
 
-      for (let i = -12; i <= 12; i++) {
+      for (let i = -14; i <= 14; i++) {
         const lx = i * gridSpacingX;
-        const scaleNear = 550 / gridZStart;
-        const scaleFar = 550 / gridZEnd;
-        
-        const pxNear = cx + lx * scaleNear;
-        const pyNear = cy + gridFloorY * scaleNear;
-        const pxFar = cx + (lx * 2.2) * scaleFar;
-        const pyFar = cy + gridFloorY * scaleFar;
+        const pNear = project3D(lx, gridFloorY, gridZStart, cx, cy);
+        const pFar = project3D(lx * 2.4, gridFloorY, gridZEnd, cx, cy);
 
-        const alpha = Math.max(0, (1 - Math.abs(i) / 12) * (isDark ? 0.22 : 0.14));
-        ctx.beginPath();
-        ctx.strokeStyle = `${lineColor}${alpha})`;
-        ctx.lineWidth = i % 3 === 0 ? 1.5 : 1;
-        ctx.moveTo(pxNear, pyNear);
-        ctx.lineTo(pxFar, pyFar);
-        ctx.stroke();
+        if (pNear && pFar) {
+          const alpha = Math.max(0, (1 - Math.abs(i) / 14) * (isDark ? 0.24 : 0.16));
+          ctx.beginPath();
+          ctx.strokeStyle = (i % 4 === 0) ? `${accentColor}${alpha * 1.4})` : `${primaryColor}${alpha})`;
+          ctx.moveTo(pNear.px, pNear.py);
+          ctx.lineTo(pFar.px, pFar.py);
+          ctx.stroke();
+        }
+      }
+
+      for (let z = gridZStart; z < gridZEnd; z += gridCrossInterval) {
+        let actualZ = z - streamOffset;
+        if (actualZ < gridZStart) actualZ += (gridZEnd - gridZStart);
+
+        const pL = project3D(-14 * gridSpacingX, gridFloorY, actualZ, cx, cy);
+        const pR = project3D(14 * gridSpacingX, gridFloorY, actualZ, cx, cy);
+
+        if (pL && pR) {
+          const depthRatio = 1 - (actualZ - gridZStart) / (gridZEnd - gridZStart);
+          ctx.beginPath();
+          ctx.strokeStyle = `${primaryColor}${depthRatio * (isDark ? 0.28 : 0.18)})`;
+          ctx.moveTo(pL.px, pL.py);
+          ctx.lineTo(pR.px, pR.py);
+          ctx.stroke();
+        }
       }
       ctx.restore();
 
-      // 2. Interactive Floating Threat Nodes & Shield Particles
-      nodes.forEach((node) => {
-        // Scroll / Swipe depth movement
-        node.z -= (scrollVelocity * 0.7 + node.speed + 0.4);
-        if (node.z < 20) node.z += WORLD_DEPTH;
-        if (node.z > WORLD_DEPTH) node.z -= WORLD_DEPTH;
+      // 3. FLOATING WIREFRAME POLYHEDRA
+      floatingObjects.forEach((obj) => {
+        obj.rotX += obj.speedRotX + scrollVelocity * 0.0018;
+        obj.rotY += obj.speedRotY + scrollVelocity * 0.0012;
 
-        const scale = 550 / node.z;
-        const px = cx + node.x * scale;
-        const py = cy + (node.y + Math.sin(tick * 0.03 + node.z) * 25) * scale;
+        const cameraScrollRel = (currentScrollY * 0.5) % WORLD_DEPTH;
+        let relativeZ = obj.z - cameraScrollRel;
+        if (relativeZ < 50) relativeZ += WORLD_DEPTH;
+        if (relativeZ > WORLD_DEPTH) relativeZ -= WORLD_DEPTH;
 
-        if (node.z > 10 && node.z < WORLD_DEPTH && px >= 0 && px <= width && py >= 0 && py <= height) {
-          const depthRatio = 1 - node.z / WORLD_DEPTH;
-          const radius = Math.max(1, node.size * scale * 1.5);
-          const alpha = depthRatio * (isDark ? 0.85 : 0.6);
+        const currentY = obj.y + Math.sin(tick * 0.02 + obj.z) * 20;
+        const projectedVertices = obj.vertices.map((v) => {
+          const rot = rotate3D(v, obj.rotX, obj.rotY, 0);
+          return project3D(obj.x + rot[0] * obj.scale, currentY + rot[1] * obj.scale, relativeZ + rot[2] * obj.scale, cx, cy);
+        });
 
-          ctx.save();
-          if (node.type === 'threat') {
-            ctx.fillStyle = `rgba(236, 72, 153, ${alpha})`; // Pink threat indicator
-            ctx.shadowColor = '#EC4899';
-          } else if (node.type === 'shield') {
-            ctx.fillStyle = `rgba(16, 185, 129, ${alpha})`; // Emerald safe indicator
-            ctx.shadowColor = '#10B981';
-          } else {
-            ctx.fillStyle = `rgba(139, 92, 246, ${alpha})`; // Purple data node
-            ctx.shadowColor = '#8B5CF6';
-          }
+        const depthRatio = Math.max(0, Math.min(1, 1 - relativeZ / WORLD_DEPTH));
+        ctx.save();
+        ctx.strokeStyle = obj.color;
+        ctx.globalAlpha = depthRatio * (isDark ? 0.7 : 0.5);
+        ctx.lineWidth = Math.max(1, depthRatio * 2.5);
 
-          ctx.shadowBlur = 8;
-          ctx.beginPath();
-          ctx.arc(px, py, radius, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Connect telemetry webs when scrolling fast
-          if (Math.abs(scrollVelocity) > 4 && node.type === 'threat') {
-            ctx.strokeStyle = `rgba(236, 72, 153, ${alpha * 0.4})`;
-            ctx.lineWidth = 0.75;
+        obj.edges.forEach(([i, j]) => {
+          const p1 = projectedVertices[i];
+          const p2 = projectedVertices[j];
+          if (p1 && p2 && p1.visible && p2.visible) {
             ctx.beginPath();
-            ctx.moveTo(px, py);
-            ctx.lineTo(px + (scrollVelocity * 2), py - 20);
+            ctx.moveTo(p1.px, p1.py);
+            ctx.lineTo(p2.px, p2.py);
             ctx.stroke();
           }
+        });
+        ctx.restore();
+      });
 
-          ctx.restore();
+      // 4. PARTICLE FIELD WARP
+      ctx.save();
+      const velocityStretch = Math.min(Math.abs(scrollVelocity) * 1.5, 35);
+
+      particles.forEach((pt) => {
+        pt.z -= scrollVelocity * 0.9 * pt.speedOffset + 0.35;
+        if (pt.z < 20) pt.z += WORLD_DEPTH;
+        if (pt.z > WORLD_DEPTH) pt.z -= WORLD_DEPTH;
+
+        const proj = project3D(pt.x, pt.y, pt.z, cx, cy);
+        if (proj && proj.visible) {
+          const depthRatio = 1 - pt.z / WORLD_DEPTH;
+          const radius = Math.max(0.6, pt.size * proj.scale * 1.8);
+          const alpha = depthRatio * (isDark ? 0.8 : 0.55);
+
+          ctx.fillStyle = pt.colorType === 'primary' 
+            ? (isDark ? `rgba(139, 92, 246, ${alpha})` : `rgba(139, 92, 246, ${alpha})`)
+            : (isDark ? `rgba(236, 72, 153, ${alpha})` : `rgba(236, 72, 153, ${alpha})`);
+
+          if (velocityStretch > 2) {
+            const prevProj = project3D(pt.x, pt.y, pt.z + velocityStretch * 10, cx, cy);
+            if (prevProj) {
+              ctx.beginPath();
+              ctx.lineWidth = radius * 1.4;
+              ctx.strokeStyle = ctx.fillStyle;
+              ctx.moveTo(proj.px, proj.py);
+              ctx.lineTo(prevProj.px, prevProj.py);
+              ctx.stroke();
+            }
+          } else {
+            ctx.beginPath();
+            ctx.arc(proj.px, proj.py, radius, 0, Math.PI * 2);
+            ctx.fill();
+          }
         }
       });
+      ctx.restore();
 
       animationFrameId = requestAnimationFrame(render);
     };
@@ -185,14 +264,13 @@ export default function CyberSpace3D() {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('click', handleClick);
       window.removeEventListener('resize', handleResize);
     };
   }, [isDark]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-auto z-0 overflow-hidden cursor-crosshair">
       <canvas ref={canvasRef} className="w-full h-full block opacity-95 transition-opacity duration-700" />
       <div className={`absolute inset-0 pointer-events-none transition-colors duration-500 ${
         isDark ? 'bg-[radial-gradient(ellipse_at_center,transparent_30%,#0A0A0F_95%)]' : 'bg-[radial-gradient(ellipse_at_center,transparent_35%,#F8FAFC_95%)]'
