@@ -440,12 +440,6 @@ export default function Home() {
             <button onClick={() => navigate('/settings')} className="hover:underline">Security</button>
             <button onClick={() => navigate('/settings')} className="hover:underline">Cookie Policy</button>
           </div>
-
-          <div className={`p-3.5 rounded-xl border flex items-center gap-2.5 ${
-            isDark ? 'bg-[#13111C] border-neutral-800 text-neutral-300' : 'bg-white border-slate-200 text-slate-700 shadow-sm'
-          }`}>
-           
-          </div>
         </div>
 
         <div className="mt-10 text-center text-[11px] opacity-70">
