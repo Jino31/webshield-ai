@@ -15,7 +15,7 @@ export default function CyberSpace3D() {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    // Physics & Interaction States
+    // Physics & Interaction States for Scroll & Swipe
     let targetScrollY = window.scrollY || window.pageYOffset || 0;
     let currentScrollY = targetScrollY;
     let scrollVelocity = 0;
@@ -25,7 +25,7 @@ export default function CyberSpace3D() {
     let mouseX = 0;
     let mouseY = 0;
 
-    // Touch Swipe Tracking
+    // Touch Swipe Tracking for Mobile/Tablets
     let touchStartY = 0;
     let touchVelocity = 0;
 
@@ -107,7 +107,7 @@ export default function CyberSpace3D() {
       const streamOffset = (currentScrollY * 0.85 + tick * 0.7 + scrollSpeedBoost) % gridCrossInterval;
 
       ctx.save();
-      const lineColor = isDark ? 'rgba(139, 92, 246, ' : 'rgba(139, 92, 246, ';
+      const lineColor = 'rgba(139, 92, 246, ';
 
       for (let i = -12; i <= 12; i++) {
         const lx = i * gridSpacingX;
@@ -147,7 +147,7 @@ export default function CyberSpace3D() {
 
           ctx.save();
           if (node.type === 'threat') {
-            ctx.fillStyle = `rgba(236, 72, 153, ${alpha})`; // Pink/Rose threat indicator
+            ctx.fillStyle = `rgba(236, 72, 153, ${alpha})`; // Pink threat indicator
             ctx.shadowColor = '#EC4899';
           } else if (node.type === 'shield') {
             ctx.fillStyle = `rgba(16, 185, 129, ${alpha})`; // Emerald safe indicator
@@ -162,7 +162,7 @@ export default function CyberSpace3D() {
           ctx.arc(px, py, radius, 0, Math.PI * 2);
           ctx.fill();
 
-          // Connect nearby nodes with telemetry webs if scrolling fast
+          // Connect telemetry webs when scrolling fast
           if (Math.abs(scrollVelocity) > 4 && node.type === 'threat') {
             ctx.strokeStyle = `rgba(236, 72, 153, ${alpha * 0.4})`;
             ctx.lineWidth = 0.75;
