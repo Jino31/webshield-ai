@@ -81,7 +81,7 @@ export default function Home() {
   };
 
   return (
-    <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 py-16 transition-colors duration-300 overflow-x-hidden ${
+    <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-between px-4 sm:px-8 lg:px-12 pt-16 transition-colors duration-300 overflow-x-hidden ${
       isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
     }`}>
       {/* Background VFX Glow Orbs & Subtle Grid */}
@@ -100,7 +100,7 @@ export default function Home() {
         isDark ? 'opacity-30' : 'opacity-15'
       }`} />
 
-      <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-5xl mx-auto w-full">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-5xl mx-auto w-full flex-1">
         {/* Hero Badge */}
         <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 uppercase tracking-wider shadow-md transition-all ${
           isDark 
@@ -343,7 +343,7 @@ export default function Home() {
 
         {/* How It Works Section */}
         {!scanResult && (
-          <div id="how-it-works" className={`w-full max-w-5xl backdrop-blur-xl border p-8 sm:p-12 rounded-3xl text-left shadow-2xl transition-all ${
+          <div id="how-it-works" className={`w-full max-w-5xl backdrop-blur-xl border p-8 sm:p-12 rounded-3xl text-left shadow-2xl transition-all mb-20 ${
             isDark ? 'bg-[#13111C]/60 border-[#231E33]' : 'bg-white border-slate-200 shadow-slate-200/60'
           }`}>
             <div className="text-center max-w-xl mx-auto mb-12">
@@ -387,6 +387,71 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Specified Footer Section */}
+      <footer className={`w-full max-w-5xl mx-auto border-t py-12 px-6 mt-16 text-xs transition-colors ${
+        isDark ? 'border-neutral-800/80 text-neutral-400' : 'border-slate-200 text-slate-600'
+      }`}>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+          <div className="space-y-3">
+            <h3 className={`font-bold text-sm tracking-tight ${isDark ? 'text-white' : 'text-slate-950'}`}>WEB SHIELD AI</h3>
+            <p className="text-xs leading-relaxed">AI-Powered Website Security</p>
+            <p className="text-[11px] opacity-80">Scan suspicious URLs • Detect phishing • Stay protected</p>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>PRODUCT</h4>
+            <ul className="space-y-1.5">
+              <li><button onClick={() => navigate('/')} className="hover:text-[#8B5CF6] transition">URL Scanner</button></li>
+              <li><button onClick={() => navigate('/history')} className="hover:text-[#8B5CF6] transition">Scan History</button></li>
+              <li><button onClick={() => navigate('/')} className="hover:text-[#8B5CF6] transition">Risk Analysis</button></li>
+              <li><button onClick={() => navigate('/settings')} className="hover:text-[#8B5CF6] transition">Security Reports</button></li>
+            </ul>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>RESOURCES</h4>
+            <ul className="space-y-1.5">
+              <li><button onClick={scrollToHowItWorks} className="hover:text-[#8B5CF6] transition">How It Works</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">Case Studies</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">FAQ</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">Documentation</button></li>
+            </ul>
+          </div>
+
+          <div className="space-y-2">
+            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>COMPANY</h4>
+            <ul className="space-y-1.5">
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">About</button></li>
+              <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Contact</button></li>
+              <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Feedback</button></li>
+              <li><button onClick={() => navigate('/admin')} className="hover:text-[#8B5CF6] transition">Changelog</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className={`pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4 ${
+          isDark ? 'border-neutral-800/60' : 'border-slate-200'
+        }`}>
+          <div className="flex flex-wrap items-center gap-6">
+            <span className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-300' : 'text-slate-900'}`}>SECURITY & PRIVACY</span>
+            <button onClick={() => navigate('/about')} className="hover:underline">Privacy Policy</button>
+            <button onClick={() => navigate('/about')} className="hover:underline">Terms of Service</button>
+            <button onClick={() => navigate('/settings')} className="hover:underline">Security</button>
+            <button onClick={() => navigate('/settings')} className="hover:underline">Cookie Policy</button>
+          </div>
+
+          <div className={`p-3 rounded-xl border flex items-center gap-2 ${
+            isDark ? 'bg-[#13111C] border-neutral-800 text-neutral-300' : 'bg-white border-slate-200 text-slate-700 shadow-sm'
+          }`}>
+            <span>🛡️ Your security matters — WebShield AI helps identify dangerous websites using machine-learning.</span>
+          </div>
+        </div>
+
+        <div className="mt-8 text-center text-[11px] opacity-70">
+          © 2026 WebShield AI. Built for safer browsing.
+        </div>
+      </footer>
 
       {/* Render ShieldSense Assistant with Active Scan Context */}
       <ShieldAIBot scanContext={scanResult} />
