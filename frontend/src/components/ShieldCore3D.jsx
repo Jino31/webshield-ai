@@ -18,12 +18,10 @@ export default function ShieldCore3D() {
     const centerY = height / 2;
 
     let rotation = 0;
-
-    // Generate fixed 3D sphere points (Latitude & Longitude grid)
     const globeRadius = 110;
     const points = [];
-    
-    // Latitudes
+
+    // Generate latitude/longitude sphere wireframe points
     for (let lat = -60; lat <= 60; lat += 30) {
       const radLat = (lat * Math.PI) / 180;
       const r = globeRadius * Math.cos(radLat);
@@ -44,7 +42,7 @@ export default function ShieldCore3D() {
       rotation += 0.012;
       ctx.clearRect(0, 0, width, height);
 
-      // 1. Outer Glow Atmosphere
+      // Atmosphere Glow
       const atmosphere = ctx.createRadialGradient(centerX, centerY, 40, centerX, centerY, 150);
       atmosphere.addColorStop(0, isDark ? 'rgba(139, 92, 246, 0.25)' : 'rgba(139, 92, 246, 0.15)');
       atmosphere.addColorStop(1, 'transparent');
@@ -53,16 +51,13 @@ export default function ShieldCore3D() {
       ctx.arc(centerX, centerY, 150, 0, Math.PI * 2);
       ctx.fill();
 
-      // 2. Rotating 3D Globe Wireframe & Nodes
       const cosR = Math.cos(rotation);
       const sinR = Math.sin(rotation);
 
-      // Sort points by Z-depth for correct rendering order
       const projectedPoints = points.map(p => {
-        // Rotate around Y axis
         const x3d = p.x * cosR - p.z * sinR;
         const z3d = p.x * sinR + p.z * cosR;
-        const scale = 220 / (220 + z3d); // Perspective scale
+        const scale = 220 / (220 + z3d);
         
         return {
           x: centerX + x3d * scale,
@@ -73,29 +68,26 @@ export default function ShieldCore3D() {
         };
       }).sort((a, b) => a.z - b.z);
 
-      // Draw Globe Grid Lines & Nodes
       projectedPoints.forEach(p => {
         if (p.z > -100) {
           const alpha = Math.max(0.1, (p.z + 110) / 220);
-          
           ctx.save();
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.isThreat ? 3.5 : 2, 0, Math.PI * 2);
           
           if (p.isThreat) {
-            ctx.fillStyle = `rgba(236, 72, 153, ${alpha})`; // Pink threat node
+            ctx.fillStyle = `rgba(236, 72, 153, ${alpha})`;
             ctx.shadowColor = '#EC4899';
             ctx.shadowBlur = 8;
           } else {
-            ctx.fillStyle = `rgba(139, 92, 246, ${alpha})`; // Purple grid node
+            ctx.fillStyle = `rgba(139, 92, 246, ${alpha})`;
           }
-          
           ctx.fill();
           ctx.restore();
         }
       });
 
-      // 3. Radar Scanning Ring Sweep Overlay
+      // Radar Sweep
       ctx.save();
       ctx.strokeStyle = isDark ? 'rgba(139, 92, 246, 0.4)' : 'rgba(139, 92, 246, 0.25)';
       ctx.lineWidth = 1.5;
@@ -116,7 +108,7 @@ export default function ShieldCore3D() {
       ctx.fill();
       ctx.restore();
 
-      // 4. Central Core Shield Emblem
+      // Core Shield Emblem
       ctx.save();
       ctx.fillStyle = isDark ? 'rgba(19, 17, 28, 0.9)' : 'rgba(255, 255, 255, 0.9)';
       ctx.strokeStyle = '#8B5CF6';
