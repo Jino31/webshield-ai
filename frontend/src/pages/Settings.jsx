@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ShieldAIBot from '../components/ShieldAIBot';
-import TiltCard3D from '../components/TiltCard3D';
-import Hero3DShield from '../components/Hero3DShield';
+
 import { 
   Shield, 
   Search, 
@@ -147,7 +145,7 @@ export default function Settings() {
       <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-[#22D3EE]/5 rounded-full blur-[160px] pointer-events-none" />
 
       {/* Top Header Section */}
-      <div className="relative z-10 w-full max-w-5xl flex items-center justify-between mb-6">
+      <div className="relative z-10 w-full max-w-5xl flex items-center justify-between mb-8">
         <button
           onClick={() => navigate(-1)}
           className="inline-flex items-center gap-2 text-xs font-medium text-neutral-300 hover:text-[#22D3EE] bg-[#0D1117] border border-neutral-800/80 px-4 py-2 rounded-xl transition shadow-sm cursor-pointer"
@@ -157,11 +155,6 @@ export default function Settings() {
         <div className="flex items-center gap-2 text-neutral-400 text-xs font-mono">
           <Activity className="w-4 h-4 text-[#22D3EE]" /> SecOps Console v2.6
         </div>
-      </div>
-
-      {/* 3D Hero Shield Graphic Integration */}
-      <div className="w-full max-w-5xl mb-4">
-        <Hero3DShield />
       </div>
 
       {/* Main Title & Subtitle */}
