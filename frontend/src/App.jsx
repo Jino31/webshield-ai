@@ -10,21 +10,22 @@ import Profile from './pages/Profile';
 import ReportScam from './pages/ReportScam';
 import ScanTrends from './pages/ScanTrends';
 import Admin from './pages/Admin';
-import ShieldAI from './pages/ShieldAI'; // <-- Imported ShieldAI page
 import About from './pages/About';
 import Feedback from './pages/Feedback';
+// Import your existing ShieldSense AI floating assistant component:
+import ShieldSenseAI from './components/ShieldSenseAI'; // Adjust path if located elsewhere (e.g. ./components/ShieldAI or similar)
 
 function AppContent() {
   const { isDark } = useTheme();
 
   return (
     <div 
-      className={`min-h-screen flex flex-col selection:bg-[#8B5CF6] selection:text-white transition-colors duration-300 ${
+      className={`min-h-screen flex flex-col selection:bg-[#8B5CF6] selection:text-white transition-colors duration-300 relative ${
         isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
       }`}
     >
       <Navbar />
-      <main className="flex-1 flex flex-col items-center">
+      <main className="flex-1 flex flex-col items-center w-full">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -36,11 +37,13 @@ function AppContent() {
           <Route path="/scam-report" element={<ReportScam />} />
           <Route path="/scan-trends" element={<ScanTrends />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/shield-ai" element={<ShieldAI />} /> {/* <-- Active Route for ShieldAI */}
           <Route path="/about" element={<About />} />
           <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </main>
+
+      {/* Global Floating ShieldSense AI Assistant available across all pages */}
+      <ShieldSenseAI />
     </div>
   );
 }
