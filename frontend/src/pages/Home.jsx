@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
 import EntryAnimation from '../components/EntryAnimation';
 import { useTheme } from '../context/ThemeContext';
+import ShieldAIBot from '../components/ShieldAIBot';
 
 const scanStages = [
   'Initializing security scan...',
