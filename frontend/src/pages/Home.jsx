@@ -159,22 +159,6 @@ export default function Home() {
     <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-between px-4 sm:px-8 lg:px-12 pt-16 transition-colors duration-300 overflow-x-hidden ${
       isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
     }`}>
-      {/* Inline Keyframe Styles for Reliable Standalone Animation */}
-      <style>{`
-        @keyframes webshield-spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        @keyframes webshield-spin-reverse {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(-360deg); }
-        }
-        @keyframes webshield-pulse-glow {
-          0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6)); }
-          50% { opacity: 0.85; transform: scale(1.05); filter: drop-shadow(0 0 16px rgba(236, 72, 153, 0.8)); }
-        }
-      </style>
-
       {/* Background VFX Glow Orbs & Subtle Grid */}
       <div className={`absolute inset-0 pointer-events-none ${
         isDark 
@@ -324,15 +308,15 @@ export default function Home() {
             <div className="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
               <div 
                 className="absolute inset-0 rounded-full border-2 border-dashed border-[#8B5CF6]" 
-                style={{ animation: 'webshield-spin 4s linear infinite' }} 
+                style={{ animation: 'spin 4s linear infinite' }} 
               />
               <div 
                 className="absolute inset-2 rounded-full border-2 border-transparent border-t-[#EC4899] border-b-[#8B5CF6]" 
-                style={{ animation: 'webshield-spin-reverse 2.5s linear infinite' }} 
+                style={{ animation: 'spin 2.5s linear infinite reverse' }} 
               />
               <div 
                 className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#1A1528] text-[#8B5CF6]' : 'bg-purple-50 text-purple-600'} shadow-md`}
-                style={{ animation: 'webshield-pulse-glow 2s ease-in-out infinite' }}
+                style={{ animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
               >
                 <Shield className="w-5 h-5" />
               </div>
