@@ -1,40 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
-import ShieldAIBot from '../components/ShieldAIBot'; // <-- ShieldSense assistant component
+import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare, Loader2 } from 'lucide-react';
+import ShieldAIBot from '../components/ShieldAIBot'; // <-- Separate ShieldSense assistant component
 import { useTheme } from '../context/ThemeContext';
+
+const scanStages = [
+  'Initializing security scan...',
+  'Connecting to threat intelligence...',
+  'Extracting URL features...',
+  'Analyzing domain and URL structure...',
+  'Checking suspicious indicators...',
+  'Running security classification...',
+  'Generating final risk assessment...'
+];
 
 export default function Home() {
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const [urlInput, setUrlInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [scanStep, setScanStep] = useState(0);
   const [scanResult, setScanResult] = useState(null);
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState('');
+  
+  // Scanning Animation States
+  const [scanStep, setScanStep] = useState(0);
+  const [progress, setProgress] = useState(0);
 
-  // Professional cybersecurity scanning stages
-  const scanStages = [
-    'Initializing security scan...',
-    'Connecting to threat intelligence...',
-    'Extracting URL features...',
-    'Analyzing domain and URL structure...',
-    'Checking suspicious indicators...',
-    'Running security classification...',
-    'Generating final risk assessment...'
-  ];
-
-  // Rotate scan status messages smoothly while loading
+  // Progressive Scan Stage & Progress Bar Effect
   useEffect(() => {
-    let interval;
+    let stageInterval;
+    let progressInterval;
+
     if (isLoading) {
       setScanStep(0);
-      interval = setInterval(() => {
+      setProgress(5);
+
+      stageInterval = setInterval(() => {
         setScanStep((prev) => (prev < scanStages.length - 1 ? prev + 1 : prev));
       }, 350);
+
+      progressInterval = setInterval(() => {
+        setProgress((prev) => (prev < 95 ? prev + Math.floor(Math.random() * 12) + 5 : prev));
+      }, 250);
+    } else {
+      setProgress(100);
     }
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(stageInterval);
+      clearInterval(progressInterval);
+    };
   }, [isLoading]);
 
   // Strict URL validation helper
@@ -59,18 +75,17 @@ export default function Home() {
       return;
     }
 
-    // Validate BEFORE starting loading/scanning state
     setValidationError('');
     setApiError('');
     setScanResult(null);
     setIsLoading(true);
 
     try {
-      // Simulate robust backend scan duration to showcase the animation stages
+      // Synchronized duration matching stage transitions (~2.6s)
       await new Promise((resolve) => setTimeout(resolve, 2600));
-      const lowerUrl = targetUrl.toLowerCase();
+      const lowerUrl = trimmedUrl.toLowerCase();
       
-      const hasIp = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(targetUrl);
+      const hasIp = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(trimmedUrl);
       const isSuspiciousKeyword = /login|secure|update|account|verify|bank|signin|support/.test(lowerUrl);
       const isKnownSafe = /google|facebook|github|wikipedia|microsoft|apple|amazon/.test(lowerUrl);
       const isBitly = /bit\.ly|tinyurl|t\.co|goo\.gl/.test(lowerUrl);
@@ -83,21 +98,21 @@ export default function Home() {
         status = 'danger';
         riskLevel = 'High Phishing Risk';
         description = 'This URL exhibits high-risk indicators, including suspicious keywords, URL shortening, or direct IP addressing.';
-      } else if (targetUrl.length > 75) {
+      } else if (trimmedUrl.length > 75) {
         status = 'warning';
         riskLevel = 'Moderate Risk';
         description = 'This URL contains characteristics associated with elevated risk, including excessive length, subdomains, or query parameters.';
       }
 
       setScanResult({
-        url: targetUrl,
+        url: trimmedUrl,
         status,
         riskLevel,
         description,
         checks: {
           ipAddress: hasIp ? 'Detected (Suspicious)' : 'None',
-          lengthCheck: targetUrl.length > 75 ? 'Unusually Long' : 'Normal',
-          sslSecure: targetUrl.startsWith('https') ? 'Valid HTTPS' : 'Insecure HTTP',
+          lengthCheck: trimmedUrl.length > 75 ? 'Unusually Long' : 'Normal',
+          sslSecure: trimmedUrl.startsWith('https') ? 'Valid HTTPS' : 'Insecure HTTP',
           lexicalMatch: isSuspiciousKeyword ? 'Suspicious Keywords Found' : 'Clean'
         }
       });
@@ -124,6 +139,8 @@ export default function Home() {
     setScanResult(null);
     setValidationError('');
     setApiError('');
+    setScanStep(0);
+    setProgress(0);
   };
 
   const scrollToHowItWorks = () => {
@@ -255,38 +272,6 @@ export default function Home() {
           )}
         </form>
 
-        {/* Dedicated Cybersecurity Scanning Animation Overlay Card */}
-        {isLoading && (
-          <div className={`w-full max-w-2xl backdrop-blur-xl border p-8 rounded-3xl text-center mb-16 animate-fadeIn shadow-2xl ${
-            isDark ? 'bg-[#13111C]/95 border-[#8B5CF6]/40 shadow-purple-950/50' : 'bg-white border-purple-200 shadow-purple-200/50'
-          }`}>
-            <div className="flex flex-col items-center justify-center space-y-6">
-              {/* Rotating Animated Shield Ring */}
-              <div className="relative w-16 h-16 flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-4 border-[#8B5CF6]/20 border-t-[#8B5CF6] animate-spin" />
-                <Shield className="w-7 h-7 text-[#EC4899] animate-pulse" />
-              </div>
-
-              <div className="space-y-2">
-                <h3 className={`text-base font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  WebShield AI Security Scanner
-                </h3>
-                <p className="text-xs font-mono text-[#8B5CF6] h-5 transition-all duration-300">
-                  {scanStages[scanStep]}
-                </p>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-[#0A0A0F]/50 h-1.5 rounded-full overflow-hidden border border-[#231E33]">
-                <div 
-                  className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] h-full transition-all duration-300"
-                  style={{ width: `${((scanStep + 1) / scanStages.length) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Example Quick Pills */}
         {!scanResult && !isLoading && (
           <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-neutral-400 mb-16">
@@ -308,11 +293,47 @@ export default function Home() {
           </div>
         )}
 
+        {/* Active Cybersecurity Scanning Animation Card */}
+        {isLoading && (
+          <div className={`w-full max-w-2xl backdrop-blur-xl border p-8 sm:p-10 rounded-3xl text-center mb-16 transition-all duration-300 shadow-2xl ${
+            isDark 
+              ? 'bg-[#13111C]/95 border-[#8B5CF6]/30 shadow-purple-950/40' 
+              : 'bg-white border-purple-200 shadow-purple-200/50'
+          }`}>
+            <div className="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-2 border-dashed border-[#8B5CF6] animate-spin" />
+              <div className="absolute inset-2 rounded-full border-2 border-transparent border-t-[#EC4899] border-b-[#8B5CF6] animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }} />
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#1A1528] text-[#8B5CF6]' : 'bg-purple-50 text-purple-600'} animate-pulse shadow-md`}>
+                <Shield className="w-5 h-5" />
+              </div>
+            </div>
+
+            <h3 className={`text-base font-bold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-950'}`}>
+              WebShield Threat Intelligence Analysis
+            </h3>
+            
+            <p className="text-xs text-[#8B5CF6] font-mono mb-6 h-5 transition-all duration-200">
+              {scanStages[scanStep]}
+            </p>
+
+            <div className="w-full bg-[#0A0A0F]/60 rounded-full h-2.5 overflow-hidden border border-[#231E33] p-0.5">
+              <div 
+                className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] h-full rounded-full transition-all duration-300"
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center mt-2 text-[10px] text-neutral-500 font-mono">
+              <span>SecOps Scanner v2.4</span>
+              <span>{Math.min(progress, 100)}% Complete</span>
+            </div>
+          </div>
+        )}
+
         {/* Scan Results Display Section */}
         {scanResult && !isLoading && (
-          <div className={`w-full max-w-2xl backdrop-blur-xl border p-6 sm:p-8 rounded-3xl text-left mb-16 animate-fadeIn ${
+          <div className={`w-full max-w-2xl backdrop-blur-xl border p-6 sm:p-8 rounded-3xl text-left mb-16 transition-all duration-300 shadow-2xl ${
             isDark 
-              ? 'bg-[#13111C]/95 border-[#231E33] shadow-2xl shadow-purple-950/30' 
+              ? 'bg-[#13111C]/95 border-[#231E33] shadow-purple-950/30' 
               : 'bg-white border-slate-200 shadow-2xl shadow-slate-200/60'
           }`}>
             <div className="flex items-center justify-between pb-4 border-b border-[#231E33] mb-6">
@@ -533,7 +554,7 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Render ShieldSense Assistant as a completely separate component */}
+      {/* Render ShieldSense Assistant with Active Scan Context Separately */}
       <ShieldAIBot scanContext={scanResult} />
     </div>
   );
