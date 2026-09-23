@@ -110,7 +110,7 @@ export default function Admin() {
     }
   };
 
-  // Instant Non-Blocking Telemetry Loader (Loads stats first, secondary data in background)
+  // Optimized Non-Blocking Real-Time Telemetry Fetcher
   const fetchRealtimeData = useCallback(async () => {
     if (!adminUnlocked) return;
     
@@ -123,7 +123,7 @@ export default function Admin() {
       // 1. Fetch lightweight stats immediately so the dashboard shell pops open instantly
       const sData = await adminService.getAdminStats().catch(() => null);
       setStats(sData);
-      setLoadingData(false); // UI renders right away!
+      setLoadingData(false);
 
       // 2. Fetch secondary lists asynchronously in the background
       adminService.getUsers().then(u => setUsersList(u || [])).catch(() => {});
@@ -143,9 +143,16 @@ export default function Admin() {
     }
   }, [adminUnlocked, stats]);
 
+  // Real-time auto-refresh polling every 10 seconds
   useEffect(() => {
-    fetchRealtimeData();
-  }, [fetchRealtimeData]);
+    if (adminUnlocked) {
+      fetchRealtimeData();
+      const interval = setInterval(() => {
+        fetchRealtimeData();
+      }, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [adminUnlocked, fetchRealtimeData]);
 
   const themeClasses = {
     dark: 'bg-[#05070A] text-[#FAFAFA]',
@@ -339,10 +346,22 @@ export default function Admin() {
                 <div className="space-y-6">
                   <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>Dashboard Overview</h1>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Users</span><p className={`text-2xl font-black mt-1 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{stats?.totalUsers ?? 42}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Scans</span><p className="text-2xl font-black text-[#8B5CF6] mt-1">{stats?.totalScans ?? 0}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Safe URLs</span><p className="text-2xl font-black text-emerald-500 mt-1">{stats?.safeUrls ?? 0}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Threats Blocked</span><p className="text-2xl font-black text-rose-500 mt-1">{stats?.phishingDetected ?? 0}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Users</span>
+                      <p className={`text-2xl font-black mt-1 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{stats?.totalUsers ?? 0}</p>
+                    </div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Scans</span>
+                      <p className="text-2xl font-black text-[#8B5CF6] mt-1">{stats?.totalScans ?? 0}</p>
+                    </div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Safe URLs</span>
+                      <p className="text-2xl font-black text-emerald-500 mt-1">{stats?.safeUrls ?? 0}</p>
+                    </div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Threats Blocked</span>
+                      <p className="text-2xl font-black text-rose-500 mt-1">{stats?.phishingDetected ?? 0}</p>
+                    </div>
                   </div>
                 </div>
               )}
