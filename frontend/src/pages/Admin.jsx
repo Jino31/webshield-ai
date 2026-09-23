@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
@@ -22,7 +22,16 @@ import {
   ArrowLeft,
   Lock,
   LogOut,
-  Send
+  Send,
+  Search,
+  Filter,
+  Activity,
+  Terminal,
+  ShieldAlert,
+  Globe,
+  SlidersHorizontal,
+  ChevronRight,
+  Database
 } from 'lucide-react';
 
 export default function Admin() {
@@ -39,9 +48,11 @@ export default function Admin() {
   const [unlocking, setUnlocking] = useState(false);
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
 
-  // UI States (6 Tabs)
+  // UI States (6 Tabs & Enterprise Controls)
   const [activeTab, setActiveTab] = useState('dashboard');
   const { theme } = useTheme();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [lastSyncedTime, setLastSyncedTime] = useState(null);
 
   // Telemetry Data
   const [stats, setStats] = useState(null);
@@ -82,12 +93,12 @@ export default function Admin() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Unlock handler with Luxury Welcome Animation
+  // Unlock handler with Enterprise Welcome Telemetry
   const handleUnlock = async (e) => {
     e.preventDefault();
     setPasswordError('');
     if (!password.trim()) {
-      setPasswordError('Please enter the admin key.');
+      setPasswordError('Administrative access key is required.');
       return;
     }
 
@@ -101,10 +112,10 @@ export default function Admin() {
       setTimeout(() => {
         setShowWelcomeAnimation(false);
         setAdminUnlocked(true);
-      }, 3000);
+      }, 2500);
 
     } catch (err) {
-      setPasswordError(err.response?.data?.error || 'Invalid admin key.');
+      setPasswordError(err.response?.data?.error || 'Invalid cryptographic key.');
       setPassword('');
       setUnlocking(false);
     }
@@ -120,12 +131,11 @@ export default function Admin() {
     setErrorData(null);
 
     try {
-      // 1. Fetch lightweight stats immediately so the dashboard shell pops open instantly
       const sData = await adminService.getAdminStats().catch(() => null);
       setStats(sData);
       setLoadingData(false);
+      setLastSyncedTime(new Date().toLocaleTimeString());
 
-      // 2. Fetch secondary lists asynchronously in the background
       adminService.getUsers().then(u => setUsersList(u || [])).catch(() => {});
       adminService.getSystemHealth().then(h => setHealth(h || [])).catch(() => {});
       adminService.getComments().then(c => setCommentsList(c || [])).catch(() => {});
@@ -138,7 +148,7 @@ export default function Admin() {
       }).catch(() => {});
 
     } catch (err) {
-      setErrorData('Failed to connect to backend server.');
+      setErrorData('Telemetry stream disconnected from cluster nodes.');
       setLoadingData(false);
     }
   }, [adminUnlocked, stats]);
@@ -154,48 +164,59 @@ export default function Admin() {
     }
   }, [adminUnlocked, fetchRealtimeData]);
 
+  // Filtered dataset for enterprise data grids
+  const filteredUsers = useMemo(() => {
+    if (!searchQuery) return usersList;
+    return usersList.filter(u => 
+      u.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      u.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [usersList, searchQuery]);
+
+  const filteredComments = useMemo(() => {
+    if (!searchQuery) return commentsList;
+    return commentsList.filter(c => 
+      c.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      c.message?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.category?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [commentsList, searchQuery]);
+
   const themeClasses = {
-    dark: 'bg-[#05070A] text-[#FAFAFA]',
-    light: 'bg-slate-100 text-slate-950',
-    unique: 'bg-[#0A0216] text-white selection:bg-fuchsia-500 selection:text-white'
+    dark: 'bg-[#0B0F17] text-[#F3F4F6] font-sans',
+    light: 'bg-[#F8FAFC] text-slate-900 font-sans',
+    unique: 'bg-[#080212] text-white selection:bg-purple-500 selection:text-white font-sans'
   };
 
   const cardTheme = {
-    dark: 'bg-[#0D1117] border-neutral-800 text-white shadow-xl',
-    light: 'bg-white border-slate-300 text-slate-900 shadow-md',
-    unique: 'bg-gradient-to-br from-[#1B0536] to-[#0E011C] border-fuchsia-500/40 text-fuchsia-100 shadow-2xl shadow-fuchsia-950/50 backdrop-blur-xl'
+    dark: 'bg-[#111827] border-neutral-800/80 text-white shadow-xl',
+    light: 'bg-white border-slate-200 text-slate-900 shadow-sm',
+    unique: 'bg-gradient-to-br from-[#160430] to-[#0A0118] border-purple-500/30 text-purple-100 shadow-2xl shadow-purple-950/40 backdrop-blur-xl'
   };
 
   if (authLoading) {
     return (
-      <div className="fixed inset-0 w-screen h-screen bg-[#05070A] flex items-center justify-center text-white text-xs z-50">
-        <RefreshCw className="w-5 h-5 animate-spin text-[#8B5CF6] mr-2" /> Checking authentication...
+      <div className="fixed inset-0 w-screen h-screen bg-[#0B0F17] flex items-center justify-center text-white text-xs z-50 font-mono">
+        <RefreshCw className="w-4 h-4 animate-spin text-purple-400 mr-2.5" /> Authenticating security clearance...
       </div>
     );
   }
 
-  // Upgraded Luxury Welcome Animation Screen
+  // Enterprise Welcome Animation
   if (showWelcomeAnimation) {
     return (
-      <div className="fixed inset-0 w-screen h-screen bg-[#07070B] text-white flex flex-col items-center justify-center z-50 overflow-hidden">
-        <div className="absolute w-[600px] h-[600px] bg-gradient-to-tr from-[#8B5CF6]/20 via-[#EC4899]/15 to-transparent rounded-full blur-[160px] animate-pulse pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.08)_0,transparent_75%)] pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col items-center p-12 rounded-[32px] bg-[#12111A]/60 border border-white/10 backdrop-blur-2xl shadow-[0_0_100px_rgba(139,92,246,0.25)] animate-fadeIn">
-          <div className="relative mb-6">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] blur-2xl rounded-full opacity-70 animate-pulse" />
-            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#1A1829] to-[#0A0A0F] flex items-center justify-center p-3 shadow-2xl relative z-10 border border-purple-400/30 text-[#8B5CF6]">
-              <ShieldCheck className="w-12 h-12 animate-bounce" />
-            </div>
+      <div className="fixed inset-0 w-screen h-screen bg-[#06080D] text-white flex flex-col items-center justify-center z-50 overflow-hidden font-mono">
+        <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-blue-600/10 via-purple-600/15 to-transparent rounded-full blur-[140px] animate-pulse pointer-events-none" />
+        <div className="relative z-15 flex flex-col items-center p-10 rounded-2xl bg-[#0F172A]/80 border border-white/10 shadow-2xl">
+          <div className="w-16 h-16 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-5 shadow-inner">
+            <ShieldCheck className="w-8 h-8 animate-pulse" />
           </div>
-          <div className="space-y-2 text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-purple-200 to-[#C4B5FD] bg-clip-text text-transparent drop-shadow-md">
-              Welcome You Admin
-            </h1>
-            <p className="text-neutral-400 text-xs font-mono uppercase tracking-[0.25em]">Initializing WebShield Security Center...</p>
-          </div>
-          <div className="w-48 h-1.5 bg-neutral-800 rounded-full overflow-hidden mt-6">
-            <div className="w-full h-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] animate-[shimmer_1.5s_infinite]" />
+          <h1 className="text-xl font-bold tracking-wider uppercase text-white mb-1">
+            WebShield Cloud Console
+          </h1>
+          <p className="text-[11px] text-neutral-400 tracking-[0.2em] uppercase">Establishing Secure Cluster Tunnel...</p>
+          <div className="w-40 h-1 bg-neutral-800 rounded-full overflow-hidden mt-6">
+            <div className="w-full h-full bg-gradient-to-r from-blue-500 to-purple-500 animate-[shimmer_1s_infinite]" />
           </div>
         </div>
       </div>
@@ -205,45 +226,38 @@ export default function Admin() {
   // Key-Gated Unlock Screen
   if (!adminUnlocked) {
     return (
-      <div className="fixed inset-0 w-screen h-screen bg-[#05070A] text-white flex items-center justify-center p-4 relative z-50 overflow-hidden">
+      <div className="fixed inset-0 w-screen h-screen bg-[#0B0F17] text-white flex items-center justify-center p-4 relative z-50 font-sans">
         <div className="absolute top-6 left-6 z-20">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D1117]/80 backdrop-blur-xl border border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg">
-            <ArrowLeft className="w-4 h-4" /> Back to Home
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#111827] border border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white transition cursor-pointer shadow-md">
+            <ArrowLeft className="w-3.5 h-3.5" /> Exit Portal
           </button>
         </div>
 
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#8B5CF6]/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#EC4899]/15 rounded-full blur-3xl pointer-events-none animate-pulse" />
-
         <div className="w-full max-w-md relative z-10">
-          <div className="bg-[#0D1117]/90 backdrop-blur-2xl border border-neutral-800/80 rounded-3xl p-8 shadow-2xl shadow-purple-950/20">
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#8B5CF6]/20 to-[#EC4899]/20 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6] shadow-lg shadow-purple-900/20">
-                <ShieldCheck className="w-8 h-8" />
+          <div className="bg-[#111827]/95 backdrop-blur-xl border border-neutral-800 rounded-2xl p-8 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                <ShieldCheck className="w-6 h-6" />
               </div>
+              <span className="text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded bg-neutral-800 text-neutral-400 border border-neutral-700">ISO-27001 SECURE</span>
             </div>
 
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/30 text-[#C4B5FD] text-[10px] font-semibold uppercase tracking-wider mb-3">
-                <Lock className="w-3 h-3" /> Secure Gateway
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight text-white">Admin Authentication</h1>
-              <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
-                Enter your administrative access key to unlock the WebShield AI control center.
-              </p>
+            <div className="mb-6">
+              <h1 className="text-lg font-bold tracking-tight text-white">Administrator Access</h1>
+              <p className="text-xs text-neutral-400 mt-1">Provide administrative security credentials to authenticate.</p>
             </div>
 
             <form onSubmit={handleUnlock} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-neutral-300 mb-2">Access Key</label>
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-1.5">Secret Key</label>
                 <div className="relative">
                   <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => { setPassword(e.target.value); setPasswordError(''); }}
-                    placeholder="Enter admin secret key"
-                    className="w-full h-12 pl-10 pr-11 rounded-xl bg-[#05070A] border border-neutral-800 text-xs text-white placeholder:text-neutral-600 outline-none focus:border-[#8B5CF6] transition shadow-inner"
+                    placeholder="Enter security key"
+                    className="w-full h-11 pl-10 pr-10 rounded-lg bg-[#0B0F17] border border-neutral-800 text-xs text-white placeholder:text-neutral-600 outline-none focus:border-purple-500 transition font-mono"
                   />
                   <button type="button" onClick={() => setShowPassword(v => !v)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition cursor-pointer">
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -252,13 +266,13 @@ export default function Admin() {
               </div>
 
               {passwordError && (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2.5 animate-fadeIn">
+                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 shrink-0" /> {passwordError}
                 </div>
               )}
 
-              <button type="submit" disabled={unlocking} className="w-full h-12 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-semibold shadow-lg shadow-purple-900/30 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer">
-                {unlocking ? <><RefreshCw className="w-4 h-4 animate-spin" /> Verifying Key...</> : <><ShieldCheck className="w-4 h-4" /> Access Admin Dashboard</>}
+              <button type="submit" disabled={unlocking} className="w-full h-11 rounded-lg bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-purple-950/50 disabled:opacity-50">
+                {unlocking ? <><RefreshCw className="w-4 h-4 animate-spin" /> Authenticating...</> : <><Lock className="w-4 h-4" /> Authenticate Session</>}
               </button>
             </form>
           </div>
@@ -270,124 +284,202 @@ export default function Admin() {
   return (
     <div className={`min-h-screen w-full flex flex-col transition-colors duration-300 ${themeClasses[theme]}`}>
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#13111C] border border-[#8B5CF6]/40 text-white px-4 py-3 rounded-2xl shadow-2xl text-xs flex items-center gap-3 animate-fadeIn">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#1E293B] border border-neutral-700 text-white px-4 py-3 rounded-xl shadow-2xl text-xs flex items-center gap-3 animate-fadeIn font-mono">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" /> {toast}
         </div>
       )}
 
-      {/* Header */}
-      <header className={`w-full h-16 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white border-slate-300 text-slate-900 shadow-sm' : theme === 'unique' ? 'bg-[#120224]/95 border-fuchsia-500/40 shadow-lg shadow-fuchsia-950/50' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/')} className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer ${theme === 'light' ? 'border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200' : 'border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/30'}`}>
-            <ArrowLeft className="w-4 h-4" /> Home
+      {/* Enterprise Top Navigation Bar */}
+      <header className={`w-full h-14 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-md ${theme === 'light' ? 'bg-white/90 border-slate-200 text-slate-900 shadow-xs' : theme === 'unique' ? 'bg-[#0D021C]/90 border-purple-500/30' : 'bg-[#0B0F17]/95 border-neutral-800'}`}>
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate('/')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition cursor-pointer ${theme === 'light' ? 'border-slate-200 bg-slate-100 hover:bg-slate-200' : 'border-neutral-800 bg-[#111827] hover:bg-neutral-800 text-neutral-200'}`}>
+            <ArrowLeft className="w-3.5 h-3.5" /> Portal Home
           </button>
-          <span className={`font-bold text-sm tracking-tight ml-2 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>WebShield Admin</span>
+          <div className="h-4 w-[1px] bg-neutral-700/50 hidden sm:block" />
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-mono text-xs font-bold uppercase tracking-wider">WebShield Core OS // Region: Global-US-East</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button onClick={() => signOut(auth).then(() => navigate('/'))} className={`flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer ${theme === 'light' ? 'border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-100' : 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10'}`}>
-            <LogOut className="w-3.5 h-3.5" /> Sign Out
+        <div className="flex items-center gap-4">
+          {lastSyncedTime && (
+            <span className="hidden md:inline-block text-[11px] font-mono text-neutral-400">
+              Synced: {lastSyncedTime}
+            </span>
+          )}
+          <button onClick={fetchRealtimeData} className="p-2 rounded-lg bg-[#111827] border border-neutral-800 text-neutral-300 hover:text-white transition cursor-pointer" title="Refresh Telemetry">
+            <RefreshCw className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={() => signOut(auth).then(() => navigate('/'))} className="flex items-center gap-1.5 text-xs font-medium px-3.5 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 transition cursor-pointer">
+            <LogOut className="w-3.5 h-3.5" /> Terminate Session
           </button>
         </div>
       </header>
 
       {/* Main Layout Area */}
       <div className="flex-1 flex flex-col md:flex-row">
-        {/* Sidebar */}
-        <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-slate-50 border-slate-300' : theme === 'unique' ? 'bg-[#0E021A] border-fuchsia-500/30' : 'bg-[#0D1117] border-neutral-800'}`}>
-          <div className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Navigation Console</div>
+        {/* Enterprise Sidebar Console */}
+        <aside className={`w-64 border-r p-4 flex flex-col gap-1 shrink-0 ${theme === 'light' ? 'bg-slate-100 border-slate-200' : theme === 'unique' ? 'bg-[#0B0116] border-purple-500/20' : 'bg-[#090D14] border-neutral-800'}`}>
+          <div className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-neutral-400 font-bold">Navigation Controls</div>
           {[
-            { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-            { id: 'users', label: 'Users', icon: Users },
-            { id: 'ad', label: 'AD', icon: BadgePercent },
-            { id: 'announcement', label: 'Announcement', icon: Megaphone },
-            { id: 'monitor', label: 'Monitor System', icon: Server },
-            { id: 'comments', label: 'Comment Receiver', icon: MessageSquareText },
+            { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
+            { id: 'users', label: 'User Directory', icon: Users },
+            { id: 'ad', label: 'Ad Configuration', icon: BadgePercent },
+            { id: 'announcement', label: 'Announcements', icon: Megaphone },
+            { id: 'monitor', label: 'System Health', icon: Server },
+            { id: 'comments', label: 'Feedback Receiver', icon: MessageSquareText },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all duration-300 transform hover:translate-x-1 active:scale-95 text-left cursor-pointer ${
+                onClick={() => { setActiveTab(tab.id); setSearchQuery(''); }}
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition text-left cursor-pointer ${
                   isActive 
                     ? theme === 'unique' 
-                      ? 'bg-gradient-to-r from-fuchsia-600/40 to-purple-600/40 border border-fuchsia-500 text-white shadow-lg shadow-fuchsia-950/60 font-bold ring-1 ring-fuchsia-400/50' 
+                      ? 'bg-purple-600/30 border border-purple-500 text-white font-semibold shadow-md' 
                       : theme === 'light'
-                      ? 'bg-purple-600 border border-purple-700 text-white shadow-md font-bold'
-                      : 'bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 text-[#C4B5FD] shadow-lg shadow-purple-950/20' 
+                      ? 'bg-purple-600 text-white font-semibold shadow-xs'
+                      : 'bg-neutral-800 border border-neutral-700 text-white font-semibold' 
                     : theme === 'light' 
-                    ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/60'
-                    : 'opacity-70 hover:opacity-100 hover:bg-neutral-800/30 text-neutral-300'
+                    ? 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/50'
+                    : 'text-neutral-400 hover:text-white hover:bg-neutral-900/50'
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
-                <span>{tab.label}</span>
+                <span className="truncate">{tab.label}</span>
               </button>
             );
           })}
         </aside>
 
-        {/* Content View */}
-        <main className="flex-1 p-6 space-y-6 overflow-y-auto">
+        {/* Content View Container */}
+        <main className="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto max-w-7xl">
           {loadingData && !stats ? (
-            <div className={`flex items-center justify-center h-64 text-xs font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-neutral-300'}`}>
-              <RefreshCw className="w-5 h-5 animate-spin text-[#8B5CF6] mr-2" /> Loading telemetry...
+            <div className="flex items-center justify-center h-64 text-xs font-mono text-neutral-400">
+              <RefreshCw className="w-4 h-4 animate-spin text-purple-400 mr-2" /> Initializing metrics stream...
             </div>
           ) : errorData ? (
-            <div className="p-6 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-600 text-xs text-center font-semibold">
+            <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-xs text-center font-mono">
               {errorData}
             </div>
           ) : (
             <>
-              {/* 1. DASHBOARD */}
+              {/* 1. DASHBOARD OVERVIEW */}
               {activeTab === 'dashboard' && (
                 <div className="space-y-6">
-                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>Dashboard Overview</h1>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <h1 className="text-xl font-bold tracking-tight">System Telemetry & Analytics</h1>
+                      <p className="text-xs text-neutral-400 mt-0.5">Real-time aggregated telemetry across all active microservices.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-mono font-medium flex items-center gap-1.5">
+                        <Activity className="w-3.5 h-3.5" /> 10s Live Polling Active
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Metrics Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
-                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Users</span>
-                      <p className={`text-2xl font-black mt-1 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{stats?.totalUsers ?? 0}</p>
+                    <div className={`border rounded-xl p-5 ${cardTheme[theme]}`}>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">Total Registered Users</span>
+                        <Users className="w-4 h-4 text-neutral-500" />
+                      </div>
+                      <p className="text-3xl font-extrabold tracking-tight mt-3">{stats?.totalUsers ?? 0}</p>
+                      <div className="mt-2 flex items-center gap-1 text-[11px] text-emerald-400 font-medium">
+                        <span>↑ Live sync active</span>
+                      </div>
                     </div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
-                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Scans</span>
-                      <p className="text-2xl font-black text-[#8B5CF6] mt-1">{stats?.totalScans ?? 0}</p>
+
+                    <div className={`border rounded-xl p-5 ${cardTheme[theme]}`}>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">Total URL Scans</span>
+                        <Database className="w-4 h-4 text-purple-400" />
+                      </div>
+                      <p className="text-3xl font-extrabold tracking-tight text-purple-400 mt-3">{stats?.totalScans ?? 0}</p>
+                      <div className="mt-2 flex items-center gap-1 text-[11px] text-neutral-400 font-medium">
+                        <span>Processed via ML Engine</span>
+                      </div>
                     </div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
-                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Safe URLs</span>
-                      <p className="text-2xl font-black text-emerald-500 mt-1">{stats?.safeUrls ?? 0}</p>
+
+                    <div className={`border rounded-xl p-5 ${cardTheme[theme]}`}>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">Safe URL Verified</span>
+                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <p className="text-3xl font-extrabold tracking-tight text-emerald-400 mt-3">{stats?.safeUrls ?? 0}</p>
+                      <div className="mt-2 flex items-center gap-1 text-[11px] text-emerald-400 font-medium">
+                        <span>Normal behavior</span>
+                      </div>
                     </div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
-                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Threats Blocked</span>
-                      <p className="text-2xl font-black text-rose-500 mt-1">{stats?.phishingDetected ?? 0}</p>
+
+                    <div className={`border rounded-xl p-5 ${cardTheme[theme]}`}>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">Threats Neutralized</span>
+                        <ShieldAlert className="w-4 h-4 text-rose-500" />
+                      </div>
+                      <p className="text-3xl font-extrabold tracking-tight text-rose-500 mt-3">{stats?.phishingDetected ?? 0}</p>
+                      <div className="mt-2 flex items-center gap-1 text-[11px] text-rose-400 font-medium">
+                        <span>Phishing / Malware blocked</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* 2. USERS */}
+              {/* 2. USER DIRECTORY */}
               {activeTab === 'users' && (
                 <div className="space-y-6">
-                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>User Accounts</h1>
-                  <div className={`border rounded-2xl p-6 ${cardTheme[theme]}`}>
-                    <table className="w-full text-left text-xs">
-                      <thead>
-                        <tr className={`border-b font-bold uppercase tracking-wider ${theme === 'light' ? 'border-slate-300 text-slate-700' : 'border-neutral-700/50 opacity-70'}`}>
-                          <th className="pb-3">User</th>
-                          <th className="pb-3">Role</th>
-                          <th className="pb-3">Status</th>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                      <h1 className="text-xl font-bold tracking-tight">Active User Directory</h1>
+                      <p className="text-xs text-neutral-400 mt-0.5">Manage user accounts and access roles synchronized from MongoDB.</p>
+                    </div>
+                    <div className="relative w-full sm:w-72">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                      <input 
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search by name or email..."
+                        className="w-full h-10 pl-9 pr-4 bg-[#111827] border border-neutral-800 rounded-lg text-xs text-white placeholder:text-neutral-500 outline-none focus:border-purple-500 transition"
+                      />
+                    </div>
+                  </div>
+
+                  <div className={`border rounded-xl overflow-hidden ${cardTheme[theme]}`}>
+                    <table className="w-full text-left text-xs font-sans">
+                      <thead className="bg-[#1F2937]/40 border-b border-neutral-800 text-[11px] font-mono uppercase tracking-wider text-neutral-400">
+                        <tr>
+                          <th className="px-5 py-3.5">User Identity</th>
+                          <th className="px-5 py-3.5">Access Role</th>
+                          <th className="px-5 py-3.5">Account Status</th>
+                          <th className="px-5 py-3.5">Registered Date</th>
                         </tr>
                       </thead>
-                      <tbody className={`divide-y font-medium ${theme === 'light' ? 'divide-slate-200 text-slate-900' : 'divide-neutral-700/30'}`}>
-                        {usersList.length > 0 ? usersList.map(u => (
-                          <tr key={u.id} className="py-3">
-                            <td className="py-3"><p className={`font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{u.name}</p><p className={`text-[10px] font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>{u.email}</p></td>
-                            <td className="py-3">{u.role}</td>
-                            <td className="py-3"><span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">{u.status}</span></td>
+                      <tbody className="divide-y divide-neutral-800/60 font-medium">
+                        {filteredUsers.length > 0 ? filteredUsers.map(u => (
+                          <tr key={u._id || u.id} className="hover:bg-neutral-800/30 transition">
+                            <td className="px-5 py-4">
+                              <p className="font-bold text-white">{u.name}</p>
+                              <p className="text-[11px] text-neutral-400 font-mono mt-0.5">{u.email}</p>
+                            </td>
+                            <td className="px-5 py-4">
+                              <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase bg-purple-500/10 text-purple-300 border border-purple-500/20">{u.role}</span>
+                            </td>
+                            <td className="px-5 py-4">
+                              <span className="px-2.5 py-1 rounded-md text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{u.status}</span>
+                            </td>
+                            <td className="px-5 py-4 font-mono text-neutral-400 text-[11px]">
+                              {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
+                            </td>
                           </tr>
                         )) : (
-                          <tr><td colSpan="3" className="py-6 text-center opacity-70">Loading users...</td></tr>
+                          <tr><td colSpan="4" className="px-5 py-10 text-center text-neutral-500">No user records matched query.</td></tr>
                         )}
                       </tbody>
                     </table>
@@ -395,22 +487,33 @@ export default function Admin() {
                 </div>
               )}
 
-              {/* 3. AD */}
+              {/* 3. AD CONFIGURATION */}
               {activeTab === 'ad' && (
                 <div className="space-y-6">
-                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>AD Configuration</h1>
+                  <div>
+                    <h1 className="text-xl font-bold tracking-tight">Ad & Promotion Configuration</h1>
+                    <p className="text-xs text-neutral-400 mt-0.5">Control live banner prompts and promotional call-to-actions across client views.</p>
+                  </div>
                   <form onSubmit={async (e) => {
                     e.preventDefault();
                     setSavingAd(true);
                     try {
                       await adminService.updateAdConfig({ label: adLabel, url: adUrl, enabled: adEnabled });
-                      showToast('AD configuration updated.');
-                    } catch { showToast('Failed to update AD.'); }
+                      showToast('Ad configuration successfully published.');
+                    } catch { showToast('Failed to update ad configuration.'); }
                     finally { setSavingAd(false); }
-                  }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
-                    <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Button Label</label><input type="text" value={adLabel} onChange={e => setAdLabel(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
-                    <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Destination URL</label><input type="url" value={adUrl} onChange={e => setAdUrl(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
-                    <button type="submit" disabled={savingAd} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer">{savingAd ? 'Saving...' : 'Save AD Config'}</button>
+                  }} className={`border rounded-xl p-6 space-y-4 max-w-xl ${cardTheme[theme]}`}>
+                    <div>
+                      <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-1.5">Banner Call-to-Action Label</label>
+                      <input type="text" value={adLabel} onChange={e => setAdLabel(e.target.value)} className="w-full h-11 px-4 rounded-lg bg-[#0B0F17] border border-neutral-800 text-xs text-white outline-none focus:border-purple-500 transition" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-1.5">Destination Redirect URL</label>
+                      <input type="url" value={adUrl} onChange={e => setAdUrl(e.target.value)} className="w-full h-11 px-4 rounded-lg bg-[#0B0F17] border border-neutral-800 text-xs text-white outline-none focus:border-purple-500 transition" />
+                    </div>
+                    <button type="submit" disabled={savingAd} className="px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-lg shadow-lg transition cursor-pointer disabled:opacity-50">
+                      {savingAd ? 'Saving Configuration...' : 'Save & Broadcast Configuration'}
+                    </button>
                   </form>
                 </div>
               )}
@@ -418,21 +521,32 @@ export default function Admin() {
               {/* 4. ANNOUNCEMENT */}
               {activeTab === 'announcement' && (
                 <div className="space-y-6">
-                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>Platform Announcement</h1>
+                  <div>
+                    <h1 className="text-xl font-bold tracking-tight">Global Platform Broadcast</h1>
+                    <p className="text-xs text-neutral-400 mt-0.5">Publish system-wide alerts and announcements to all connected users.</p>
+                  </div>
                   <form onSubmit={async (e) => {
                     e.preventDefault();
-                    if (!annTitle || !annMessage) return showToast('Fill all fields.');
+                    if (!annTitle || !annMessage) return showToast('All fields are required.');
                     setPublishingAnn(true);
                     try {
                       await adminService.createAnnouncement({ title: annTitle, message: annMessage });
-                      showToast('Announcement broadcasted.');
+                      showToast('Announcement successfully broadcasted.');
                       setAnnTitle(''); setAnnMessage('');
-                    } catch { showToast('Publish failed.'); }
+                    } catch { showToast('Broadcast transmission failed.'); }
                     finally { setPublishingAnn(false); }
-                  }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
-                    <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Title</label><input type="text" value={annTitle} onChange={e => setAnnTitle(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
-                    <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Message</label><textarea rows="3" value={annMessage} onChange={e => setAnnMessage(e.target.value)} className={`w-full p-4 rounded-xl border text-xs font-semibold outline-none resize-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
-                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer">{publishingAnn ? 'Publishing...' : 'Publish Announcement'}</button>
+                  }} className={`border rounded-xl p-6 space-y-4 max-w-xl ${cardTheme[theme]}`}>
+                    <div>
+                      <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-1.5">Broadcast Title</label>
+                      <input type="text" value={annTitle} onChange={e => setAnnTitle(e.target.value)} className="w-full h-11 px-4 rounded-lg bg-[#0B0F17] border border-neutral-800 text-xs text-white outline-none focus:border-purple-500 transition" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-1.5">Message Body</label>
+                      <textarea rows="4" value={annMessage} onChange={e => setAnnMessage(e.target.value)} className="w-full p-4 rounded-lg bg-[#0B0F17] border border-neutral-800 text-xs text-white outline-none focus:border-purple-500 transition resize-none" />
+                    </div>
+                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-lg shadow-lg transition cursor-pointer disabled:opacity-50">
+                      {publishingAnn ? 'Broadcasting...' : 'Publish Global Broadcast'}
+                    </button>
                   </form>
                 </div>
               )}
@@ -440,49 +554,62 @@ export default function Admin() {
               {/* 5. MONITOR SYSTEM */}
               {activeTab === 'monitor' && (
                 <div className="space-y-6">
-                  <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>System Monitor</h1>
+                  <div>
+                    <h1 className="text-xl font-bold tracking-tight">Cluster Node Health Monitor</h1>
+                    <p className="text-xs text-neutral-400 mt-0.5">Real-time latency and operational status across microservice backends.</p>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {health.length > 0 ? health.map((h, i) => (
-                      <div key={i} className={`border rounded-2xl p-5 flex items-center justify-between ${cardTheme[theme]}`}>
-                        <div><p className={`text-xs font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{h.service}</p><p className={`text-[10px] font-semibold mt-0.5 ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Latency: {h.latency}</p></div>
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">{h.status}</span>
+                      <div key={i} className={`border rounded-xl p-5 flex items-center justify-between ${cardTheme[theme]}`}>
+                        <div>
+                          <p className="text-xs font-bold text-white">{h.service}</p>
+                          <p className="text-[11px] font-mono text-neutral-400 mt-1">Latency: {h.latency} • Uptime: {h.uptime}</p>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{h.status}</span>
                       </div>
-                    )) : <p className={`text-xs font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Checking system health...</p>}
+                    )) : <p className="text-xs font-mono text-neutral-500">Querying cluster diagnostics...</p>}
                   </div>
                 </div>
               )}
 
-              {/* 6. COMMENT RECEIVER WITH FEEDBACK BUTTON */}
+              {/* 6. COMMENT RECEIVER / FEEDBACK */}
               {activeTab === 'comments' && (
                 <div className="space-y-6">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                      <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>User Comment Receiver</h1>
-                      <p className={`text-xs font-medium mt-1 ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Review and manage incoming user feedback messages.</p>
+                      <h1 className="text-xl font-bold tracking-tight">User Feedback & Comment Inbox</h1>
+                      <p className="text-xs text-neutral-400 mt-0.5">Review incoming telemetry support tickets and user inquiries.</p>
                     </div>
-                    <button onClick={() => showToast('Feedback inbox is synchronized in real-time.')} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer">
-                      <Send className="w-3.5 h-3.5" /> Feedback Inbox ({commentsList.length})
-                    </button>
+                    <div className="relative w-full sm:w-72">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                      <input 
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search feedback..."
+                        className="w-full h-10 pl-9 pr-4 bg-[#111827] border border-neutral-800 rounded-lg text-xs text-white placeholder:text-neutral-500 outline-none focus:border-purple-500 transition"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-3">
-                    {commentsList.length > 0 ? commentsList.map(c => (
-                      <div key={c._id} className={`border rounded-2xl p-5 space-y-2.5 ${cardTheme[theme]}`}>
+                    {filteredComments.length > 0 ? filteredComments.map(c => (
+                      <div key={c._id || c.id} className={`border rounded-xl p-5 space-y-3 ${cardTheme[theme]}`}>
                         <div className="flex justify-between items-center">
-                          <span className={`text-xs font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{c.name} <span className={`font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>({c.email})</span></span>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/15 text-purple-600 border border-purple-500/30">{c.category}</span>
+                          <span className="text-xs font-bold text-white">{c.name} <span className="text-neutral-400 font-normal font-mono">({c.email})</span></span>
+                          <span className="px-2.5 py-0.5 rounded text-[10px] font-mono uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20">{c.category}</span>
                         </div>
-                        <p className={`text-xs font-semibold p-3.5 rounded-xl border ${theme === 'light' ? 'bg-slate-100 border-slate-300 text-slate-900' : 'bg-black/20 border-neutral-700/50 text-neutral-200'}`}>
+                        <p className="text-xs p-3.5 rounded-lg bg-[#0B0F17] border border-neutral-800 text-neutral-300 font-sans leading-relaxed">
                           "{c.message}"
                         </p>
-                        <div className={`flex justify-between items-center text-[10px] font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>
-                          <span>Submitted {new Date(c.createdAt).toLocaleDateString()}</span>
-                          {c.reviewed ? <span className="text-emerald-500 font-bold">Reviewed ✓</span> : (
-                            <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline font-bold cursor-pointer transition transform hover:scale-105">Mark as Reviewed ✓</button>
+                        <div className="flex justify-between items-center text-[11px] font-mono text-neutral-400">
+                          <span>Received: {new Date(c.createdAt).toLocaleDateString()}</span>
+                          {c.reviewed ? <span className="text-emerald-400 font-bold">Reviewed ✓</span> : (
+                            <button onClick={async () => { await adminService.markCommentReviewed(c._id || c.id); fetchRealtimeData(); showToast('Marked ticket as reviewed.'); }} className="text-purple-400 hover:text-purple-300 font-bold cursor-pointer transition">Mark as Reviewed ✓</button>
                           )}
                         </div>
                       </div>
-                    )) : <p className={`text-xs font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>No feedback comments received yet.</p>}
+                    )) : <p className="text-xs font-mono text-neutral-500">No support tickets match query.</p>}
                   </div>
                 </div>
               )}
