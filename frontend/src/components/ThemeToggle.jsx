@@ -12,7 +12,7 @@ export default function ThemeToggle({ showLabel = false, className = '' }) {
       type="button"
       onClick={toggleTheme}
       className={`theme-toggle-btn group flex items-center justify-center gap-2 p-2 rounded-xl transition-all duration-300 cursor-pointer border ${isDark
-          ? 'bg-[#0C1220] hover:bg-[#101828] border-[#16223A] hover:border-amber-400/50 text-amber-400 shadow-sm hover:shadow-amber-500/10'
+          ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-amber-400/50 text-amber-400 shadow-sm hover:shadow-amber-500/10'
           : 'bg-white hover:bg-slate-100 border-slate-200 hover:border-cyan-500 text-slate-700 shadow-sm hover:shadow-cyan-500/10'
         } ${className}`}
       title={tooltipText}

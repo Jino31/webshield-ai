@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   ScanSearch, Globe, Loader2, ShieldCheck, ShieldAlert, ShieldQuestion,
   Clock, Lock, LockOpen, Fingerprint, Users, ExternalLink, AlertTriangle
@@ -12,10 +13,17 @@ const LEVEL_STYLES = {
 };
 
 export default function Scanner() {
-  const [url, setUrl] = useState('');
+  const location = useLocation();
+  const [url, setUrl] = useState(() => location.state?.url || '');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
+
+  useEffect(() => {
+    if (location.state?.url && !result && !isLoading) {
+      setUrl(location.state.url);
+    }
+  }, [location.state]);
 
   const handleScan = async (e) => {
     e.preventDefault();

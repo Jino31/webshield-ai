@@ -125,31 +125,31 @@ export default function Feedback() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07090E] text-[#FAFAFA] flex flex-col justify-between p-4 sm:p-8 relative overflow-x-hidden">
-      <div className="absolute top-1/4 left-10 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-[#0A0A0F] text-[#FAFAFA] flex flex-col justify-between p-4 sm:p-8 relative overflow-x-hidden">
+      <div className="absolute top-1/4 left-10 w-[400px] h-[400px] bg-[#8B5CF6]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-[#EC4899]/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-xl mx-auto w-full pt-6 relative z-10">
         <button 
           onClick={() => navigate('/')} 
-          className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 mb-6 flex items-center gap-2 transition-all cursor-pointer"
+          className="text-xs font-semibold text-[#8B5CF6] hover:text-[#7C3AED] mb-6 flex items-center gap-2 transition-all cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Home
         </button>
 
-        <div className="bg-[#0C1220]/90 backdrop-blur-xl border border-[#16223A] rounded-3xl p-6 sm:p-8 shadow-2xl shadow-cyan-950/20">
+        <div className="bg-[#13111C]/90 backdrop-blur-xl border border-[#231E33] rounded-3xl p-6 sm:p-8 shadow-2xl shadow-purple-950/20">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#101828] border border-[#1D2939] flex items-center justify-center text-cyan-400 shadow-inner">
+            <div className="w-12 h-12 rounded-2xl bg-[#1A1528] border border-[#231E33] flex items-center justify-center text-[#8B5CF6] shadow-inner">
               <Shield className="w-6 h-6" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#101828] border border-[#1D2939] text-cyan-300 text-[10px] font-bold uppercase tracking-wider mb-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#1A1528] border border-[#231E33] text-purple-300 text-[10px] font-bold uppercase tracking-wider mb-1">
                 Feedback Center
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">Help Us Strengthen Web Safety</h1>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#FAFAFA]">Help Us Strengthen Web Safety</h1>
             </div>
           </div>
-          <p className="text-slate-400 text-xs sm:text-sm mb-6 leading-relaxed">
+          <p className="text-neutral-400 text-xs sm:text-sm mb-6 leading-relaxed">
             Your feedback helps us improve phishing detection accuracy, usability, and the ShieldSense AI experience.
           </p>
 
@@ -164,17 +164,17 @@ export default function Feedback() {
           )}
 
           {status === 'success' ? (
-            <div role="status" className="bg-[#080D1A] border border-[#16223A] p-8 rounded-2xl text-center space-y-4">
+            <div role="status" className="bg-[#0A0A0F] border border-[#231E33] p-8 rounded-2xl text-center space-y-4">
               <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-[#10B981] mx-auto">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white mb-1">Feedback Received</h2>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <h2 className="text-lg font-bold text-[#FAFAFA] mb-1">Feedback Received</h2>
+                <p className="text-xs text-neutral-400 leading-relaxed">
                   Thank you for helping us protect the web. We have logged your response successfully.
                 </p>
                 {feedbackId && (
-                  <div className="mt-3 inline-block bg-[#0C1220] border border-[#16223A] px-3 py-1 rounded-lg text-xs font-mono text-cyan-400">
+                  <div className="mt-3 inline-block bg-[#13111C] border border-[#231E33] px-3 py-1 rounded-lg text-xs font-mono text-[#8B5CF6]">
                     Feedback ID: {feedbackId}
                   </div>
                 )}
@@ -182,13 +182,13 @@ export default function Feedback() {
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <button 
                   onClick={handleResetForm}
-                  className="flex-1 py-3 px-4 bg-[#101828] hover:bg-[#16223A] border border-[#1D2939] text-white rounded-xl text-xs font-semibold transition-all cursor-pointer"
+                  className="flex-1 py-3 px-4 bg-[#1A1528] hover:bg-[#221B36] border border-[#231E33] text-[#FAFAFA] rounded-xl text-xs font-semibold transition-all cursor-pointer"
                 >
                   Send Another Response
                 </button>
                 <button 
                   onClick={() => navigate('/')}
-                  className="flex-1 py-3 px-4 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:opacity-95 text-white rounded-xl text-xs font-semibold transition-all cursor-pointer shadow-lg shadow-cyan-950/40"
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white rounded-xl text-xs font-semibold transition-all cursor-pointer shadow-lg shadow-purple-950/40"
                 >
                   Back to Home
                 </button>
@@ -205,7 +205,7 @@ export default function Feedback() {
                   onChange={handleChange}
                   disabled={status === 'submitting'}
                   placeholder="Enter your full name"
-                  className={`w-full bg-[#080D1A] border ${validationErrors.name ? 'border-rose-500' : 'border-[#16223A]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition-all`}
+                  className={`w-full bg-[#0A0A0F] border ${validationErrors.name ? 'border-rose-500' : 'border-[#231E33]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-[#FAFAFA] placeholder-neutral-500 transition-all`}
                 />
                 {validationErrors.name && <p className="text-rose-400 text-[11px] mt-1">{validationErrors.name}</p>}
               </div>
@@ -219,7 +219,7 @@ export default function Feedback() {
                   onChange={handleChange}
                   disabled={status === 'submitting'}
                   placeholder="name@example.com"
-                  className={`w-full bg-[#080D1A] border ${validationErrors.email ? 'border-rose-500' : 'border-[#16223A]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition-all`}
+                  className={`w-full bg-[#0A0A0F] border ${validationErrors.email ? 'border-rose-500' : 'border-[#231E33]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-[#FAFAFA] placeholder-neutral-500 transition-all`}
                 />
                 {validationErrors.email && <p className="text-rose-400 text-[11px] mt-1">{validationErrors.email}</p>}
               </div>
@@ -232,16 +232,16 @@ export default function Feedback() {
                     value={formData.category}
                     onChange={handleChange}
                     disabled={status === 'submitting'}
-                    className="w-full bg-[#080D1A] border border-[#16223A] rounded-xl px-3 py-3 text-xs sm:text-sm focus:outline-none focus:border-cyan-400 text-white transition-all cursor-pointer"
+                    className="w-full bg-[#0A0A0F] border border-[#231E33] rounded-xl px-3 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-[#FAFAFA] transition-all cursor-pointer"
                   >
                     {CATEGORIES.map(cat => (
-                      <option key={cat} value={cat} className="bg-[#0C1220] text-white">{cat}</option>
+                      <option key={cat} value={cat} className="bg-[#13111C] text-[#FAFAFA]">{cat}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#FAFAFA] mb-1">Website URL <span className="text-[#A1A1AA] font-normal">(Optional)</span></label>
+                  <label className="block text-xs font-semibold text-[#FAFAFA] mb-1">Website URL <span className="text-neutral-500 font-normal">(Optional)</span></label>
                   <input 
                     type="url" 
                     name="websiteUrl"
@@ -249,7 +249,7 @@ export default function Feedback() {
                     onChange={handleChange}
                     disabled={status === 'submitting'}
                     placeholder="https://suspicious-site.com"
-                    className={`w-full bg-[#080D1A] border ${validationErrors.websiteUrl ? 'border-rose-500' : 'border-[#16223A]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition-all`}
+                    className={`w-full bg-[#0A0A0F] border ${validationErrors.websiteUrl ? 'border-rose-500' : 'border-[#231E33]'} rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-[#FAFAFA] placeholder-neutral-500 transition-all`}
                   />
                   {validationErrors.websiteUrl && <p className="text-rose-400 text-[11px] mt-1">{validationErrors.websiteUrl}</p>}
                 </div>
@@ -258,7 +258,7 @@ export default function Feedback() {
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="block text-xs font-semibold text-[#FAFAFA]">Your Message *</label>
-                  <span className="text-[11px] font-mono text-[#A1A1AA]">{formData.message.length} / 1000</span>
+                  <span className="text-[11px] font-mono text-neutral-500">{formData.message.length} / 1000</span>
                 </div>
                 <textarea 
                   name="message"
@@ -268,7 +268,7 @@ export default function Feedback() {
                   onChange={handleChange}
                   disabled={status === 'submitting'}
                   placeholder="Describe your feedback, report a false positive, or suggest a feature..."
-                  className={`w-full bg-[#080D1A] border ${validationErrors.message ? 'border-rose-500' : 'border-[#16223A]'} rounded-xl p-4 text-xs sm:text-sm focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 resize-none transition-all`}
+                  className={`w-full bg-[#0A0A0F] border ${validationErrors.message ? 'border-rose-500' : 'border-[#231E33]'} rounded-xl p-4 text-xs sm:text-sm focus:outline-none focus:border-[#8B5CF6] text-[#FAFAFA] placeholder-neutral-500 resize-none transition-all`}
                 />
                 {validationErrors.message && <p className="text-rose-400 text-[11px] mt-1">{validationErrors.message}</p>}
               </div>
@@ -276,7 +276,7 @@ export default function Feedback() {
               <button 
                 type="submit"
                 disabled={status === 'submitting'}
-                className="w-full py-3.5 px-6 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:opacity-95 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-cyan-950/40 flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 px-6 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-lg shadow-purple-950/40 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {status === 'submitting' ? <><Loader2 className="w-4 h-4 animate-spin" /> Submitting Feedback...</> : <><Send className="w-4 h-4" /> Submit Feedback</>}
               </button>
@@ -285,7 +285,7 @@ export default function Feedback() {
         </div>
       </div>
 
-      <footer className="text-center text-[11px] text-[#A1A1AA] py-4 relative z-10">
+      <footer className="text-center text-[11px] text-neutral-500 py-4 relative z-10">
         WebShield AI Platform • Security & Phishing Defense
       </footer>
     </div>

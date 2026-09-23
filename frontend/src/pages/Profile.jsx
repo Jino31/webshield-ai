@@ -33,21 +33,9 @@ import {
   Link as LinkIcon,
 } from 'lucide-react';
 
-// ---------------------------------------------------------------------------
-// Google Drive picker configuration
-// ---------------------------------------------------------------------------
-// To enable "Choose from Google Drive" you need a Google Cloud project with:
-//   1. The "Google Picker API" and "Google Drive API" enabled.
-//   2. An OAuth 2.0 Client ID (Web application) — add your app's origin(s)
-//      under "Authorized JavaScript origins" (e.g. http://localhost:5173,
-//      your production domain).
-//   3. An API key, restricted to the Picker API.
-// Fill in the two values below. Until you do, the Google Drive button will
-// show an error instead of opening the picker.
 const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com';
 const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY';
 const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
-
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5MB
 
 function loadScriptOnce(src) {
@@ -66,9 +54,7 @@ function loadScriptOnce(src) {
   });
 }
 
-// If you track scan history in Firestore/your backend, wire this up to a real
-// fetch (e.g. getUserStats(user.uid)) and replace the placeholder below.
-async function fetchUserSecurityStats(/* uid */) {
+async function fetchUserSecurityStats() {
   return {
     totalScans: 0,
     threatsFlagged: 0,
@@ -83,7 +69,6 @@ export default function Profile() {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [copiedUid, setCopiedUid] = useState(false);
 
-  // Edit Mode States
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
@@ -91,17 +76,14 @@ export default function Profile() {
   const [saveStatus, setSaveStatus] = useState({ loading: false, error: '', success: '' });
   const [pendingEmail, setPendingEmail] = useState('');
 
-  // Avatar picker states
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [avatarError, setAvatarError] = useState('');
   const pickerApiLoadedRef = useRef(false);
   const tokenClientRef = useRef(null);
 
-  // Product stats
   const [stats, setStats] = useState(null);
   const [statsLoading, setStatsLoading] = useState(true);
 
-  // Real-time synchronization of Firebase Auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
@@ -118,7 +100,7 @@ export default function Profile() {
     if (!user) return;
     let cancelled = false;
     setStatsLoading(true);
-    fetchUserSecurityStats(user.uid)
+    fetchUserSecurityStats()
       .then((data) => {
         if (!cancelled) setStats(data);
       })
@@ -181,7 +163,6 @@ export default function Profile() {
     const emailChanged = editEmail !== (user.email || '');
 
     try {
-      // 1. Name / avatar — safe to update directly, no re-auth needed.
       if (nameOrPhotoChanged) {
         await updateProfile(auth.currentUser, {
           displayName: editName,
@@ -191,9 +172,6 @@ export default function Profile() {
         setUser({ ...auth.currentUser });
       }
 
-      // 2. Email — modern Firebase requires verifying the NEW address before
-      //    it takes effect. This does not change user.email immediately;
-      //    it sends a confirmation link to editEmail.
       if (emailChanged) {
         await verifyBeforeUpdateEmail(auth.currentUser, editEmail);
         setPendingEmail(editEmail);
@@ -207,8 +185,6 @@ export default function Profile() {
 
       setSaveStatus({ loading: false, error: '', success: successMsg });
 
-      // Keep the form open longer when an email confirmation is pending,
-      // since the user needs to read that message.
       setTimeout(
         () => {
           setIsEditing(false);
@@ -232,7 +208,6 @@ export default function Profile() {
     }
   };
 
-  // ---- Avatar upload helpers -----------------------------------------
   const uploadAvatarBlob = async (blob, filename = 'avatar') => {
     const storage = getStorage();
     const safeName = filename.replace(/[^\w.\-]/g, '_');
@@ -244,7 +219,7 @@ export default function Profile() {
 
   const handleLocalFileChange = async (e) => {
     const file = e.target.files?.[0];
-    e.target.value = ''; // allow re-selecting the same file later
+    e.target.value = '';
     if (!file) return;
 
     setAvatarError('');
@@ -269,7 +244,6 @@ export default function Profile() {
     }
   };
 
-  // ---- Google Drive picker ---------------------------------------------
   const ensureGoogleApisLoaded = async () => {
     if (GOOGLE_CLIENT_ID.startsWith('YOUR_') || GOOGLE_API_KEY.startsWith('YOUR_')) {
       throw new Error('missing-config');
@@ -286,7 +260,7 @@ export default function Profile() {
       tokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
         scope: GOOGLE_DRIVE_SCOPE,
-        callback: () => {}, // overridden per-request below
+        callback: () => {},
       });
     }
   };
@@ -344,7 +318,6 @@ export default function Profile() {
     }
   };
 
-  // Helper to format timestamps locally
   const formatLocalDate = (timestamp) => {
     if (!timestamp) return 'Not available';
     try {
@@ -363,7 +336,6 @@ export default function Profile() {
     }
   };
 
-  // Helper to get initials for avatar fallback
   const getInitials = (name, email) => {
     if (name) return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
     if (email) return email.slice(0, 2).toUpperCase();
@@ -372,9 +344,9 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-[#05070A] text-[#FAFAFA]">
+      <div className="min-h-screen w-full flex items-center justify-center bg-[#0A0A0F] text-[#FAFAFA]">
         <div className="flex items-center gap-3 text-sm text-neutral-400 font-medium">
-          <Activity className="w-5 h-5 text-cyan-400 animate-spin" /> Loading your profile...
+          <Activity className="w-5 h-5 text-[#8B5CF6] animate-spin" /> Loading your profile...
         </div>
       </div>
     );
@@ -386,33 +358,29 @@ export default function Profile() {
   const email = user.email || 'No email provided';
 
   const statCards = [
-    { label: 'Sites Scanned', value: stats?.totalScans ?? 0, icon: ScanSearch, color: '#06B6D4' },
-    { label: 'Threats Flagged', value: stats?.threatsFlagged ?? 0, icon: ShieldX, color: '#F43F5E' },
+    { label: 'Sites Scanned', value: stats?.totalScans ?? 0, icon: ScanSearch, color: '#8B5CF6' },
+    { label: 'Threats Flagged', value: stats?.threatsFlagged ?? 0, icon: ShieldX, color: '#EC4899' },
     { label: 'Confirmed Safe', value: stats?.safeSites ?? 0, icon: ShieldCheck, color: '#10B981' },
   ];
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col items-center px-4 sm:px-8 lg:px-16 py-12 bg-[#05070A] text-[#FAFAFA] overflow-x-hidden">
-      {/* Absolute Top-Left Back Button */}
+    <div className="relative min-h-screen w-full flex flex-col items-center px-4 sm:px-8 lg:px-16 py-12 bg-[#0A0A0F] text-[#FAFAFA] overflow-x-hidden">
       <div className="absolute top-6 left-6 z-50">
         <button
           onClick={() => navigate('/')}
           aria-label="Go back to home page"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-neutral-300 hover:text-white bg-[#0D1117]/80 backdrop-blur-md border border-neutral-800 px-4 py-2.5 rounded-xl transition shadow-lg cursor-pointer"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-neutral-300 hover:text-white bg-[#13111C]/80 backdrop-blur-md border border-[#231E33] px-4 py-2.5 rounded-xl transition shadow-lg cursor-pointer"
         >
-          <ArrowLeft className="w-4 h-4 text-cyan-400" /> Back to Home
+          <ArrowLeft className="w-4 h-4 text-[#8B5CF6]" /> Back to Home
         </button>
       </div>
 
-      {/* Background Ambient Glows */}
-      <div className="absolute top-20 left-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-20 left-10 w-96 h-96 bg-[#8B5CF6]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#EC4899]/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-4xl flex flex-col gap-6 mt-8">
-        {/* Profile Container */}
-        <div className="w-full bg-[#0D1117]/90 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8">
-          {/* Profile Header & Edit Profile Button */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-8 border-b border-neutral-800">
+        <div className="w-full bg-[#13111C]/90 backdrop-blur-xl border border-[#231E33] rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-8 border-b border-[#231E33]">
             <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
               <div className="relative">
                 {(isEditing ? editPhotoUrl : user.photoURL) ? (
@@ -422,15 +390,15 @@ export default function Profile() {
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}
-                    className="w-24 h-24 rounded-2xl object-cover border-2 border-cyan-500/40 shadow-lg shadow-cyan-950/50"
+                    className="w-24 h-24 rounded-2xl object-cover border-2 border-[#8B5CF6]/40 shadow-lg shadow-purple-950/50"
                   />
                 ) : (
-                  <div className="w-24 h-24 rounded-2xl bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-bold text-2xl shadow-lg shadow-cyan-950/50">
+                  <div className="w-24 h-24 rounded-2xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6] font-bold text-2xl shadow-lg shadow-purple-950/50">
                     {getInitials(displayName, email)}
                   </div>
                 )}
                 <div
-                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-[#0D1117] flex items-center justify-center"
+                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-[#13111C] flex items-center justify-center"
                   title="Active Account"
                 >
                   <span className="w-2 h-2 bg-black rounded-full"></span>
@@ -438,7 +406,7 @@ export default function Profile() {
               </div>
 
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-bold text-[#FAFAFA] tracking-tight">
                   {displayName}
                 </h1>
                 <p className="text-xs sm:text-sm text-neutral-400 mt-1">{email}</p>
@@ -450,7 +418,7 @@ export default function Profile() {
                   </span>
                   <button
                     onClick={handleCopyUid}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-800/60 border border-neutral-700 text-neutral-400 hover:text-neutral-200 text-xs font-semibold transition cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1A1528] border border-[#231E33] text-neutral-400 hover:text-neutral-200 text-xs font-semibold transition cursor-pointer"
                     title={user.uid}
                   >
                     {copiedUid ? (
@@ -467,23 +435,22 @@ export default function Profile() {
             {!isEditing && (
               <button
                 onClick={handleEditClick}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:opacity-95 text-white px-5 py-2.5 rounded-xl transition text-xs font-semibold cursor-pointer shadow-lg shadow-cyan-950/30"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white px-5 py-2.5 rounded-xl transition text-xs font-semibold cursor-pointer shadow-lg shadow-purple-950/30"
               >
                 <Edit3 className="w-4 h-4" /> Edit Profile
               </button>
             )}
           </div>
 
-          {/* Security Stats — product-specific, fits a fake-website detector */}
           <div className="space-y-3">
-            <h3 className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+            <h3 className="text-xs font-semibold text-[#8B5CF6] uppercase tracking-wider">
               Detection Activity
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {statCards.map(({ label, value, icon: Icon, color }) => (
                 <div
                   key={label}
-                  className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl flex items-center gap-3.5"
+                  className="p-4 bg-[#0A0A0F] border border-[#231E33] rounded-2xl flex items-center gap-3.5"
                 >
                   <div className="p-2.5 rounded-xl shrink-0" style={{ backgroundColor: `${color}1A`, color }}>
                     <Icon className="w-4 h-4" />
@@ -492,7 +459,7 @@ export default function Profile() {
                     <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium">
                       {label}
                     </span>
-                    <span className="text-lg font-bold text-white block leading-tight">
+                    <span className="text-lg font-bold text-[#FAFAFA] block leading-tight">
                       {statsLoading ? (
                         <Loader2 className="w-4 h-4 animate-spin text-neutral-600" />
                       ) : (
@@ -505,14 +472,13 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* EDIT FORM (Visible only when isEditing is true) */}
           {isEditing ? (
             <form
               onSubmit={handleSaveProfile}
-              className="space-y-5 bg-[#05070A] p-6 rounded-2xl border border-neutral-800 animate-fadeIn"
+              className="space-y-5 bg-[#0A0A0F] p-6 rounded-2xl border border-[#231E33] animate-fadeIn"
             >
-              <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                <Edit3 className="w-4 h-4 text-cyan-400" /> Update Profile Details
+              <h3 className="text-sm font-bold text-[#FAFAFA] mb-4 flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-[#8B5CF6]" /> Update Profile Details
               </h3>
 
               {saveStatus.error && (
@@ -534,15 +500,14 @@ export default function Profile() {
               )}
 
               <div className="space-y-4">
-                {/* Avatar picker */}
                 <div>
                   <label className="block text-xs font-semibold text-neutral-400 mb-1.5">
                     Profile Avatar
                   </label>
                   <div className="flex items-center gap-4 mb-3">
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden border border-neutral-800 bg-[#0C1220] flex items-center justify-center shrink-0">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden border border-[#231E33] bg-[#13111C] flex items-center justify-center shrink-0">
                       {avatarUploading ? (
-                        <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />
+                        <Loader2 className="w-5 h-5 animate-spin text-[#8B5CF6]" />
                       ) : editPhotoUrl ? (
                         <img
                           src={editPhotoUrl}
@@ -557,7 +522,7 @@ export default function Profile() {
                       )}
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-[11px] font-semibold cursor-pointer transition">
+                      <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#231E33] text-neutral-300 hover:bg-[#1A1528] text-[11px] font-semibold cursor-pointer transition">
                         <Upload className="w-3.5 h-3.5" /> Upload from Device
                         <input
                           type="file"
@@ -571,7 +536,7 @@ export default function Profile() {
                         type="button"
                         onClick={handlePickFromDrive}
                         disabled={avatarUploading}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-[11px] font-semibold cursor-pointer transition disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#231E33] text-neutral-300 hover:bg-[#1A1528] text-[11px] font-semibold cursor-pointer transition disabled:opacity-50"
                       >
                         <HardDrive className="w-3.5 h-3.5" /> Google Drive
                       </button>
@@ -591,7 +556,7 @@ export default function Profile() {
                       value={editPhotoUrl}
                       onChange={(e) => setEditPhotoUrl(e.target.value)}
                       placeholder="Or paste an image URL"
-                      className="w-full bg-[#080D1A] border border-[#16223A] rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
+                      className="w-full bg-[#0A0A0F] border border-[#231E33] rounded-xl py-2.5 pl-10 pr-4 text-xs text-[#FAFAFA] focus:outline-none focus:border-[#8B5CF6] transition-colors"
                     />
                   </div>
                 </div>
@@ -608,7 +573,7 @@ export default function Profile() {
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="Your name"
-                      className="w-full bg-[#080D1A] border border-[#16223A] rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
+                      className="w-full bg-[#0A0A0F] border border-[#231E33] rounded-xl py-2.5 pl-10 pr-4 text-xs text-[#FAFAFA] focus:outline-none focus:border-[#8B5CF6] transition-colors"
                     />
                   </div>
                 </div>
@@ -625,7 +590,7 @@ export default function Profile() {
                       value={editEmail}
                       onChange={(e) => setEditEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full bg-[#080D1A] border border-[#16223A] rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
+                      className="w-full bg-[#0A0A0F] border border-[#231E33] rounded-xl py-2.5 pl-10 pr-4 text-xs text-[#FAFAFA] focus:outline-none focus:border-[#8B5CF6] transition-colors"
                     />
                   </div>
                   {editEmail !== (user.email || '') && (
@@ -637,19 +602,19 @@ export default function Profile() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#231E33]">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
                   disabled={saveStatus.loading}
-                  className="px-4 py-2.5 rounded-xl border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-xs font-semibold transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2.5 rounded-xl border border-[#231E33] text-neutral-300 hover:bg-[#1A1528] text-xs font-semibold transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <X className="w-4 h-4" /> Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saveStatus.loading || avatarUploading}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:opacity-95 text-white text-xs font-semibold transition flex items-center gap-2 cursor-pointer shadow-lg shadow-cyan-950/40 disabled:opacity-50"
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-semibold transition flex items-center gap-2 cursor-pointer shadow-lg shadow-purple-950/40 disabled:opacity-50"
                 >
                   {saveStatus.loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -661,53 +626,52 @@ export default function Profile() {
               </div>
             </form>
           ) : (
-            /* VIEW MODE: User Account Details */
             <div className="space-y-4 animate-fadeIn">
-              <h3 className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+              <h3 className="text-xs font-semibold text-[#8B5CF6] uppercase tracking-wider">
                 User Account Details & Login History
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl flex items-start gap-3.5">
-                  <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 mt-0.5">
+                <div className="p-4 bg-[#0A0A0F] border border-[#231E33] rounded-2xl flex items-start gap-3.5">
+                  <div className="p-2.5 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6] mt-0.5">
                     <Calendar className="w-4 h-4" />
                   </div>
                   <div>
                     <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium">
                       Member Since
                     </span>
-                    <span className="text-xs font-semibold text-white mt-0.5 block">
+                    <span className="text-xs font-semibold text-[#FAFAFA] mt-0.5 block">
                       {formatLocalDate(user.metadata?.creationTime)}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl flex items-start gap-3.5">
-                  <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 mt-0.5">
+                <div className="p-4 bg-[#0A0A0F] border border-[#231E33] rounded-2xl flex items-start gap-3.5">
+                  <div className="p-2.5 rounded-xl bg-[#EC4899]/10 text-[#EC4899] mt-0.5">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
                     <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium">
                       Last Logged In
                     </span>
-                    <span className="text-xs font-semibold text-white mt-0.5 block">
+                    <span className="text-xs font-semibold text-[#FAFAFA] mt-0.5 block">
                       {formatLocalDate(user.metadata?.lastSignInTime)}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl">
+                <div className="p-4 bg-[#0A0A0F] border border-[#231E33] rounded-2xl">
                   <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium mb-1">
                     Full Name
                   </span>
-                  <span className="text-xs font-semibold text-white">{displayName}</span>
+                  <span className="text-xs font-semibold text-[#FAFAFA]">{displayName}</span>
                 </div>
 
-                <div className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl">
+                <div className="p-4 bg-[#0A0A0F] border border-[#231E33] rounded-2xl">
                   <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium mb-1">
                     Email Address
                   </span>
-                  <span className="text-xs font-semibold text-white flex items-center gap-2">
+                  <span className="text-xs font-semibold text-[#FAFAFA] flex items-center gap-2">
                     {email}
                     {!user.emailVerified && (
                       <span
@@ -723,8 +687,7 @@ export default function Profile() {
             </div>
           )}
 
-          {/* Sign Out Action */}
-          <div className="pt-6 border-t border-neutral-800 flex justify-end">
+          <div className="pt-6 border-t border-[#231E33] flex justify-end">
             <button
               type="button"
               disabled={isSigningOut}

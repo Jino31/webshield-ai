@@ -48,42 +48,42 @@ function AppContent() {
     >
       {/* 3-Second Luxury Cinematic Intro Overlay */}
       {showIntro && (
-        <div className="fixed inset-0 z-[200] bg-[#07090E] flex flex-col items-center justify-center animate-luxuryFadeOut overflow-hidden">
+        <div className="fixed inset-0 z-[200] bg-[#0A0A0F] flex flex-col items-center justify-center animate-luxuryFadeOut overflow-hidden">
           {/* Ambient Luxury Gradient Orbs */}
-          <div className="absolute w-[600px] h-[600px] bg-gradient-to-tr from-[#06B6D4]/20 via-[#6366F1]/15 to-transparent rounded-full blur-[160px] animate-pulse pointer-events-none" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.08)_0,transparent_75%)] pointer-events-none" />
+          <div className="absolute w-[600px] h-[600px] bg-gradient-to-tr from-[#8B5CF6]/20 via-[#EC4899]/15 to-transparent rounded-full blur-[160px] animate-pulse pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.08)_0,transparent_75%)] pointer-events-none" />
 
           {/* Luxury Glassmorphic Card Container */}
-          <div className="relative z-10 flex flex-col items-center p-12 rounded-[32px] bg-[#0C1220]/70 border border-cyan-500/20 backdrop-blur-2xl shadow-[0_0_100px_rgba(6,182,212,0.2)] animate-luxuryReveal">
+          <div className="relative z-10 flex flex-col items-center p-12 rounded-[32px] bg-[#13111C]/90 border border-purple-500/20 backdrop-blur-2xl shadow-[0_0_100px_rgba(139,92,246,0.2)] animate-luxuryReveal">
             
             {/* Glowing Logo Asset Container */}
             <div className="relative mb-6">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-indigo-500 blur-2xl rounded-full opacity-60 animate-pulse" />
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#121B30] to-[#07090E] flex items-center justify-center p-2.5 shadow-2xl relative z-10 border border-cyan-400/40">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] blur-2xl rounded-full opacity-60 animate-pulse" />
+              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#1A1528] to-[#0A0A0F] flex items-center justify-center p-2.5 shadow-2xl relative z-10 border border-purple-400/40">
                 <img 
                   src="/logo.png" 
                   alt="WebShield AI Logo" 
-                  className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(6,182,212,0.8)]" 
+                  className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]" 
                 />
               </div>
             </div>
 
             {/* Typography with Luxury Letter Spacing */}
             <div className="flex items-center font-extrabold text-3xl md:text-5xl tracking-tight">
-              <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">WebShield</span>
-              <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 bg-clip-text text-transparent ml-2.5 drop-shadow-[0_0_30px_rgba(6,182,212,0.6)]">AI</span>
+              <span className="text-[#FAFAFA] drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">WebShield</span>
+              <span className="bg-gradient-to-r from-[#8B5CF6] via-purple-300 to-[#EC4899] bg-clip-text text-transparent ml-2.5 drop-shadow-[0_0_30px_rgba(139,92,246,0.6)]">AI</span>
             </div>
 
             {/* Subtitle / Loader Text */}
             <div className="mt-4 flex items-center space-x-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] animate-ping" />
               <p className="text-neutral-400 text-[11px] font-mono uppercase tracking-[0.25em] text-center">
                 Establishing Secure Vault Environment...
               </p>
             </div>
 
             {/* High-End Scanning Beam Line */}
-            <div className="w-48 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent mt-6 animate-pulse" />
+            <div className="w-48 h-[2px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent mt-6 animate-pulse" />
           </div>
         </div>
       )}
