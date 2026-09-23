@@ -56,7 +56,7 @@ export default function CyberSpace3D() {
         y: (Math.random() - 0.5) * height * 2,
         z: Math.random() * WORLD_DEPTH,
         size: Math.random() * 2.2 + 0.8,
-        colorType: Math.random() > 0.4 ? 'purple' : Math.random() > 0.5 ? 'pink' : 'cyan',
+        colorType: Math.random() > 0.4 ? 'cyan' : Math.random() > 0.5 ? 'indigo' : 'emerald',
         speedOffset: Math.random() * 0.4 + 0.8
       });
     }
@@ -103,7 +103,7 @@ export default function CyberSpace3D() {
         rotZ: 0,
         speedRotX: 0.008,
         speedRotY: 0.012,
-        color: '#8B5CF6'
+        color: '#06B6D4'
       },
       {
         type: 'cube',
@@ -118,7 +118,7 @@ export default function CyberSpace3D() {
         rotZ: 0.2,
         speedRotX: -0.007,
         speedRotY: 0.01,
-        color: '#EC4899'
+        color: '#6366F1'
       },
       {
         type: 'octa',
@@ -133,7 +133,7 @@ export default function CyberSpace3D() {
         rotZ: 0.3,
         speedRotX: 0.01,
         speedRotY: -0.009,
-        color: '#06B6D4'
+        color: '#00F0FF'
       },
       {
         type: 'cube',
@@ -148,7 +148,7 @@ export default function CyberSpace3D() {
         rotZ: 0.1,
         speedRotX: 0.006,
         speedRotY: 0.011,
-        color: '#8B5CF6'
+        color: '#3B82F6'
       }
     ];
 
@@ -218,13 +218,13 @@ export default function CyberSpace3D() {
       ctx.save();
       ctx.lineWidth = 1;
 
-      // Grid color styles based on theme
+      // Grid color styles based on theme (Electric Cyan & Royal Indigo)
       const primaryGridColor = isDark
-        ? 'rgba(139, 92, 246, ' // Purple
-        : 'rgba(124, 58, 237, ';
+        ? 'rgba(6, 182, 212, ' // Cyan
+        : 'rgba(2, 132, 199, '; // Sky
       const accentGridColor = isDark
-        ? 'rgba(236, 72, 153, ' // Pink
-        : 'rgba(219, 39, 119, ';
+        ? 'rgba(99, 102, 241, ' // Royal Indigo
+        : 'rgba(79, 70, 229, '; // Deep Indigo
 
       // Longitudinal lines (perspective rays to vanishing horizon)
       const lineSpread = 16;
@@ -354,11 +354,11 @@ export default function CyberSpace3D() {
           const alpha = depthRatio * (isDark ? 0.75 : 0.5);
 
           ctx.fillStyle =
-            pt.colorType === 'purple'
-              ? isDark ? `rgba(139, 92, 246, ${alpha})` : `rgba(124, 58, 237, ${alpha})`
-              : pt.colorType === 'pink'
-              ? isDark ? `rgba(236, 72, 153, ${alpha})` : `rgba(219, 39, 119, ${alpha})`
-              : isDark ? `rgba(6, 182, 212, ${alpha})` : `rgba(14, 165, 233, ${alpha})`;
+            pt.colorType === 'cyan'
+              ? isDark ? `rgba(6, 182, 212, ${alpha})` : `rgba(2, 132, 199, ${alpha})`
+              : pt.colorType === 'indigo'
+              ? isDark ? `rgba(99, 102, 241, ${alpha})` : `rgba(79, 70, 229, ${alpha})`
+              : isDark ? `rgba(16, 185, 129, ${alpha})` : `rgba(5, 150, 105, ${alpha})`;
 
           if (velocityStretch > 2) {
             // Draw warp velocity line along camera motion

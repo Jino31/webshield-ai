@@ -75,49 +75,52 @@ export default function Navbar() {
   };
 
   return (
-    <nav className={`w-full border-b backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between transition-colors duration-300 ${
-      isDark ? 'border-[#231E33] bg-[#0A0A0F]/80 text-white' : 'border-slate-200 bg-white/90 text-slate-900 shadow-sm'
+    <nav className={`w-full border-b backdrop-blur-md sticky top-0 z-50 px-6 py-3.5 flex items-center justify-between transition-colors duration-300 ${
+      isDark ? 'border-[#151F33] bg-[#07090E]/85 text-white' : 'border-slate-200 bg-white/90 text-slate-900 shadow-sm'
     }`}>
       {/* Left: Hamburger Menu, Brand & Main Nav Links */}
       <div className="flex items-center gap-6 relative" ref={menuRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={`p-2 rounded-xl transition focus:outline-none cursor-pointer border ${
-            isDark ? 'bg-[#13111C] hover:bg-[#1A1528] text-white border-[#231E33]' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+            isDark ? 'bg-[#0D1322] hover:bg-[#141C30] text-white border-[#19243C]' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
           }`}
           aria-label="Toggle menu"
         >
-          {isOpen ? <X className="w-5 h-5 text-[#8B5CF6]" /> : <Menu className="w-5 h-5" />}
+          {isOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Brand Name with Seamless Transparent Logo Wrapper */}
+        {/* Brand Name with Modern Cyber Shield Logo */}
         <Link to="/" className={`flex items-center gap-3 font-bold text-xl tracking-tight group ${isDark ? 'text-white' : 'text-slate-900'}`}>
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden transition">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center p-1 overflow-hidden transition-all duration-300 group-hover:scale-105 bg-gradient-to-br from-[#0F172A] to-[#07090E] border border-cyan-500/35 shadow-[0_0_15px_rgba(6,182,212,0.3)] group-hover:border-cyan-400">
             <img 
               src="/logo.png" 
               alt="WebShield AI Logo" 
-              className="w-full h-full object-cover scale-150" 
+              className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" 
             />
           </div>
-          <span>WebShield AI</span>
+          <span className="flex items-center tracking-tight">
+            <span>WebShield</span>
+            <span className="ml-1.5 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-cyan-400 to-indigo-500 text-black font-extrabold text-[11px] tracking-wider shadow-sm">AI</span>
+          </span>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className={`hidden lg:flex items-center gap-1 pl-4 border-l ${isDark ? 'border-[#231E33]' : 'border-slate-200'}`}>
+        <div className={`hidden lg:flex items-center gap-1 pl-4 border-l ${isDark ? 'border-[#151F33]' : 'border-slate-200'}`}>
           <button
             onClick={() => navigate('/scanner')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#13111C]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#0D1322]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <ScanSearch className="w-3.5 h-3.5 text-emerald-400" />
+            <ScanSearch className="w-3.5 h-3.5 text-cyan-400" />
             <span>Scan a URL</span>
           </button>
 
           <button
             onClick={() => navigate('/scam-report')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#13111C]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#0D1322]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
@@ -127,20 +130,20 @@ export default function Navbar() {
           <button
             onClick={() => navigate('/scan-trends')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#13111C]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#0D1322]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <TrendingUp className="w-3.5 h-3.5 text-[#8B5CF6]" />
+            <TrendingUp className="w-3.5 h-3.5 text-indigo-400" />
             <span>Scan Trends</span>
           </button>
 
           <button
             onClick={scrollToHowItWorks}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#13111C]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#0D1322]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <HelpCircle className="w-3.5 h-3.5 text-[#8B5CF6]" />
+            <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
             <span>How It Works</span>
           </button>
         </div>
@@ -297,7 +300,7 @@ export default function Navbar() {
           ) : (
             <Link 
               to="/login" 
-              className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 text-white font-semibold px-4 py-2 rounded-xl transition flex items-center gap-2 text-sm shadow-md shadow-purple-950/50"
+              className="bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:opacity-95 text-white font-semibold px-4 py-2 rounded-xl transition flex items-center gap-2 text-sm shadow-md shadow-cyan-950/40"
             >
               <LogIn className="w-4 h-4" />
               Sign In
