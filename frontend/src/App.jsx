@@ -13,19 +13,23 @@ import Admin from './pages/Admin';
 import About from './pages/About';
 import Feedback from './pages/Feedback';
 import ShieldSenseAI from './components/ShieldAIBot';
-import EntryAnimation from './components/EntryAnimation'; // <-- Added missing import
+import EntryAnimation from './components/EntryAnimation';
 
 function AppContent() {
   const { isDark } = useTheme();
   
-  // Track introductory animation state globally in App so the bot respects it
+  // Initialize and instantly lock session storage on first load to prevent re-triggers
   const [showIntro, setShowIntro] = useState(() => {
-    return !sessionStorage.getItem('webshield_intro_played');
+    const hasPlayed = sessionStorage.getItem('webshield_intro_played');
+    if (!hasPlayed) {
+      sessionStorage.setItem('webshield_intro_played', 'true');
+      return true;
+    }
+    return false;
   });
 
   useEffect(() => {
     if (showIntro) {
-      sessionStorage.setItem('webshield_intro_played', 'true'); // Save session flag immediately
       const timer = setTimeout(() => {
         setShowIntro(false);
       }, 3000);
@@ -39,7 +43,7 @@ function AppContent() {
         isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
       }`}
     >
-      {/* Upgraded 3-Second Startup Animation Screen */}
+      {/* Simple Startup Animation Screen */}
       {showIntro && <EntryAnimation />}
 
       <Navbar />
