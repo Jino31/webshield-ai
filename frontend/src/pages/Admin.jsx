@@ -4,7 +4,6 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { adminService } from '../services/adminService';
 import { useTheme } from '../context/ThemeContext';
-import ShieldSenseAI from '../components/ShieldAIBot'; // Ensure component is imported if used
 
 import {
   LayoutDashboard,
@@ -203,7 +202,7 @@ export default function Admin() {
     return (
       <div className="fixed inset-0 w-screen h-screen bg-[#05070A] text-white flex items-center justify-center p-4 relative z-50 overflow-hidden">
         <div className="absolute top-6 left-6 z-20">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D1117]/80 backdrop-blur-xl border border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50 transition cursor-pointer shadow-lg">
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D1117]/80 backdrop-blur-xl border border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg">
             <ArrowLeft className="w-4 h-4" /> Back to Home
           </button>
         </div>
@@ -253,7 +252,7 @@ export default function Admin() {
                 </div>
               )}
 
-              <button type="submit" disabled={unlocking} className="w-full h-12 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 text-white text-xs font-semibold shadow-lg shadow-purple-900/30 transition disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer">
+              <button type="submit" disabled={unlocking} className="w-full h-12 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-semibold shadow-lg shadow-purple-900/30 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer">
                 {unlocking ? <><RefreshCw className="w-4 h-4 animate-spin" /> Verifying Key...</> : <><ShieldCheck className="w-4 h-4" /> Access Admin Dashboard</>}
               </button>
             </form>
@@ -274,14 +273,14 @@ export default function Admin() {
       {/* Header */}
       <header className={`w-full h-16 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white border-slate-300 text-slate-900 shadow-sm' : theme === 'unique' ? 'bg-[#120224]/95 border-fuchsia-500/40 shadow-lg shadow-fuchsia-950/50' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/')} className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer ${theme === 'light' ? 'border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200' : 'border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/30'}`}>
+          <button onClick={() => navigate('/')} className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer ${theme === 'light' ? 'border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200' : 'border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/30'}`}>
             <ArrowLeft className="w-4 h-4" /> Home
           </button>
           <span className={`font-bold text-sm tracking-tight ml-2 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>WebShield Admin</span>
         </div>
 
         <div className="flex items-center gap-3">
-          <button onClick={() => signOut(auth).then(() => navigate('/'))} className={`flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border transition cursor-pointer ${theme === 'light' ? 'border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-100' : 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10'}`}>
+          <button onClick={() => signOut(auth).then(() => navigate('/'))} className={`flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer ${theme === 'light' ? 'border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-100' : 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10'}`}>
             <LogOut className="w-3.5 h-3.5" /> Sign Out
           </button>
         </div>
@@ -306,7 +305,7 @@ export default function Admin() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition text-left cursor-pointer ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all duration-300 transform hover:translate-x-1 active:scale-95 text-left cursor-pointer ${
                   isActive 
                     ? theme === 'unique' 
                       ? 'bg-gradient-to-r from-fuchsia-600/40 to-purple-600/40 border border-fuchsia-500 text-white shadow-lg shadow-fuchsia-950/60 font-bold ring-1 ring-fuchsia-400/50' 
@@ -392,7 +391,7 @@ export default function Admin() {
                   }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
                     <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Button Label</label><input type="text" value={adLabel} onChange={e => setAdLabel(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
                     <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Destination URL</label><input type="url" value={adUrl} onChange={e => setAdUrl(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
-                    <button type="submit" disabled={savingAd} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg cursor-pointer">{savingAd ? 'Saving...' : 'Save AD Config'}</button>
+                    <button type="submit" disabled={savingAd} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer">{savingAd ? 'Saving...' : 'Save AD Config'}</button>
                   </form>
                 </div>
               )}
@@ -414,7 +413,7 @@ export default function Admin() {
                   }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
                     <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Title</label><input type="text" value={annTitle} onChange={e => setAnnTitle(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
                     <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Message</label><textarea rows="3" value={annMessage} onChange={e => setAnnMessage(e.target.value)} className={`w-full p-4 rounded-xl border text-xs font-semibold outline-none resize-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
-                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg cursor-pointer">{publishingAnn ? 'Publishing...' : 'Publish Announcement'}</button>
+                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer">{publishingAnn ? 'Publishing...' : 'Publish Announcement'}</button>
                   </form>
                 </div>
               )}
@@ -442,7 +441,7 @@ export default function Admin() {
                       <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>User Comment Receiver</h1>
                       <p className={`text-xs font-medium mt-1 ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Review and manage incoming user feedback messages.</p>
                     </div>
-                    <button onClick={() => showToast('Feedback inbox is synchronized in real-time.')} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg hover:opacity-90 transition cursor-pointer">
+                    <button onClick={() => showToast('Feedback inbox is synchronized in real-time.')} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer">
                       <Send className="w-3.5 h-3.5" /> Feedback Inbox ({commentsList.length})
                     </button>
                   </div>
@@ -460,7 +459,7 @@ export default function Admin() {
                         <div className={`flex justify-between items-center text-[10px] font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>
                           <span>Submitted {new Date(c.createdAt).toLocaleDateString()}</span>
                           {c.reviewed ? <span className="text-emerald-500 font-bold">Reviewed ✓</span> : (
-                            <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline font-bold cursor-pointer">Mark as Reviewed ✓</button>
+                            <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline font-bold cursor-pointer transition transform hover:scale-105">Mark as Reviewed ✓</button>
                           )}
                         </div>
                       </div>
@@ -472,9 +471,6 @@ export default function Admin() {
           )}
         </main>
       </div>
-
-      {/* ShieldSense Assistant is completely hidden during login/animations and only rendered when fully unlocked */}
-      {adminUnlocked && !showWelcomeAnimation && <ShieldSenseAI />}
     </div>
   );
 }
