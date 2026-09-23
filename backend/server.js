@@ -69,8 +69,35 @@ const feedbackSchema = new mongoose.Schema({
   reviewed: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
-
 const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
+
+// User Sync Endpoint (Called on Login/Signup)
+app.post('/api/users/sync', async (req, res) => {
+  try {
+    const { name, email, role, status } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, error: "Email is required." });
+    }
+
+    let user = await UserLog.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      user = await UserLog.create({
+        name: name || email.split('@')[0],
+        email: email.toLowerCase().trim(),
+        role: role || 'User',
+        status: status || 'Active'
+      });
+    } else {
+      user.name = name || user.name;
+      await user.save();
+    }
+
+    res.json({ success: true, user });
+  } catch (error) {
+    console.error("User sync error:", error.message);
+    res.status(500).json({ success: false, error: "Failed to sync user session." });
+  }
+});
 
 app.post('/api/feedback', async (req, res) => {
   try {
@@ -216,7 +243,7 @@ app.post('/api/admin/unlock', async (req, res) => {
 
 app.get('/api/admin/stats', async (req, res) => {
   try {
-    const totalUsers = await UserLog.countDocuments().catch(() => 1);
+    const totalUsers = await UserLog.countDocuments().catch(() => 0);
     const totalScans = await ScanLog.countDocuments().catch(() => 0);
     const phishingDetected = await ScanLog.countDocuments({ status: { $regex: /phishing|danger|critical/i } }).catch(() => 0);
     const safeUrls = Math.max(0, totalScans - phishingDetected);
@@ -224,14 +251,14 @@ app.get('/api/admin/stats', async (req, res) => {
 
     res.json({ success: true, totalUsers, totalScans, safeUrls, phishingDetected, detectionRate });
   } catch (error) {
-    res.json({ success: true, totalUsers: 1, totalScans: 0, safeUrls: 0, phishingDetected: 0, detectionRate: '—' });
+    res.json({ success: true, totalUsers: 0, totalScans: 0, safeUrls: 0, phishingDetected: 0, detectionRate: '—' });
   }
 });
 
 app.get('/api/admin/users', async (req, res) => {
   try {
     const users = await UserLog.find().sort({ createdAt: -1 }).limit(50).catch(() => []);
-    res.json({ success: true, users: users.length > 0 ? users : [{ id: 'usr_01', name: 'S. Jeffrin Jino', email: 'jino@webshield.ai', role: 'User', status: 'Active' }] });
+    res.json({ success: true, users: users || [] });
   } catch (error) {
     res.json({ success: true, users: [] });
   }

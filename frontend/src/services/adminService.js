@@ -8,19 +8,19 @@ export const adminService = {
     return res.data;
   },
   async getAdminStats() {
-    const res = await axios.get(`${API_BASE_URL}/api/admin/stats`);
+    const res = await axios.get(`${API_BASE_URL}/api/admin/stats?_t=${Date.now()}`);
     return res.data;
   },
   async getUsers() {
-    const res = await axios.get(`${API_BASE_URL}/api/admin/users`);
+    const res = await axios.get(`${API_BASE_URL}/api/admin/users?_t=${Date.now()}`);
     return res.data.users;
   },
   async getSystemHealth() {
-    const res = await axios.get(`${API_BASE_URL}/api/admin/health`);
+    const res = await axios.get(`${API_BASE_URL}/api/admin/health?_t=${Date.now()}`);
     return res.data.health;
   },
   async getComments() {
-    const res = await axios.get(`${API_BASE_URL}/api/admin/comments`);
+    const res = await axios.get(`${API_BASE_URL}/api/admin/comments?_t=${Date.now()}`);
     return res.data.comments;
   },
   async markCommentReviewed(id) {
@@ -32,7 +32,7 @@ export const adminService = {
     return res.data;
   },
   async getAdConfig() {
-    const res = await axios.get(`${API_BASE_URL}/api/admin/ad-config`);
+    const res = await axios.get(`${API_BASE_URL}/api/admin/ad-config?_t=${Date.now()}`);
     return res.data.config;
   },
   async updateAdConfig(data) {
