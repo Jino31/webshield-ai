@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
-import ShieldAIBot from '../components/ShieldAIBot'; // <-- Separate ShieldSense assistant component
+import ShieldAIBot from '../components/ShieldAIBot';
 import { useTheme } from '../context/ThemeContext';
 
 const scanStages = [
@@ -29,9 +29,15 @@ export default function Home() {
   const [scanStep, setScanStep] = useState(0);
   const [progress, setProgress] = useState(0);
 
+  // Use a ref to keep track of active timers and prevent race conditions/memory leaks
+  const timerRefs = useRef([]);
+
   // Synchronized Stage & Deterministic Progress Timer
   useEffect(() => {
-    let timers = [];
+    // Clear any existing timers before setting new ones
+    timerRefs.current.forEach(clearTimeout);
+    timerRefs.current = [];
+
     if (isLoading) {
       setScanStep(0);
       setProgress(5);
@@ -43,22 +49,23 @@ export default function Home() {
           setScanStep(index);
           setProgress(stageProgressMap[index]);
         }, index * stageIntervalTime);
-        timers.push(timer);
+        timerRefs.current.push(timer);
       });
     } else {
       setProgress(100);
     }
 
     return () => {
-      timers.forEach(clearTimeout);
+      timerRefs.current.forEach(clearTimeout);
     };
   }, [isLoading]);
 
-  // Strict URL validation helper
+  // Strict URL validation helper (supports standard domains + local development endpoints)
   const isValidUrl = (string) => {
     try {
-      const url = new URL(string.includes('://') ? string : `https://${string}`);
-      return url.hostname.includes('.');
+      const formatted = string.includes('://') ? string : `https://${string}`;
+      const url = new URL(formatted);
+      return url.hostname.includes('.') || url.hostname === 'localhost' || url.hostname === '127.0.0.1';
     } catch (_) {
       return false;
     }
@@ -162,32 +169,18 @@ export default function Home() {
       {/* Self-contained Keyframe Animations for WebShield Scanner */}
       <style>{`
         @keyframes webshieldSpin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
 
         @keyframes webshieldReverseSpin {
-          from {
-            transform: rotate(360deg);
-          }
-          to {
-            transform: rotate(0deg);
-          }
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
         }
 
         @keyframes webshieldPulse {
-          0%, 100% {
-            transform: scale(1);
-            opacity: 0.8;
-          }
-          50% {
-            transform: scale(1.08);
-            opacity: 1;
-          }
+          0%, 100% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(1.08); opacity: 1; }
         }
       `}</style>
 
