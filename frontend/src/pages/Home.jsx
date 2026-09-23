@@ -4,7 +4,7 @@ import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle
 import { useTheme } from '../context/ThemeContext';
 import ShieldAIBot from '../components/ShieldAIBot';
 import TiltCard3D from '../components/TiltCard3D';
-import ShieldCore3D from '../components/ShieldCore3D';
+import ShieldCore3D from '../components/ShieldCore3D'; // <--- Imported 3D Security Core Canvas
 
 const scanStages = [
   'Initializing security scan...',
@@ -582,6 +582,65 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Widened Footer Section */}
+      <footer className={`w-full max-w-7xl mx-auto border-t py-14 px-6 sm:px-12 lg:px-16 mt-16 text-xs transition-colors ${
+        isDark ? 'border-neutral-800/80 text-neutral-400' : 'border-slate-200 text-slate-600'
+      }`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+          <div className="space-y-3">
+            <h3 className={`font-bold text-sm tracking-tight ${isDark ? 'text-[#FAFAFA]' : 'text-slate-950'}`}>WEB SHIELD AI</h3>
+            <p className="text-xs leading-relaxed">AI-Powered Website Security</p>
+            <p className="text-[11px] opacity-80">Scan suspicious URLs • Detect phishing • Stay protected</p>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>PRODUCT</h4>
+            <ul className="space-y-2.5">
+              <li><button onClick={() => navigate('/')} className="hover:text-[#8B5CF6] transition cursor-pointer">URL Scanner</button></li>
+              <li><button onClick={() => navigate('/history')} className="hover:text-[#8B5CF6] transition cursor-pointer">Scan History</button></li>
+              <li><button onClick={() => navigate('/')} className="hover:text-[#8B5CF6] transition cursor-pointer">Risk Analysis</button></li>
+              <li><button onClick={() => navigate('/settings')} className="hover:text-[#8B5CF6] transition cursor-pointer">Security Reports</button></li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>RESOURCES</h4>
+            <ul className="space-y-2.5">
+              <li><button onClick={scrollToHowItWorks} className="hover:text-[#8B5CF6] transition cursor-pointer">How It Works</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition cursor-pointer">Case Studies</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition cursor-pointer">FAQ</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition cursor-pointer">Documentation</button></li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>COMPANY</h4>
+            <ul className="space-y-2.5">
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition cursor-pointer">About</button></li>
+              <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition cursor-pointer">Contact</button></li>
+              <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition cursor-pointer">Feedback</button></li>
+              <li><button onClick={() => navigate('/settings')} className="hover:text-[#8B5CF6] transition cursor-pointer">Changelog</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className={`pt-8 border-t flex flex-col lg:flex-row items-center justify-between gap-6 ${
+          isDark ? 'border-neutral-800/60' : 'border-slate-200'
+        }`}>
+          <div className="flex flex-wrap items-center gap-6">
+            <span className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-300' : 'text-slate-900'}`}>SECURITY & PRIVACY</span>
+            <button onClick={() => navigate('/about')} className="hover:underline">Privacy Policy</button>
+            <button onClick={() => navigate('/about')} className="hover:underline">Terms of Service</button>
+            <button onClick={() => navigate('/settings')} className="hover:underline">Security</button>
+            <button onClick={() => navigate('/settings')} className="hover:underline">Cookie Policy</button>
+          </div>
+        </div>
+
+        <div className="mt-10 text-center text-[11px] opacity-70">
+          © 2026 WebShield AI. Built for safer browsing.
+        </div>
+      </footer>
 
       {/* Render ShieldSense Assistant conditionally only AFTER the introductory animation completes */}
       {!showIntroAnimation && <ShieldAIBot scanContext={scanResult} />}
