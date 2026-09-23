@@ -134,7 +134,7 @@ export default function Navbar() {
             }`}
           >
             <TrendingUp className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Scan Trends</span>
+            <span>Scam Trends</span>
           </button>
 
           <button
