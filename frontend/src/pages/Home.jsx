@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
-import ShieldAIBot from '../components/ShieldAIBot';
+import ShieldAIBot from '../components/ShieldAIBot'; // <-- Separate ShieldSense assistant component
 import { useTheme } from '../context/ThemeContext';
 
 const scanStages = [
@@ -25,19 +25,30 @@ export default function Home() {
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState('');
   
+  // Introductory Entrance Animation State (Triggers once per session entry, not on refresh)
+  const [showIntroAnimation, setShowIntroAnimation] = useState(() => {
+    const hasSeenIntro = sessionStorage.getItem('webshield_intro_played');
+    return !hasSeenIntro;
+  });
+
+  // Handle intro animation timer
+  useEffect(() => {
+    if (showIntroAnimation) {
+      sessionStorage.setItem('webshield_intro_played', 'true');
+      const timer = setTimeout(() => {
+        setShowIntroAnimation(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showIntroAnimation]);
+
   // Scanning Animation States
   const [scanStep, setScanStep] = useState(0);
   const [progress, setProgress] = useState(0);
 
-  // Use a ref to keep track of active timers and prevent race conditions/memory leaks
-  const timerRefs = useRef([]);
-
   // Synchronized Stage & Deterministic Progress Timer
   useEffect(() => {
-    // Clear any existing timers before setting new ones
-    timerRefs.current.forEach(clearTimeout);
-    timerRefs.current = [];
-
+    let timers = [];
     if (isLoading) {
       setScanStep(0);
       setProgress(5);
@@ -49,23 +60,22 @@ export default function Home() {
           setScanStep(index);
           setProgress(stageProgressMap[index]);
         }, index * stageIntervalTime);
-        timerRefs.current.push(timer);
+        timers.push(timer);
       });
     } else {
       setProgress(100);
     }
 
     return () => {
-      timerRefs.current.forEach(clearTimeout);
+      timers.forEach(clearTimeout);
     };
   }, [isLoading]);
 
-  // Strict URL validation helper (supports standard domains + local development endpoints)
+  // Strict URL validation helper
   const isValidUrl = (string) => {
     try {
-      const formatted = string.includes('://') ? string : `https://${string}`;
-      const url = new URL(formatted);
-      return url.hostname.includes('.') || url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+      const url = new URL(string.includes('://') ? string : `https://${string}`);
+      return url.hostname.includes('.');
     } catch (_) {
       return false;
     }
@@ -166,23 +176,28 @@ export default function Home() {
     <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-between px-4 sm:px-8 lg:px-12 pt-16 transition-colors duration-300 overflow-x-hidden ${
       isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
     }`}>
-      {/* Self-contained Keyframe Animations for WebShield Scanner */}
-      <style>{`
-        @keyframes webshieldSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        @keyframes webshieldReverseSpin {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-
-        @keyframes webshieldPulse {
-          0%, 100% { transform: scale(1); opacity: 0.8; }
-          50% { transform: scale(1.08); opacity: 1; }
-        }
-      `}</style>
+      {/* 3-Second Entry Animation Overlay */}
+      {showIntroAnimation && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0A0A0F]/95 backdrop-blur-2xl animate-fadeIn transition-opacity duration-700">
+          <div className="flex flex-col items-center space-y-6 animate-pulse">
+            <div className="w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden shadow-2xl shadow-purple-950/60 border border-[#8B5CF6]/30 bg-[#13111C]">
+              <img 
+                src="/logo.png" 
+                alt="WebShield AI Logo" 
+                className="w-full h-full object-cover scale-150" 
+              />
+            </div>
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">
+                Welcome to WebShield AI
+              </h2>
+              <p className="text-xs uppercase tracking-widest text-neutral-400 font-mono">
+                Initializing Secure Environment...
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Background VFX Glow Orbs & Subtle Grid */}
       <div className={`absolute inset-0 pointer-events-none ${
@@ -333,15 +348,15 @@ export default function Home() {
             <div className="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
               <div 
                 className="absolute inset-0 rounded-full border-2 border-dashed border-[#8B5CF6]" 
-                style={{ animation: 'webshieldSpin 4s linear infinite' }} 
+                style={{ animation: 'spin 4s linear infinite' }} 
               />
               <div 
                 className="absolute inset-2 rounded-full border-2 border-transparent border-t-[#EC4899] border-b-[#8B5CF6]" 
-                style={{ animation: 'webshieldReverseSpin 2.5s linear infinite' }} 
+                style={{ animation: 'spin 2.5s linear infinite reverse' }} 
               />
               <div 
                 className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#1A1528] text-[#8B5CF6]' : 'bg-purple-50 text-purple-600'} shadow-md`}
-                style={{ animation: 'webshieldPulse 2s ease-in-out infinite' }}
+                style={{ animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
               >
                 <Shield className="w-5 h-5" />
               </div>
@@ -568,7 +583,7 @@ export default function Home() {
           <div className="space-y-3">
             <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>COMPANY</h4>
             <ul className="space-y-2.5">
-              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">About</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] innovative">About</button></li>
               <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Contact</button></li>
               <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Feedback</button></li>
               <li><button onClick={() => navigate('/settings')} className="hover:text-[#8B5CF6] transition">Changelog</button></li>
