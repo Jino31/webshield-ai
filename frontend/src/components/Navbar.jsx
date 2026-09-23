@@ -89,21 +89,21 @@ export default function Navbar() {
           {isOpen ? <X className="w-5 h-5 text-[#8B5CF6]" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Brand Name with Fully Filled Logo Shield */}
+        {/* Brand Name with Perfectly Framed Logo Shield */}
         <Link to="/" className={`flex items-center gap-3 font-bold text-xl tracking-tight group ${isDark ? 'text-white' : 'text-slate-900'}`}>
-          <div className={`w-10 h-10 rounded-xl border flex items-center justify-center overflow-hidden transition shadow-inner ${
+          <div className={`w-10 h-10 rounded-xl border flex items-center justify-center p-1.5 transition shadow-inner ${
             isDark ? 'bg-[#13111C] border-[#231E33] group-hover:border-[#8B5CF6]/50' : 'bg-slate-100 border-slate-300 group-hover:border-[#8B5CF6]/50'
           }`}>
             <img 
               src="/logo.png" 
               alt="WebShield AI Logo" 
-              className="w-full h-full object-cover scale-[2.2]" 
+              className="w-full h-full object-contain" 
             />
           </div>
           <span>WebShield AI</span>
         </Link>
 
-        {/* Desktop Navigation Links (Placed right next to the logo) */}
+        {/* Desktop Navigation Links */}
         <div className={`hidden lg:flex items-center gap-1 pl-4 border-l ${isDark ? 'border-[#231E33]' : 'border-slate-200'}`}>
           <button
             onClick={() => navigate('/scam-report')}
@@ -121,7 +121,7 @@ export default function Navbar() {
               isDark ? 'text-neutral-300 hover:text-white hover:bg-[#13111C]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <TrendingUp className="w-3.5 h-3.5 text-[#22D3EE]" />
+            <TrendingUp className="w-3.5 h-3.5 text-[#8B5CF6]" />
             <span>Scan Trends</span>
           </button>
 
@@ -180,7 +180,7 @@ export default function Navbar() {
                 isDark ? 'text-neutral-300 hover:text-white hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <TrendingUp className="w-4 h-4 text-[#22D3EE]" />
+              <TrendingUp className="w-4 h-4 text-[#8B5CF6]" />
               <span>Scan Trends</span>
             </button>
 
@@ -224,7 +224,6 @@ export default function Navbar() {
 
       {/* Right: Theme Toggle & Dynamic Profile / Sign In Section */}
       <div className="flex items-center gap-3">
-        {/* GeeksforGeeks-Style Theme Toggle Button */}
         <ThemeToggle />
 
         <div className="relative" ref={profileRef}>
@@ -232,14 +231,14 @@ export default function Navbar() {
             <div>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-2.5 bg-gradient-to-r from-[#13111C] to-[#1A1528] hover:from-[#1A1528] hover:to-[#221B36] border border-[#22D3EE]/40 hover:border-[#22D3EE] text-white px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer shadow-lg shadow-cyan-950/30 ring-1 ring-[#22D3EE]/20 hover:ring-[#22D3EE]/50"
+                className="flex items-center gap-2.5 bg-gradient-to-r from-[#13111C] to-[#1A1528] hover:from-[#1A1528] hover:to-[#221B36] border border-[#8B5CF6]/40 hover:border-[#8B5CF6] text-white px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer shadow-lg shadow-purple-950/30 ring-1 ring-[#8B5CF6]/20 hover:ring-[#8B5CF6]/50"
               >
                 {currentUser.photoURL ? (
-                  <img src={currentUser.photoURL} alt="Profile" className="w-5 h-5 rounded-full object-cover ring-1 ring-[#22D3EE]/50" />
+                  <img src={currentUser.photoURL} alt="Profile" className="w-5 h-5 rounded-full object-cover ring-1 ring-[#8B5CF6]/50" />
                 ) : (
-                  <User className="w-4 h-4 text-[#22D3EE]" />
+                  <User className="w-4 h-4 text-[#8B5CF6]" />
                 )}
-                <span className="text-xs font-semibold tracking-wide max-w-[120px] truncate hidden sm:inline text-cyan-100">
+                <span className="text-xs font-semibold tracking-wide max-w-[120px] truncate hidden sm:inline text-purple-100">
                   {currentUser.displayName || currentUser.email}
                 </span>
               </button>
@@ -259,7 +258,7 @@ export default function Navbar() {
                     }}
                     className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-neutral-300 hover:text-white hover:bg-[#1A1528] transition text-left cursor-pointer mb-1"
                   >
-                    <UserCircle className="w-4 h-4 text-[#22D3EE]" />
+                    <UserCircle className="w-4 h-4 text-[#8B5CF6]" />
                     <span>View Profile</span>
                   </button>
 
