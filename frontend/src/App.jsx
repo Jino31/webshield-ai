@@ -10,8 +10,7 @@ import Profile from './pages/Profile';
 import ReportScam from './pages/ReportScam';
 import ScanTrends from './pages/ScanTrends';
 import Admin from './pages/Admin';
-// If you create a dedicated ShieldAI page, import it here:
-// import ShieldAI from './pages/ShieldAI';
+import ShieldAI from './pages/ShieldAI'; // <-- Imported ShieldAI page
 import About from './pages/About';
 import Feedback from './pages/Feedback';
 
@@ -37,8 +36,7 @@ function AppContent() {
           <Route path="/scam-report" element={<ReportScam />} />
           <Route path="/scan-trends" element={<ScanTrends />} />
           <Route path="/admin" element={<Admin />} />
-          {/* Dedicated route if applicable: */}
-          {/* <Route path="/shield-ai" element={<ShieldAI />} /> */}
+          <Route path="/shield-ai" element={<ShieldAI />} /> {/* <-- Active Route for ShieldAI */}
           <Route path="/about" element={<About />} />
           <Route path="/feedback" element={<Feedback />} />
         </Routes>

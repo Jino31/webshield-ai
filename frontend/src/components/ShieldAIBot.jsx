@@ -1,20 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, X, Send, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
-import { aiAssistantService } from '../services/aiAssistantService';
+import { Bot, X, Send, Sparkles, Loader2, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import axios from 'axios';
 
-export default function ShieldAIBot({ scanContext = null }) {
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+export default function ShieldSenseWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { 
-      sender: 'bot', 
-      text: 'Hello! I am ShieldSense, your AI security assistant. I can help explain URL scan results, security metrics, or web protection concepts.' 
-    }
+    { sender: 'ai', text: 'Hello! I am ShieldSense, your WebShield AI security assistant. How can I help you protect your browsing today?' }
   ]);
-  const [inputMessage, setInputMessage] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  
   const messagesEndRef = useRef(null);
-  const chatRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -26,208 +23,115 @@ export default function ShieldAIBot({ scanContext = null }) {
     }
   }, [messages, isOpen]);
 
-  // Handle outside click to close chat
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (chatRef.current && !chatRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
-
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!inputMessage.trim() || isTyping) return;
+    if (!inputValue.trim() || isTyping) return;
 
-    const userText = inputMessage;
-    const userMessage = { sender: 'user', text: userText };
-    
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
+    const userMessage = inputValue.trim();
+    setInputValue('');
+    setMessages(prev => [...prev, { sender: 'user', text: userMessage }]);
     setIsTyping(true);
 
     try {
-      const responseText = await aiAssistantService.sendMessage(userText, scanContext);
-      setMessages(prev => [...prev, { sender: 'bot', text: responseText }]);
-    } catch (err) {
-      setMessages(prev => [
-        ...prev, 
-        { sender: 'bot', text: "I couldn't connect to the security assistant right now. Please try again in a moment." }
-      ]);
+      const response = await axios.post(`${API_BASE_URL}/api/assistant`, {
+        message: userMessage
+      });
+
+      const reply = response.data?.reply || "I am analyzing your security query.";
+      setMessages(prev => [...prev, { sender: 'ai', text: reply }]);
+    } catch (error) {
+      setMessages(prev => [...prev, { 
+        sender: 'ai', 
+        text: "I couldn't connect to the AI engine right now. Please ensure your backend server is running." 
+      }]);
     } finally {
       setIsTyping(false);
     }
   };
 
-  const handleQuickPrompt = (promptText) => {
-    if (isTyping) return;
-    setInputMessage(promptText);
-  };
-
   return (
-    <div className="fixed bottom-6 right-6 z-50" ref={chatRef}>
-      {/* Floating Trigger Button */}
+    <div className="fixed bottom-6 right-6 z-50">
+      {/* Floating Toggle Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-3 bg-gradient-to-r from-[#8B5CF6] to-[#22D3EE] p-0.5 rounded-2xl shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer"
-          aria-label="Open ShieldSense AI Security Assistant"
+          aria-label="Open ShieldSense AI"
+          className="w-14 h-14 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white flex items-center justify-center shadow-2xl shadow-purple-950/60 hover:scale-105 transition-all cursor-pointer group"
         >
-          <div className="flex items-center gap-3 bg-[#0D1117] px-5 py-3.5 rounded-2xl text-white font-semibold text-sm tracking-wide">
-            <div className="w-7 h-7 rounded-lg bg-[#22D3EE]/20 flex items-center justify-center text-[#22D3EE] animate-pulse">
-              <Bot className="w-4 h-4" />
-            </div>
-            <span>Ask ShieldSense</span>
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-          </div>
+          <Bot className="w-6 h-6 group-hover:rotate-12 transition-transform" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#0A0A0F]" />
         </button>
       )}
 
-      {/* Chat Window Container */}
+      {/* Chat Box Drawer */}
       {isOpen && (
-        <div className="w-[calc(100vw-2rem)] max-w-[420px] h-[560px] bg-[#0D1117] border border-neutral-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in backdrop-blur-2xl">
-          
+        <div className="w-[360px] sm:w-[400px] h-[500px] bg-[#111118]/95 backdrop-blur-2xl border border-[#27272F] rounded-3xl shadow-2xl shadow-purple-950/50 flex flex-col overflow-hidden animate-fadeIn">
           {/* Chat Header */}
-          <div className="px-5 py-4 bg-[#13111C] border-b border-neutral-800 flex items-center justify-between">
+          <div className="px-5 py-4 bg-[#1A1528] border-b border-[#27272F] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#8B5CF6] to-[#22D3EE] flex items-center justify-center text-white shadow-md">
+              <div className="w-9 h-9 rounded-xl bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6]">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white tracking-wide flex items-center gap-1.5">
-                  ShieldSense <Sparkles className="w-3.5 h-3.5 text-[#22D3EE]" />
+                <h3 className="text-xs font-bold text-white flex items-center gap-1.5">
+                  ShieldSense AI <Sparkles className="w-3 h-3 text-[#EC4899]" />
                 </h3>
-                <p className="text-xs text-emerald-400 flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Online • AI Security Assistant
-                </p>
+                <p className="text-[10px] text-emerald-400 font-medium">● Real-Time Security Assistant</p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-neutral-800/60 transition cursor-pointer"
-              aria-label="Close chat"
+              className="w-8 h-8 rounded-full bg-neutral-800/60 hover:bg-neutral-800 text-neutral-400 hover:text-white flex items-center justify-center transition cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Scan Context Status Indicator */}
-          <div className="px-4 py-2.5 bg-[#05070A]/90 border-b border-neutral-800/80 flex items-center justify-between text-xs">
-            <span className="text-neutral-300 flex items-center gap-2">
-              {scanContext ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="text-emerald-300 truncate max-w-[260px] font-medium">Scan loaded: {scanContext.url}</span>
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="w-4 h-4 text-neutral-400 shrink-0" />
-                  <span>No scan selected</span>
-                </>
-              )}
-            </span>
-          </div>
-
-          {/* Messages Scroll Area */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#05070A]/60">
+          {/* Messages Area */}
+          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs">
             {messages.map((msg, index) => (
               <div
                 key={index}
                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed font-normal whitespace-pre-wrap ${
+                  className={`max-w-[80%] p-3.5 rounded-2xl leading-relaxed ${
                     msg.sender === 'user'
-                      ? 'bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white rounded-br-none shadow-md font-medium'
-                      : 'bg-[#13111C] border border-neutral-800 text-white rounded-bl-none shadow-inner'
+                      ? 'bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white rounded-br-xs shadow-md'
+                      : 'bg-[#1A1528] border border-[#27272F] text-[#FAFAFA] rounded-bl-xs'
                   }`}
                 >
                   {msg.text}
                 </div>
               </div>
             ))}
-
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-[#13111C] border border-neutral-800 px-4 py-3 rounded-2xl rounded-bl-none text-sm text-white flex items-center gap-2.5">
-                  <span className="text-[#22D3EE] font-medium">ShieldSense is analyzing</span>
-                  <span className="flex gap-1">
-                    <span className="w-2 h-2 bg-[#22D3EE] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="w-2 h-2 bg-[#22D3EE] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="w-2 h-2 bg-[#22D3EE] rounded-full animate-bounce"></span>
-                  </span>
+                <div className="bg-[#1A1528] border border-[#27272F] p-3 rounded-2xl rounded-bl-xs text-neutral-400 flex items-center gap-2">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8B5CF6]" /> ShieldSense is thinking...
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Suggestion Pills */}
-          <div className="px-4 py-2.5 bg-[#13111C]/80 border-t border-neutral-800 flex gap-2 overflow-x-auto no-scrollbar">
-            {scanContext ? (
-              <>
-                <button
-                  onClick={() => handleQuickPrompt("Explain my scan result")}
-                  className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium"
-                >
-                  Explain my scan
-                </button>
-                <button
-                  onClick={() => handleQuickPrompt("Why was this URL flagged?")}
-                  className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium"
-                >
-                  Why was this flagged?
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => handleQuickPrompt("How does WebShield detect phishing?")}
-                  className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium"
-                >
-                  How does detection work?
-                </button>
-                <button
-                  onClick={() => handleQuickPrompt("What should I do if I clicked a phishing link?")}
-                  className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium"
-                >
-                  Clicked a phishing link?
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Chat Input Form */}
-          <form onSubmit={handleSendMessage} className="p-3.5 bg-[#13111C] border-t border-neutral-800 flex items-center gap-2">
+          {/* Input Bar */}
+          <form onSubmit={handleSendMessage} className="p-3 bg-[#0A0A0F] border-t border-[#27272F] flex items-center gap-2">
             <input
               type="text"
-              placeholder="Ask ShieldSense about security..."
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              disabled={isTyping}
-              className="flex-1 bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-400 focus:outline-none transition disabled:opacity-50"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Ask about website safety or WebShield..."
+              className="flex-1 bg-[#111118] border border-[#27272F] rounded-xl px-4 py-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#8B5CF6] transition"
             />
             <button
               type="submit"
-              disabled={isTyping || !inputMessage.trim()}
-              className="p-3 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#22D3EE] hover:opacity-90 disabled:opacity-50 text-white transition cursor-pointer shadow-md"
-              aria-label="Send message"
+              disabled={isTyping || !inputValue.trim()}
+              className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 text-white flex items-center justify-center transition disabled:opacity-50 cursor-pointer shadow-lg shadow-purple-950/40"
             >
               <Send className="w-4 h-4" />
             </button>
           </form>
-
-          {/* Security Disclaimer */}
-          <div className="px-3 py-2 bg-[#05070A] text-[10px] text-neutral-300 font-medium text-center border-t border-neutral-900">
-            AI guidance is informational and does not guarantee website safety.
-          </div>
-
         </div>
       )}
     </div>
