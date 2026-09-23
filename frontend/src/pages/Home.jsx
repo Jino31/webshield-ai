@@ -631,7 +631,60 @@ export default function Home() {
       {!showIntroAnimation && <ShieldAIBot scanContext={scanResult} />}
 
       {/* CSS Keyframes & Animation Utilities */}
-      
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        .animate-fadeOut {
+          animation: fadeOut 0.4s ease-in-out 2.6s forwards;
+        }
+
+        @keyframes cinematicReveal {
+          0% {
+            opacity: 0;
+            transform: scale(0.7) translateY(20px);
+            filter: blur(10px);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.05) translateY(0);
+            filter: blur(0px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0px);
+          }
+        }
+        .animate-cinematicReveal {
+          animation: cinematicReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideDownStagger1 {
+          from { opacity: 0; transform: translateY(-15px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slideDownStagger1 {
+          animation: slideDownStagger1 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideDownStagger2 {
+          from { opacity: 0; transform: translateY(-15px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slideDownStagger2 {
+          animation: slideDownStagger2 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
     </div>
   );
 }
