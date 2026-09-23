@@ -76,23 +76,23 @@ export default function Navbar() {
 
   return (
     <nav className={`w-full border-b backdrop-blur-md sticky top-0 z-50 px-6 py-3.5 flex items-center justify-between transition-colors duration-300 ${
-      isDark ? 'border-[#151F33] bg-[#07090E]/85 text-white' : 'border-slate-200 bg-white/90 text-slate-900 shadow-sm'
+      isDark ? 'border-[#231E33] bg-[#0A0A0F]/85 text-[#FAFAFA]' : 'border-slate-200 bg-white/90 text-slate-900 shadow-sm'
     }`}>
       {/* Left: Hamburger Menu, Brand & Main Nav Links */}
       <div className="flex items-center gap-6 relative" ref={menuRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={`p-2 rounded-xl transition focus:outline-none cursor-pointer border ${
-            isDark ? 'bg-[#0D1322] hover:bg-[#141C30] text-white border-[#19243C]' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+            isDark ? 'bg-[#13111C] hover:bg-[#1A1528] text-[#FAFAFA] border-[#231E33]' : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
           }`}
           aria-label="Toggle menu"
         >
-          {isOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5" />}
+          {isOpen ? <X className="w-5 h-5 text-[#8B5CF6]" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Brand Name with Seamless Transparent Logo Wrapper */}
-        <Link to="/" className={`flex items-center gap-3 font-bold text-xl tracking-tight group ${isDark ? 'text-white' : 'text-slate-900'}`}>
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center p-0.5 overflow-hidden transition-all duration-300 group-hover:scale-105 bg-transparent">
+        {/* Brand Name with Increased Transparent Logo Wrapper Frame */}
+        <Link to="/" className={`flex items-center gap-3 font-bold text-xl tracking-tight group ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center p-0.5 overflow-hidden transition-all duration-300 group-hover:scale-105 bg-transparent">
             <img 
               src="/logo.png" 
               alt="WebShield AI Logo" 
@@ -101,26 +101,26 @@ export default function Navbar() {
           </div>
           <span className="flex items-center tracking-tight">
             <span>WebShield</span>
-            <span className="ml-1.5 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-cyan-400 to-indigo-500 text-black font-extrabold text-[11px] tracking-wider shadow-sm">AI</span>
+            <span className="ml-1.5 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white font-extrabold text-[11px] tracking-wider shadow-sm">AI</span>
           </span>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className={`hidden lg:flex items-center gap-1 pl-4 border-l ${isDark ? 'border-[#151F33]' : 'border-slate-200'}`}>
+        <div className={`hidden lg:flex items-center gap-1 pl-4 border-l ${isDark ? 'border-[#231E33]' : 'border-slate-200'}`}>
           <button
             onClick={() => navigate('/scanner')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#0D1322]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#13111C]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <ScanSearch className="w-3.5 h-3.5 text-cyan-400" />
+            <ScanSearch className="w-3.5 h-3.5 text-[#8B5CF6]" />
             <span>Scan a URL</span>
           </button>
 
           <button
             onClick={() => navigate('/scam-report')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#0D1322]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#13111C]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
@@ -130,20 +130,20 @@ export default function Navbar() {
           <button
             onClick={() => navigate('/scan-trends')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#0D1322]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#13111C]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <TrendingUp className="w-3.5 h-3.5 text-indigo-400" />
+            <TrendingUp className="w-3.5 h-3.5 text-[#EC4899]" />
             <span>Scan Trends</span>
           </button>
 
           <button
             onClick={scrollToHowItWorks}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
-              isDark ? 'text-neutral-300 hover:text-white hover:bg-[#0D1322]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#13111C]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+            <HelpCircle className="w-3.5 h-3.5 text-[#8B5CF6]" />
             <span>How It Works</span>
           </button>
         </div>
@@ -151,7 +151,7 @@ export default function Navbar() {
         {/* Navigation Dropdown Menu (Mobile / Collapsed) */}
         {isOpen && (
           <div className={`absolute top-14 left-0 w-60 border rounded-2xl shadow-2xl p-2 z-50 animate-fade-in space-y-1 ${
-            isDark ? 'bg-[#13111C] border-[#231E33]' : 'bg-white border-slate-200 text-slate-800'
+            isDark ? 'bg-[#13111C] border-[#231E33] text-[#FAFAFA]' : 'bg-white border-slate-200 text-slate-800'
           }`}>
             <div className={`px-3 py-2 text-[10px] font-semibold uppercase tracking-wider ${isDark ? 'text-neutral-500' : 'text-slate-400'}`}>
               Navigation
@@ -163,7 +163,7 @@ export default function Navbar() {
                 navigate('/history');
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition text-left cursor-pointer ${
-                isDark ? 'text-neutral-300 hover:text-white hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               <History className="w-4 h-4 text-[#8B5CF6]" />
@@ -176,10 +176,10 @@ export default function Navbar() {
                 navigate('/scanner');
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition text-left cursor-pointer ${
-                isDark ? 'text-neutral-300 hover:text-white hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <ScanSearch className="w-4 h-4 text-emerald-400" />
+              <ScanSearch className="w-4 h-4 text-[#8B5CF6]" />
               <span>Scan a URL</span>
             </button>
 
@@ -189,7 +189,7 @@ export default function Navbar() {
                 navigate('/scam-report');
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition text-left cursor-pointer ${
-                isDark ? 'text-neutral-300 hover:text-white hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               <AlertOctagon className="w-4 h-4 text-rose-400" />
@@ -202,10 +202,10 @@ export default function Navbar() {
                 navigate('/scan-trends');
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition text-left cursor-pointer ${
-                isDark ? 'text-neutral-300 hover:text-white hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <TrendingUp className="w-4 h-4 text-[#8B5CF6]" />
+              <TrendingUp className="w-4 h-4 text-[#EC4899]" />
               <span>Scan Trends</span>
             </button>
 
@@ -215,7 +215,7 @@ export default function Navbar() {
                 scrollToHowItWorks();
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition text-left cursor-pointer ${
-                isDark ? 'text-neutral-300 hover:text-white hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               <HelpCircle className="w-4 h-4 text-[#8B5CF6]" />
@@ -225,7 +225,7 @@ export default function Navbar() {
             <div className={`border-t my-1 pt-1 ${isDark ? 'border-[#231E33]' : 'border-slate-200'}`}></div>
 
             <div className={`px-3 py-2 flex items-center justify-between rounded-xl ${
-              isDark ? 'bg-[#1A1528]/50 text-neutral-300' : 'bg-slate-100 text-slate-800'
+              isDark ? 'bg-[#1A1528]/50 text-neutral-400' : 'bg-slate-100 text-slate-800'
             }`}>
               <span className="text-xs font-medium">Theme Mode</span>
               <ThemeToggle showLabel={true} />
@@ -237,7 +237,7 @@ export default function Navbar() {
                 navigate('/settings');
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs transition text-left cursor-pointer ${
-                isDark ? 'text-neutral-300 hover:text-white hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+                isDark ? 'text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#1A1528]' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               <Settings className="w-4 h-4 text-[#EC4899]" />
@@ -256,7 +256,7 @@ export default function Navbar() {
             <div>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-2.5 bg-gradient-to-r from-[#13111C] to-[#1A1528] hover:from-[#1A1528] hover:to-[#221B36] border border-[#8B5CF6]/40 hover:border-[#8B5CF6] text-white px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer shadow-lg shadow-purple-950/30 ring-1 ring-[#8B5CF6]/20 hover:ring-[#8B5CF6]/50"
+                className="flex items-center gap-2.5 bg-gradient-to-r from-[#13111C] to-[#1A1528] hover:from-[#1A1528] hover:to-[#221B36] border border-[#8B5CF6]/40 hover:border-[#8B5CF6] text-[#FAFAFA] px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98] cursor-pointer shadow-lg shadow-purple-950/30 ring-1 ring-[#8B5CF6]/20 hover:ring-[#8B5CF6]/50"
               >
                 {currentUser.photoURL ? (
                   <img src={currentUser.photoURL} alt="Profile" className="w-5 h-5 rounded-full object-cover ring-1 ring-[#8B5CF6]/50" />
@@ -270,7 +270,7 @@ export default function Navbar() {
 
               {/* Profile Dropdown Menu */}
               {profileOpen && (
-                <div className="absolute top-12 right-0 w-60 bg-[#13111C] border border-[#231E33] rounded-2xl shadow-2xl p-3 z-50 animate-fade-in">
+                <div className="absolute top-12 right-0 w-60 bg-[#13111C] border border-[#231E33] rounded-2xl shadow-2xl p-3 z-50 animate-fade-in text-[#FAFAFA]">
                   <div className="px-3 py-2 border-b border-[#231E33] mb-2">
                     <p className="text-xs font-semibold text-white truncate">{currentUser.displayName || 'SecOps User'}</p>
                     <p className="text-[10px] text-neutral-400 truncate mt-0.5">{currentUser.email}</p>
@@ -281,7 +281,7 @@ export default function Navbar() {
                       setProfileOpen(false);
                       navigate('/Profile');
                     }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-neutral-300 hover:text-white hover:bg-[#1A1528] transition text-left cursor-pointer mb-1"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-neutral-400 hover:text-[#FAFAFA] hover:bg-[#1A1528] transition text-left cursor-pointer mb-1"
                   >
                     <UserCircle className="w-4 h-4 text-[#8B5CF6]" />
                     <span>View Profile</span>
@@ -300,7 +300,7 @@ export default function Navbar() {
           ) : (
             <Link 
               to="/login" 
-              className="bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:opacity-95 text-white font-semibold px-4 py-2 rounded-xl transition flex items-center gap-2 text-sm shadow-md shadow-cyan-950/40"
+              className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white font-semibold px-4 py-2 rounded-xl transition flex items-center gap-2 text-sm shadow-md shadow-purple-950/50"
             >
               <LogIn className="w-4 h-4" />
               Sign In
