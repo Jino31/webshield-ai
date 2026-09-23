@@ -13,6 +13,7 @@ import Admin from './pages/Admin';
 import About from './pages/About';
 import Feedback from './pages/Feedback';
 import ShieldSenseAI from './components/ShieldAIBot';
+import EntryAnimation from './components/EntryAnimation'; // <-- Added missing import
 
 function AppContent() {
   const { isDark } = useTheme();
@@ -24,6 +25,7 @@ function AppContent() {
 
   useEffect(() => {
     if (showIntro) {
+      sessionStorage.setItem('webshield_intro_played', 'true'); // Save session flag immediately
       const timer = setTimeout(() => {
         setShowIntro(false);
       }, 3000);
@@ -37,6 +39,9 @@ function AppContent() {
         isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
       }`}
     >
+      {/* Upgraded 3-Second Startup Animation Screen */}
+      {showIntro && <EntryAnimation />}
+
       <Navbar />
       <main className="flex-1 flex flex-col items-center w-full">
         <Routes>
@@ -71,4 +76,4 @@ function App() {
   );
 }
 
- export default App;
+export default App;
