@@ -6,6 +6,11 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const { GoogleGenAI } = require('@google/genai');
+const { checkThreatFeeds } = require('./services/threatFeeds');
+const { analyzeDomain, extractDomain } = require('./services/domainAnalysis');
+const { computeRiskScore } = require('./services/riskScore');
+const { getChatbotAdvice } = require('./services/chatbotAdvice');
+const { validateReport } = require('./services/reportValidation');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -44,6 +49,7 @@ const scanSchema = new mongoose.Schema({
   status: String,
   confidenceScore: Number,
   features: Object,
+  riskScore: Number,
   createdAt: { type: Date, default: Date.now }
 });
 const ScanLog = mongoose.models.ScanLog || mongoose.model('ScanLog', scanSchema);
@@ -67,19 +73,6 @@ const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog',
 // ==========================================
 // FEEDBACK API ENDPOINT (Bulletproofed)
 // ==========================================
-const feedbackSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, trim: true, lowercase: true },
-  category: { type: String, required: true },
-  message: { type: String, required: true, maxlength: 1000 },
-  websiteUrl: { type: String, trim: true, default: null },
-  userId: { type: String, default: null },
-  reviewed: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now }
-});
-
-const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
-
 app.post('/api/feedback', async (req, res) => {
   try {
     const { name, email, category, message, websiteUrl, userId } = req.body;
@@ -113,6 +106,71 @@ app.post('/api/feedback', async (req, res) => {
     });
   }
 });
+// ==========================================
+// SCAM REPORT SCHEMA & ROUTE
+// Per-domain victim reports — verified reports feed the risk score
+// computed in /api/scan below. Kept separate from FeedbackLog above
+// since ReportScam.jsx collects url/category/description/proof, not
+// name/email like the general Feedback page does.
+// ==========================================
+const scamReportSchema = new mongoose.Schema({
+  url: { type: String, required: true, trim: true },
+  domain: { type: String, required: true, trim: true, lowercase: true, index: true },
+  category: { type: String, required: true },
+  description: { type: String, trim: true, default: '' },
+  proofUrl: { type: String, trim: true, default: null },
+  verified: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+const ScamReport = mongoose.models.ScamReport || mongoose.model('ScamReport', scamReportSchema);
+
+app.post('/api/report-scam', async (req, res) => {
+  try {
+    const { url, category, description, proofUrl } = req.body;
+    if (!url || !category) {
+      return res.status(400).json({ success: false, error: 'URL and category are required.' });
+    }
+
+    let domain;
+    try {
+      domain = extractDomain(url);
+    } catch {
+      return res.status(400).json({ success: false, error: 'Enter a valid URL, e.g. https://example.com' });
+    }
+
+    const isDuplicateProofUrl = proofUrl
+      ? Boolean(await ScamReport.findOne({ proofUrl: proofUrl.trim() }))
+      : false;
+
+    const { verified, issues } = validateReport({ description, proofUrl, isDuplicateProofUrl });
+
+    const report = await ScamReport.create({
+      url: url.trim(),
+      domain,
+      category,
+      description: description ? description.trim() : '',
+      proofUrl: proofUrl ? proofUrl.trim() : null,
+      verified
+    });
+
+    res.status(201).json({
+      success: true,
+      message: verified
+        ? "Report received and verified — it now counts toward this site's risk score."
+        : 'Report received. Add more detail or a proof link so it counts toward the risk score.',
+      verified,
+      issues,
+      reportId: report._id
+    });
+  } catch (error) {
+    console.error('Scam report submission error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: "We couldn't process your report right now. Please try again later."
+    });
+  }
+});
+
 // Main Scan Route: Forwards URL to Python FastAPI Microservice
 app.post('/api/scan', async (req, res) => {
   const { url } = req.body;
@@ -122,14 +180,43 @@ app.post('/api/scan', async (req, res) => {
 
   try {
     const mlResponse = await axios.post('http://127.0.0.1:8000/predict', { url });
-    const result = mlResponse.data;
+    const mlResult = mlResponse.data;
+
+    // Objective signals your lexical-feature model doesn't see: domain age/SSL/typosquat,
+    // known threat-feed listings, and verified victim reports for this domain.
+    let domainInfo = null;
+    let threatFeeds = null;
+    let verifiedReportCount = 0;
+
+    try {
+      domainInfo = await analyzeDomain(url);
+    } catch (e) {
+      console.log('Domain analysis skipped:', e.message);
+    }
+
+    try {
+      threatFeeds = await checkThreatFeeds(url);
+    } catch (e) {
+      console.log('Threat feed check skipped:', e.message);
+    }
+
+    if (domainInfo?.domain) {
+      verifiedReportCount = await ScamReport.countDocuments({
+        domain: domainInfo.domain,
+        verified: true
+      }).catch(() => 0);
+    }
+
+    const risk = computeRiskScore({ mlResult, threatFeeds, domainInfo, verifiedReportCount });
+    const advice = getChatbotAdvice(risk, domainInfo?.domain || mlResult.url);
 
     try {
       await ScanLog.create({
-        url: result.url,
-        status: result.status,
-        confidenceScore: result.confidence_score,
-        features: result.features_analyzed
+        url: mlResult.url,
+        status: mlResult.status,
+        confidenceScore: mlResult.confidence_score,
+        features: mlResult.features_analyzed,
+        riskScore: risk.score
       });
     } catch (dbErr) {
       console.log("Could not save to DB, skipping log.");
@@ -137,7 +224,7 @@ app.post('/api/scan', async (req, res) => {
 
     res.json({
       success: true,
-      data: result
+      data: { ...mlResult, domainInfo, threatFeeds, verifiedReportCount, risk, advice }
     });
   } catch (error) {
     console.error("Error communicating with ML service:", error.message);

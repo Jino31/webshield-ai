@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import Scanner from './pages/Scanner';
 import Login from './pages/Login';
 import History from './pages/History';
 import Settings from './pages/Settings';
@@ -28,6 +29,7 @@ function AppContent() {
       <main className="flex-1 flex flex-col items-center">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/scanner" element={<Scanner />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Login />} />
           <Route path="/signup" element={<Login />} />

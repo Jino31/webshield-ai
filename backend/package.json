@@ -19,6 +19,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
     "firebase-admin": "^14.4.0",
-    "mongoose": "^9.10.1"
+    "mongoose": "^9.10.1",
+    "whois-json": "^2.0.4"
   }
 }
