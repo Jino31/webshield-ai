@@ -31,7 +31,7 @@ function AppContent() {
     if (showIntro) {
       const timer = setTimeout(() => {
         setShowIntro(false);
-      }, 3000);
+      }, 2500); // Adjusted total duration to match smoother fade
       return () => clearTimeout(timer);
     }
   }, [showIntro]);
@@ -83,14 +83,15 @@ function AppContent() {
       {/* Global Floating ShieldSense AI Assistant - hidden while intro animation runs */}
       {!showIntro && <ShieldSenseAI />}
 
-      {/* Required Animation Keyframes */}
+      {/* Updated Animation Keyframes with smooth fade out */}
       <style>{`
         @keyframes fadeOut {
-          from { opacity: 1; }
-          to { opacity: 0; }
+          0% { opacity: 1; pointer-events: auto; }
+          70% { opacity: 1; }
+          100% { opacity: 0; pointer-events: none; }
         }
         .animate-fadeOut {
-          animation: fadeOut 0.4s ease-in-out 2.6s forwards;
+          animation: fadeOut 0.6s ease-in-out 1.9s forwards;
         }
 
         @keyframes cinematicReveal {
