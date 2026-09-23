@@ -1,47 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WebShield AI</title>
-    <style>
-      /* Native loader styling to prevent blank screens */
-      #native-loader {
-        position: fixed;
-        inset: 0;
-        background-color: #0A0A0F;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 99999;
-        transition: opacity 0.3s ease;
-      }
-      #native-loader img {
-        width: 60px;
-        height: 60px;
-        object-contain: contain;
-        margin-bottom: 16px;
-      }
-      #native-loader h1 {
-        color: white;
-        font-family: system-ui, -apple-system, sans-serif;
-        font-size: 1.25rem;
-        font-weight: bold;
-        background: linear-gradient(to right, #8B5CF6, #EC4899);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-    </style>
   </head>
-  <body style="background-color: #0A0A0F; margin: 0;">
-    <!-- Instant Native Splash Screen -->
-    <div id="native-loader">
-      <img src="/logo.png" alt="WebShield AI Logo" />
-      <h1>WebShield AI</h1>
-    </div>
-
+  <body style="background-color: #0A0A0F; color: #FAFAFA; margin: 0;">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
