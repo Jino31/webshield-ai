@@ -180,7 +180,7 @@ export default function Home() {
       {showIntroAnimation && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0A0A0F]/95 backdrop-blur-2xl animate-fadeIn transition-opacity duration-700">
           <div className="flex flex-col items-center space-y-6 animate-pulse">
-            <div className="w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden shadow-2xl shadow-purple-950/60 border border-[#8B5CF6]/30 bg-[#13111C]">
+            <div className="w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden shadow-2xl shadow-purple-950/60 bg-[#13111C]">
               <img 
                 src="/logo.png" 
                 alt="WebShield AI Logo" 
@@ -192,7 +192,7 @@ export default function Home() {
                 Welcome to WebShield AI
               </h2>
               <p className="text-xs uppercase tracking-widest text-neutral-400 font-mono">
-                Initializing Secure Environment...
+                INITIALIZING SECURE ENVIRONMENT...
               </p>
             </div>
           </div>
@@ -571,7 +571,7 @@ export default function Home() {
           </div>
 
           <div className="space-y-3">
-            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>RESOURCES</h4>
+            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>RESOURCE</h4>
             <ul className="space-y-2.5">
               <li><button onClick={scrollToHowItWorks} className="hover:text-[#8B5CF6] transition">How It Works</button></li>
               <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">Case Studies</button></li>
@@ -583,7 +583,7 @@ export default function Home() {
           <div className="space-y-3">
             <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>COMPANY</h4>
             <ul className="space-y-2.5">
-              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] innovative">About</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">About</button></li>
               <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Contact</button></li>
               <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Feedback</button></li>
               <li><button onClick={() => navigate('/settings')} className="hover:text-[#8B5CF6] transition">Changelog</button></li>
@@ -608,8 +608,8 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Render ShieldSense Assistant with Active Scan Context Separately */}
-      <ShieldAIBot scanContext={scanResult} />
+      {/* Render ShieldSense Assistant conditionally only AFTER the introductory animation completes */}
+      {!showIntroAnimation && <ShieldAIBot scanContext={scanResult} />}
     </div>
   );
 }
