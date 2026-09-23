@@ -1,5 +1,3 @@
-import { themeColors } from './src/style/colors.js';
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -10,12 +8,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        deep: themeColors.deep,
-        card: themeColors.card,
-        elevated: themeColors.elevated,
-        borderline: themeColors.borderline,
-        primary: themeColors.primary,
-        secondary: themeColors.secondary,
+        deep: 'var(--bg-deep)',
+        card: 'var(--bg-card)',
+        elevated: 'var(--bg-elevated)',
+        borderline: 'var(--borderline)',
+        primary: 'var(--primary)',
+        secondary: 'var(--secondary)',
       },
     },
   },
