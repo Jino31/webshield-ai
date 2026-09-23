@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bot, X, Send, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { aiAssistantService } from '../services/aiAssistantService';
 
 export default function ShieldAIBot({ scanContext = null }) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -41,11 +43,35 @@ export default function ShieldAIBot({ scanContext = null }) {
     };
   }, [isOpen]);
 
+  // Page keyword router mapping
+  const routeMap = {
+    'home': { path: '/', name: 'Home' },
+    'dashboard': { path: '/', name: 'Home' },
+    'login': { path: '/login', name: 'Login' },
+    'signin': { path: '/login', name: 'Login' },
+    'signup': { path: '/login', name: 'Login' },
+    'history': { path: '/history', name: 'Scan History' },
+    'scans': { path: '/history', name: 'Scan History' },
+    'settings': { path: '/settings', name: 'Settings' },
+    'profile': { path: '/profile', name: 'Profile' },
+    'account': { path: '/profile', name: 'Profile' },
+    'scam report': { path: '/scam-report', name: 'Report a Scam' },
+    'report scam': { path: '/scam-report', name: 'Report a Scam' },
+    'scan trends': { path: '/scan-trends', name: 'Scan Trends' },
+    'trends': { path: '/scan-trends', name: 'Scan Trends' },
+    'admin': { path: '/admin', name: 'Admin Dashboard' },
+    'dashboard admin': { path: '/admin', name: 'Admin Dashboard' },
+    'about': { path: '/about', name: 'About' },
+    'feedback': { path: '/feedback', name: 'Feedback Center' },
+    'comments': { path: '/feedback', name: 'Feedback Center' }
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!inputMessage.trim() || isTyping) return;
 
-    const userText = inputMessage;
+    const userText = inputMessage.trim();
+    const lowerText = userText.toLowerCase();
     const userMessage = { sender: 'user', text: userText };
 
     setMessages(prev => [...prev, userMessage]);
@@ -53,6 +79,29 @@ export default function ShieldAIBot({ scanContext = null }) {
     setIsTyping(true);
 
     try {
+      // Check if user is asking to navigate to a page
+      let matchedRoute = null;
+      for (const [keyword, routeInfo] of Object.entries(routeMap)) {
+        if (lowerText === keyword || lowerText.includes(`go to ${keyword}`) || lowerText.includes(`open ${keyword}`) || lowerText.includes(`navigate to ${keyword}`)) {
+          matchedRoute = routeInfo;
+          break;
+        }
+      }
+
+      if (matchedRoute) {
+        setMessages(prev => [
+          ...prev,
+          { sender: 'bot', text: `Taking you to the ${matchedRoute.name} page right now! 🚀` }
+        ]);
+        setIsTyping(false);
+        setTimeout(() => {
+          navigate(matchedRoute.path);
+          setIsOpen(false);
+        }, 1000);
+        return;
+      }
+
+      // Otherwise, query the AI Assistant Service
       const responseText = await aiAssistantService.sendMessage(userText, scanContext);
       setMessages(prev => [...prev, { sender: 'bot', text: responseText }]);
     } catch (err) {
@@ -104,7 +153,7 @@ export default function ShieldAIBot({ scanContext = null }) {
                   ShieldSense <Sparkles className="w-3.5 h-3.5 text-[#22D3EE]" />
                 </h3>
                 <p className="text-xs text-emerald-400 flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Online • AI Security Assistant
+                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Online • AI Navigator & Assistant
                 </p>
               </div>
             </div>
@@ -128,7 +177,7 @@ export default function ShieldAIBot({ scanContext = null }) {
               ) : (
                 <>
                   <ShieldCheck className="w-4 h-4 text-neutral-400 shrink-0" />
-                  <span>No scan selected</span>
+                  <span>Type a page name to jump anywhere</span>
                 </>
               )}
             </span>
@@ -155,7 +204,7 @@ export default function ShieldAIBot({ scanContext = null }) {
             {isTyping && (
               <div className="flex justify-start">
                 <div className="bg-[#13111C] border border-neutral-800 px-4 py-3 rounded-2xl rounded-bl-none text-sm text-white flex items-center gap-2.5">
-                  <span className="text-[#22D3EE] font-medium">ShieldSense is analyzing</span>
+                  <span className="text-[#22D3EE] font-medium">ShieldSense is processing</span>
                   <span className="flex gap-1">
                     <span className="w-2 h-2 bg-[#22D3EE] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
                     <span className="w-2 h-2 bg-[#22D3EE] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
@@ -167,46 +216,30 @@ export default function ShieldAIBot({ scanContext = null }) {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Suggestion Pills */}
+          {/* Quick Page Shortcut Pills */}
           <div className="px-4 py-2.5 bg-[#13111C]/80 border-t border-neutral-800 flex gap-2 overflow-x-auto no-scrollbar">
-            {scanContext ? (
-              <>
-                <button
-                  onClick={() => handleQuickPrompt("Explain my scan result")}
-                  className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium"
-                >
-                  Explain my scan
-                </button>
-                <button
-                  onClick={() => handleQuickPrompt("Why was this URL flagged?")}
-                  className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium"
-                >
-                  Why was this flagged?
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => handleQuickPrompt("How does WebShield detect phishing?")}
-                  className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium"
-                >
-                  How does detection work?
-                </button>
-                <button
-                  onClick={() => handleQuickPrompt("What should I do if I clicked a phishing link?")}
-                  className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium"
-                >
-                  Clicked a phishing link?
-                </button>
-              </>
-            )}
+            <button onClick={() => handleQuickPrompt("admin")} className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+              Admin 🛡️
+            </button>
+            <button onClick={() => handleQuickPrompt("profile")} className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+              Profile 👤
+            </button>
+            <button onClick={() => handleQuickPrompt("settings")} className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+              Settings ⚙️
+            </button>
+            <button onClick={() => handleQuickPrompt("history")} className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+              History 📊
+            </button>
+            <button onClick={() => handleQuickPrompt("feedback")} className="px-3 py-1.5 rounded-xl bg-[#05070A] border border-neutral-800 hover:border-[#22D3EE]/40 text-xs text-white whitespace-nowrap transition cursor-pointer font-medium">
+              Feedback 💬
+            </button>
           </div>
 
           {/* Chat Input Form */}
           <form onSubmit={handleSendMessage} className="p-3.5 bg-[#13111C] border-t border-neutral-800 flex items-center gap-2">
             <input
               type="text"
-              placeholder="Ask ShieldSense about security..."
+              placeholder="Type page name or security question..."
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               disabled={isTyping}
@@ -224,7 +257,7 @@ export default function ShieldAIBot({ scanContext = null }) {
 
           {/* Security Disclaimer */}
           <div className="px-3 py-2 bg-[#05070A] text-[10px] text-neutral-300 font-medium text-center border-t border-neutral-900">
-            AI guidance is informational and does not guarantee website safety.
+            Type any page name (e.g. admin, profile, history) to jump instantly.
           </div>
 
         </div>

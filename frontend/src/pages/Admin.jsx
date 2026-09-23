@@ -20,13 +20,8 @@ import {
   RefreshCw,
   CheckCircle2,
   ArrowLeft,
-  Sun,
-  Moon,
-  Sparkles,
   Lock,
   LogOut,
-  Palette,
-  ChevronDown,
   Send
 } from 'lucide-react';
 
@@ -44,10 +39,9 @@ export default function Admin() {
   const [unlocking, setUnlocking] = useState(false);
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
 
-  // UI States (6 Tabs & Theme Dropdown)
+  // UI States (6 Tabs)
   const [activeTab, setActiveTab] = useState('dashboard');
-  const { theme, setTheme } = useTheme();
-  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+  const { theme } = useTheme();
 
   // Telemetry Data
   const [stats, setStats] = useState(null);
@@ -88,7 +82,7 @@ export default function Admin() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Unlock handler with 3-second Welcome Animation
+  // Unlock handler with Luxury Welcome Animation
   const handleUnlock = async (e) => {
     e.preventDefault();
     setPasswordError('');
@@ -116,37 +110,49 @@ export default function Admin() {
     }
   };
 
+  // Optimized Non-Blocking Real-Time Telemetry Fetcher
   const fetchRealtimeData = useCallback(async () => {
     if (!adminUnlocked) return;
-    setLoadingData(true);
+    
+    if (!stats) {
+      setLoadingData(true);
+    }
     setErrorData(null);
+
     try {
-      const [sData, uData, hData, cData, adData] = await Promise.all([
-        adminService.getAdminStats(),
-        adminService.getUsers(),
-        adminService.getSystemHealth(),
-        adminService.getComments(),
-        adminService.getAdConfig()
-      ]);
+      // 1. Fetch lightweight stats immediately so the dashboard shell pops open instantly
+      const sData = await adminService.getAdminStats().catch(() => null);
       setStats(sData);
-      setUsersList(uData);
-      setHealth(hData);
-      setCommentsList(cData);
-      if (adData) {
-        setAdLabel(adData.label || '');
-        setAdUrl(adData.url || '');
-        setAdEnabled(adData.enabled ?? true);
-      }
+      setLoadingData(false);
+
+      // 2. Fetch secondary lists asynchronously in the background
+      adminService.getUsers().then(u => setUsersList(u || [])).catch(() => {});
+      adminService.getSystemHealth().then(h => setHealth(h || [])).catch(() => {});
+      adminService.getComments().then(c => setCommentsList(c || [])).catch(() => {});
+      adminService.getAdConfig().then(adData => {
+        if (adData) {
+          setAdLabel(adData.label || '');
+          setAdUrl(adData.url || '');
+          setAdEnabled(adData.enabled ?? true);
+        }
+      }).catch(() => {});
+
     } catch (err) {
       setErrorData('Failed to connect to backend server.');
-    } finally {
       setLoadingData(false);
     }
-  }, [adminUnlocked]);
+  }, [adminUnlocked, stats]);
 
+  // Real-time auto-refresh polling every 10 seconds
   useEffect(() => {
-    fetchRealtimeData();
-  }, [fetchRealtimeData]);
+    if (adminUnlocked) {
+      fetchRealtimeData();
+      const interval = setInterval(() => {
+        fetchRealtimeData();
+      }, 10000);
+      return () => clearInterval(interval);
+    }
+  }, [adminUnlocked, fetchRealtimeData]);
 
   const themeClasses = {
     dark: 'bg-[#05070A] text-[#FAFAFA]',
@@ -168,24 +174,27 @@ export default function Admin() {
     );
   }
 
-  // 3-Second Welcome Animation Screen
+  // Upgraded Luxury Welcome Animation Screen
   if (showWelcomeAnimation) {
     return (
-      <div className="fixed inset-0 w-screen h-screen bg-[#05070A] text-white flex flex-col items-center justify-center z-50 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#8B5CF6]/10 via-transparent to-[#EC4899]/10 animate-pulse pointer-events-none" />
-        <div className="flex flex-col items-center space-y-6 text-center relative z-10 animate-fadeIn">
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#8B5CF6] to-[#EC4899] p-0.5 shadow-2xl shadow-purple-900/50 flex items-center justify-center">
-            <div className="w-full h-full bg-[#0D1117] rounded-[22px] flex items-center justify-center text-[#8B5CF6]">
-              <ShieldCheck className="w-10 h-10 animate-bounce" />
+      <div className="fixed inset-0 w-screen h-screen bg-[#07070B] text-white flex flex-col items-center justify-center z-50 overflow-hidden">
+        <div className="absolute w-[600px] h-[600px] bg-gradient-to-tr from-[#8B5CF6]/20 via-[#EC4899]/15 to-transparent rounded-full blur-[160px] animate-pulse pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.08)_0,transparent_75%)] pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col items-center p-12 rounded-[32px] bg-[#12111A]/60 border border-white/10 backdrop-blur-2xl shadow-[0_0_100px_rgba(139,92,246,0.25)] animate-fadeIn">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] blur-2xl rounded-full opacity-70 animate-pulse" />
+            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#1A1829] to-[#0A0A0F] flex items-center justify-center p-3 shadow-2xl relative z-10 border border-purple-400/30 text-[#8B5CF6]">
+              <ShieldCheck className="w-12 h-12 animate-bounce" />
             </div>
           </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-purple-200 to-[#C4B5FD] bg-clip-text text-transparent">
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-purple-200 to-[#C4B5FD] bg-clip-text text-transparent drop-shadow-md">
               Welcome You Admin
             </h1>
-            <p className="text-xs text-neutral-400 tracking-widest uppercase">Initializing WebShield Security Center...</p>
+            <p className="text-neutral-400 text-xs font-mono uppercase tracking-[0.25em]">Initializing WebShield Security Center...</p>
           </div>
-          <div className="w-48 h-1.5 bg-neutral-800 rounded-full overflow-hidden mt-4">
+          <div className="w-48 h-1.5 bg-neutral-800 rounded-full overflow-hidden mt-6">
             <div className="w-full h-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] animate-[shimmer_1.5s_infinite]" />
           </div>
         </div>
@@ -198,7 +207,7 @@ export default function Admin() {
     return (
       <div className="fixed inset-0 w-screen h-screen bg-[#05070A] text-white flex items-center justify-center p-4 relative z-50 overflow-hidden">
         <div className="absolute top-6 left-6 z-20">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D1117]/80 backdrop-blur-xl border border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50 transition cursor-pointer shadow-lg">
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0D1117]/80 backdrop-blur-xl border border-neutral-800 text-xs font-medium text-neutral-300 hover:text-white hover:bg-neutral-800/50 transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg">
             <ArrowLeft className="w-4 h-4" /> Back to Home
           </button>
         </div>
@@ -248,7 +257,7 @@ export default function Admin() {
                 </div>
               )}
 
-              <button type="submit" disabled={unlocking} className="w-full h-12 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 text-white text-xs font-semibold shadow-lg shadow-purple-900/30 transition disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer">
+              <button type="submit" disabled={unlocking} className="w-full h-12 rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-semibold shadow-lg shadow-purple-900/30 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer">
                 {unlocking ? <><RefreshCw className="w-4 h-4 animate-spin" /> Verifying Key...</> : <><ShieldCheck className="w-4 h-4" /> Access Admin Dashboard</>}
               </button>
             </form>
@@ -266,59 +275,17 @@ export default function Admin() {
         </div>
       )}
 
-      {/* Header with Top-Left Back Button & Top-Right Theme Dropdown & Sign Out */}
+      {/* Header */}
       <header className={`w-full h-16 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white border-slate-300 text-slate-900 shadow-sm' : theme === 'unique' ? 'bg-[#120224]/95 border-fuchsia-500/40 shadow-lg shadow-fuchsia-950/50' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/')} className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer ${theme === 'light' ? 'border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200' : 'border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/30'}`}>
+          <button onClick={() => navigate('/')} className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer ${theme === 'light' ? 'border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200' : 'border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/30'}`}>
             <ArrowLeft className="w-4 h-4" /> Home
           </button>
           <span className={`font-bold text-sm tracking-tight ml-2 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>WebShield Admin</span>
         </div>
 
-        {/* Right Corner Controls: Theme Dropdown & Sign Out */}
-        <div className="flex items-center gap-3 relative">
-          {/* Theme Dropdown Button */}
-          <div className="relative">
-            <button
-              onClick={() => setThemeDropdownOpen(v => !v)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${
-                theme === 'unique'
-                  ? 'bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white border-fuchsia-400 shadow-lg shadow-fuchsia-500/40 animate-pulse'
-                  : theme === 'light'
-                  ? 'bg-slate-200 border-slate-300 text-slate-900 hover:bg-slate-300'
-                  : 'bg-black/20 border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/40'
-              }`}
-            >
-              <Palette className="w-3.5 h-3.5" />
-              <span>Theme: <span className="capitalize">{theme}</span></span>
-              <ChevronDown className="w-3.5 h-3.5 opacity-70" />
-            </button>
-
-            {themeDropdownOpen && (
-              <div className={`absolute right-0 top-12 w-44 border rounded-2xl shadow-2xl p-2 z-50 space-y-1 ${cardTheme[theme]}`}>
-                <button
-                  onClick={() => { setTheme('light'); setThemeDropdownOpen(false); }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${theme === 'light' ? 'bg-purple-500/20 text-purple-700 font-bold' : 'hover:bg-neutral-800/20'}`}
-                >
-                  <Sun className="w-3.5 h-3.5" /> Light
-                </button>
-                <button
-                  onClick={() => { setTheme('dark'); setThemeDropdownOpen(false); }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${theme === 'dark' ? 'bg-[#8B5CF6]/30 text-[#C4B5FD] font-bold' : 'hover:bg-neutral-800/20'}`}
-                >
-                  <Moon className="w-3.5 h-3.5" /> Dark
-                </button>
-                <button
-                  onClick={() => { setTheme('unique'); setThemeDropdownOpen(false); }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${theme === 'unique' ? 'bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white shadow-md' : 'text-fuchsia-300 hover:bg-fuchsia-950/40'}`}
-                >
-                  <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '4s' }} /> Unique (Neon Glow)
-                </button>
-              </div>
-            )}
-          </div>
-
-          <button onClick={() => signOut(auth).then(() => navigate('/'))} className={`flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border transition cursor-pointer ${theme === 'light' ? 'border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-100' : 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10'}`}>
+        <div className="flex items-center gap-3">
+          <button onClick={() => signOut(auth).then(() => navigate('/'))} className={`flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer ${theme === 'light' ? 'border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-100' : 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10'}`}>
             <LogOut className="w-3.5 h-3.5" /> Sign Out
           </button>
         </div>
@@ -326,7 +293,7 @@ export default function Admin() {
 
       {/* Main Layout Area */}
       <div className="flex-1 flex flex-col md:flex-row">
-        {/* Sidebar - 6 Requested Buttons */}
+        {/* Sidebar */}
         <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-slate-50 border-slate-300' : theme === 'unique' ? 'bg-[#0E021A] border-fuchsia-500/30' : 'bg-[#0D1117] border-neutral-800'}`}>
           <div className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Navigation Console</div>
           {[
@@ -343,7 +310,7 @@ export default function Admin() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition text-left cursor-pointer ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold transition-all duration-300 transform hover:translate-x-1 active:scale-95 text-left cursor-pointer ${
                   isActive 
                     ? theme === 'unique' 
                       ? 'bg-gradient-to-r from-fuchsia-600/40 to-purple-600/40 border border-fuchsia-500 text-white shadow-lg shadow-fuchsia-950/60 font-bold ring-1 ring-fuchsia-400/50' 
@@ -364,7 +331,7 @@ export default function Admin() {
 
         {/* Content View */}
         <main className="flex-1 p-6 space-y-6 overflow-y-auto">
-          {loadingData ? (
+          {loadingData && !stats ? (
             <div className={`flex items-center justify-center h-64 text-xs font-semibold ${theme === 'light' ? 'text-slate-700' : 'text-neutral-300'}`}>
               <RefreshCw className="w-5 h-5 animate-spin text-[#8B5CF6] mr-2" /> Loading telemetry...
             </div>
@@ -379,10 +346,22 @@ export default function Admin() {
                 <div className="space-y-6">
                   <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>Dashboard Overview</h1>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Users</span><p className={`text-2xl font-black mt-1 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{stats?.totalUsers ?? 42}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Scans</span><p className="text-2xl font-black text-[#8B5CF6] mt-1">{stats?.totalScans ?? 0}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Safe URLs</span><p className="text-2xl font-black text-emerald-500 mt-1">{stats?.safeUrls ?? 0}</p></div>
-                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}><span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Threats Blocked</span><p className="text-2xl font-black text-rose-500 mt-1">{stats?.phishingDetected ?? 0}</p></div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Users</span>
+                      <p className={`text-2xl font-black mt-1 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{stats?.totalUsers ?? 0}</p>
+                    </div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Total Scans</span>
+                      <p className="text-2xl font-black text-[#8B5CF6] mt-1">{stats?.totalScans ?? 0}</p>
+                    </div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Safe URLs</span>
+                      <p className="text-2xl font-black text-emerald-500 mt-1">{stats?.safeUrls ?? 0}</p>
+                    </div>
+                    <div className={`border rounded-2xl p-5 ${cardTheme[theme]}`}>
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Threats Blocked</span>
+                      <p className="text-2xl font-black text-rose-500 mt-1">{stats?.phishingDetected ?? 0}</p>
+                    </div>
                   </div>
                 </div>
               )}
@@ -401,13 +380,15 @@ export default function Admin() {
                         </tr>
                       </thead>
                       <tbody className={`divide-y font-medium ${theme === 'light' ? 'divide-slate-200 text-slate-900' : 'divide-neutral-700/30'}`}>
-                        {usersList.map(u => (
+                        {usersList.length > 0 ? usersList.map(u => (
                           <tr key={u.id} className="py-3">
                             <td className="py-3"><p className={`font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{u.name}</p><p className={`text-[10px] font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>{u.email}</p></td>
                             <td className="py-3">{u.role}</td>
                             <td className="py-3"><span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">{u.status}</span></td>
                           </tr>
-                        ))}
+                        )) : (
+                          <tr><td colSpan="3" className="py-6 text-center opacity-70">Loading users...</td></tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -429,7 +410,7 @@ export default function Admin() {
                   }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
                     <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Button Label</label><input type="text" value={adLabel} onChange={e => setAdLabel(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
                     <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Destination URL</label><input type="url" value={adUrl} onChange={e => setAdUrl(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
-                    <button type="submit" disabled={savingAd} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg cursor-pointer">{savingAd ? 'Saving...' : 'Save AD Config'}</button>
+                    <button type="submit" disabled={savingAd} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer">{savingAd ? 'Saving...' : 'Save AD Config'}</button>
                   </form>
                 </div>
               )}
@@ -451,7 +432,7 @@ export default function Admin() {
                   }} className={`border rounded-2xl p-6 space-y-4 ${cardTheme[theme]}`}>
                     <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Title</label><input type="text" value={annTitle} onChange={e => setAnnTitle(e.target.value)} className={`w-full h-11 px-4 rounded-xl border text-xs font-semibold outline-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
                     <div><label className={`block text-xs font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-neutral-200'}`}>Message</label><textarea rows="3" value={annMessage} onChange={e => setAnnMessage(e.target.value)} className={`w-full p-4 rounded-xl border text-xs font-semibold outline-none resize-none ${theme === 'light' ? 'bg-slate-50 border-slate-300 text-slate-950' : 'bg-black/20 border-neutral-700 text-white'}`} /></div>
-                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg cursor-pointer">{publishingAnn ? 'Publishing...' : 'Publish Announcement'}</button>
+                    <button type="submit" disabled={publishingAnn} className="px-5 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white text-xs font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer">{publishingAnn ? 'Publishing...' : 'Publish Announcement'}</button>
                   </form>
                 </div>
               )}
@@ -461,12 +442,12 @@ export default function Admin() {
                 <div className="space-y-6">
                   <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>System Monitor</h1>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {health.map((h, i) => (
+                    {health.length > 0 ? health.map((h, i) => (
                       <div key={i} className={`border rounded-2xl p-5 flex items-center justify-between ${cardTheme[theme]}`}>
                         <div><p className={`text-xs font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{h.service}</p><p className={`text-[10px] font-semibold mt-0.5 ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Latency: {h.latency}</p></div>
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">{h.status}</span>
                       </div>
-                    ))}
+                    )) : <p className={`text-xs font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Checking system health...</p>}
                   </div>
                 </div>
               )}
@@ -479,8 +460,7 @@ export default function Admin() {
                       <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>User Comment Receiver</h1>
                       <p className={`text-xs font-medium mt-1 ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Review and manage incoming user feedback messages.</p>
                     </div>
-                    {/* New Feedback Action Button */}
-                    <button onClick={() => showToast('Feedback inbox is synchronized in real-time.')} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg hover:opacity-90 transition cursor-pointer">
+                    <button onClick={() => showToast('Feedback inbox is synchronized in real-time.')} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer">
                       <Send className="w-3.5 h-3.5" /> Feedback Inbox ({commentsList.length})
                     </button>
                   </div>
@@ -498,7 +478,7 @@ export default function Admin() {
                         <div className={`flex justify-between items-center text-[10px] font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>
                           <span>Submitted {new Date(c.createdAt).toLocaleDateString()}</span>
                           {c.reviewed ? <span className="text-emerald-500 font-bold">Reviewed ✓</span> : (
-                            <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline font-bold cursor-pointer">Mark as Reviewed ✓</button>
+                            <button onClick={async () => { await adminService.markCommentReviewed(c._id); fetchRealtimeData(); showToast('Marked reviewed.'); }} className="text-[#8B5CF6] hover:underline font-bold cursor-pointer transition transform hover:scale-105">Mark as Reviewed ✓</button>
                           )}
                         </div>
                       </div>
