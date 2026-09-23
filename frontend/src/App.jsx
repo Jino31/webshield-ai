@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -16,6 +16,8 @@ import ShieldSenseAI from './components/ShieldAIBot';
 
 function AppContent() {
   const { isDark } = useTheme();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
   
   // Track introductory animation state globally in App
   const [showIntro, setShowIntro] = useState(() => {
@@ -102,8 +104,8 @@ function AppContent() {
         </Routes>
       </main>
 
-      {/* Global Floating ShieldSense AI Assistant - hidden while intro animation runs */}
-      {!showIntro && <ShieldSenseAI />}
+      {/* Global Floating ShieldSense AI Assistant - hidden during intro animation and on Admin routes */}
+      {!showIntro && !isAdminRoute && <ShieldSenseAI />}
 
       {/* High-End Luxury Keyframes & Transitions */}
       <style>{`
