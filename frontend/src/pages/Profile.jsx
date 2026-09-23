@@ -4,10 +4,8 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { 
   ArrowLeft, 
-  User, 
   ShieldCheck, 
   Mail, 
-  Calendar, 
   Key, 
   LogOut, 
   CheckCircle2, 
@@ -17,7 +15,8 @@ import {
   Check, 
   Lock, 
   Activity,
-  Sliders
+  Sliders,
+  Edit3
 } from 'lucide-react';
 
 export default function Profile() {
@@ -125,7 +124,7 @@ export default function Profile() {
       {/* Background Soft Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[#22D3EE]/5 rounded-full blur-[180px] pointer-events-none" />
 
-      {/* Main Wide Layout Container (fills width nicely without empty side gaps) */}
+      {/* Main Wide Layout Container */}
       <div className="relative z-10 w-full max-w-5xl flex flex-col gap-6">
         
         {/* Top Navigation & Header Row */}
@@ -146,42 +145,52 @@ export default function Profile() {
         {/* Profile Card Container */}
         <div className="w-full bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl space-y-8">
           
-          {/* Profile Header Banner */}
-          <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-neutral-800/80">
-            <div className="relative">
-              {user.photoURL ? (
-                <img 
-                  src={user.photoURL} 
-                  alt={`${displayName}'s avatar`} 
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-[#22D3EE]/30 shadow-lg shadow-cyan-950/40" 
-                />
-              ) : (
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[#22D3EE]/10 border border-[#22D3EE]/30 flex items-center justify-center text-[#22D3EE] font-bold text-2xl shadow-lg shadow-cyan-950/40">
-                  {getInitials(user.displayName, user.email)}
+          {/* Profile Header Banner with Edit Profile Button */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-8 border-b border-neutral-800/80">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="relative">
+                {user.photoURL ? (
+                  <img 
+                    src={user.photoURL} 
+                    alt={`${displayName}'s avatar`} 
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-[#22D3EE]/30 shadow-lg shadow-cyan-950/40" 
+                  />
+                ) : (
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[#22D3EE]/10 border border-[#22D3EE]/30 flex items-center justify-center text-[#22D3EE] font-bold text-2xl shadow-lg shadow-cyan-950/40">
+                    {getInitials(user.displayName, user.email)}
+                  </div>
+                )}
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-[#0D1117] flex items-center justify-center" title="Active Session">
+                  <span className="w-2 h-2 bg-black rounded-full"></span>
                 </div>
-              )}
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-[#0D1117] flex items-center justify-center" title="Active Session">
-                <span className="w-2 h-2 bg-black rounded-full"></span>
+              </div>
+
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{displayName}</h1>
+                <p className="text-xs sm:text-sm text-neutral-400 mt-1">{email}</p>
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#22D3EE]/10 border border-[#22D3EE]/20 text-[#22D3EE] text-xs font-medium">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Account Status: Active
+                  </span>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${
+                    user.emailVerified 
+                      ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                      : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                  }`}>
+                    {user.emailVerified ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+                    {user.emailVerified ? 'Verified' : 'Unverified'}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="text-center sm:text-left flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{displayName}</h1>
-              <p className="text-xs sm:text-sm text-neutral-400 mt-1">{email}</p>
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-3">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#22D3EE]/10 border border-[#22D3EE]/20 text-[#22D3EE] text-xs font-medium">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Authenticated Account
-                </span>
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${
-                  user.emailVerified 
-                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
-                    : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
-                }`}>
-                  {user.emailVerified ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
-                  {user.emailVerified ? 'Email Verified' : 'Verification Required'}
-                </span>
-              </div>
-            </div>
+            {/* Edit Profile Button */}
+            <button
+              onClick={() => navigate('/settings')}
+              className="inline-flex items-center gap-2 bg-[#22D3EE]/10 hover:bg-[#22D3EE]/20 border border-[#22D3EE]/30 text-[#22D3EE] px-4 py-2.5 rounded-xl transition text-xs font-semibold cursor-pointer shadow-md"
+            >
+              <Edit3 className="w-4 h-4" /> Edit Profile
+            </button>
           </div>
 
           {/* Account Information Section */}
@@ -208,22 +217,22 @@ export default function Profile() {
               </div>
 
               <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                <span className="text-neutral-500 text-[11px] uppercase tracking-wider block mb-1">Email Verification</span>
+                <span className="text-neutral-500 text-[11px] uppercase tracking-wider block mb-1">Account Status</span>
                 <div className="flex items-center gap-2 text-xs font-medium text-white">
                   {user.emailVerified ? (
                     <>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Verified
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Verified / Active
                     </>
                   ) : (
                     <>
-                      <AlertTriangle className="w-4 h-4 text-amber-400" /> Unverified
+                      <AlertTriangle className="w-4 h-4 text-amber-400" /> Active (Unverified Email)
                     </>
                   )}
                 </div>
               </div>
 
               <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                <span className="text-neutral-500 text-[11px] uppercase tracking-wider block mb-1">Account Created</span>
+                <span className="text-neutral-500 text-[11px] uppercase tracking-wider block mb-1">Member Since</span>
                 <span className="text-xs font-medium text-neutral-300">
                   {formatLocalDate(user.metadata?.creationTime)}
                 </span>
@@ -275,32 +284,6 @@ export default function Profile() {
                 }`}>
                   {user.emailVerified ? 'Verified' : 'Unverified'}
                 </span>
-              </div>
-
-              <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-[#22D3EE]/10 text-[#22D3EE]">
-                    <Activity className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-white">Session Status</p>
-                    <p className="text-[11px] text-neutral-400">Token active</p>
-                  </div>
-                </div>
-                <span className="text-[11px] font-medium text-[#22D3EE] bg-[#22D3EE]/10 px-2.5 py-1 rounded-full">Active</span>
-              </div>
-
-              <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
-                    <Lock className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-white">Account Protection</p>
-                    <p className="text-[11px] text-neutral-400">Firebase secured</p>
-                  </div>
-                </div>
-                <span className="text-[11px] font-medium text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full">Enabled</span>
               </div>
 
             </div>
