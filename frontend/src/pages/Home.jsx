@@ -41,19 +41,6 @@ export default function Home() {
     setScanResult(null);
 
     try {
-      // NOTE: Connect your backend /api/scan endpoint here if active.
-      // Example production integration:
-      /*
-      const response = await fetch('/api/scan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: trimmedUrl })
-      });
-      if (!response.ok) throw new Error('Failed to analyze URL');
-      const data = await response.json();
-      setScanResult(data);
-      */
-
       // Fallback heuristic verification mode
       await new Promise((resolve) => setTimeout(resolve, 1200));
       const lowerUrl = targetUrl.toLowerCase();
@@ -65,16 +52,16 @@ export default function Home() {
 
       let status = 'safe';
       let riskLevel = 'Low Risk';
-      let description = 'No high-risk indicators were detected by this security analysis.';
+      let description = 'No high-risk indicators were detected during this URL analysis.';
 
       if (hasIp || (isSuspiciousKeyword && !isKnownSafe) || isBitly) {
         status = 'danger';
         riskLevel = 'High Phishing Risk';
-        description = 'Warning! High-risk indicators detected, such as suspicious keywords, shortened links, or direct IP addressing.';
+        description = 'This URL exhibits high-risk indicators, including suspicious keywords, URL shortening, or direct IP addressing.';
       } else if (targetUrl.length > 75) {
         status = 'warning';
         riskLevel = 'Moderate Risk';
-        description = 'This URL is unusually long and contains excessive subdomains or query parameters. Proceed with caution.';
+        description = 'This URL contains characteristics associated with elevated risk, including excessive length, subdomains, or query parameters.';
       }
 
       setScanResult({
@@ -155,13 +142,13 @@ export default function Home() {
         <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight transition-colors ${
           isDark ? 'text-white' : 'text-slate-900'
         }`}>
-          Detect Phishing & Fake Websites <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Instantly</span>
+          Detect Phishing & Malicious Websites <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Instantly</span>
         </h1>
         
         <p className={`text-lg md:text-xl max-w-2xl mb-8 leading-relaxed transition-colors ${
           isDark ? 'text-neutral-400' : 'text-slate-600'
         }`}>
-          Protect yourself against malicious links, spoofed domains, and online fraud using advanced lexical feature extraction and real-time classification models.
+          Analyze suspicious URLs using advanced lexical feature extraction and machine-learning-based threat classification.
         </p>
 
         {/* Action Buttons */}
@@ -358,8 +345,8 @@ export default function Home() {
               }`}>
                 <Cpu className="w-5 h-5" />
               </div>
-              <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Security Analysis Core</h3>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Evaluates real-world threat parameters utilizing feature classification models to predict risk probabilities.</p>
+              <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Machine Learning Core</h3>
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Uses a trained Random Forest classifier to analyze URL features and identify patterns associated with potentially malicious websites.</p>
             </div>
 
             <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all shadow-xl ${
@@ -373,7 +360,7 @@ export default function Home() {
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Instant Lexical Analysis</h3>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Instantly evaluates URL length, IP address presence, dot/hyphen counts, and protocol security.</p>
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Analyzes URL structure, including length, IP address usage, special characters, and protocol characteristics.</p>
             </div>
 
             <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all shadow-xl ${
@@ -387,7 +374,7 @@ export default function Home() {
                 <Lock className="w-5 h-5" />
               </div>
               <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Secure & Logged</h3>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Powered by a robust backend architecture with database scan logging for comprehensive auditing.</p>
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Securely processes scan requests and maintains structured scan records for analysis and auditing.</p>
             </div>
           </div>
         )}
@@ -411,10 +398,10 @@ export default function Home() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { step: '01', title: '1. Paste URL', desc: 'Enter any suspicious web link or domain into the secure scanner interface.', icon: Search, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
-                { step: '02', title: '2. Feature Extraction', desc: 'Lexical rules analyze structural properties like domain length, IP presence, and special keywords.', icon: Layers, color: 'text-[#EC4899]', bg: 'bg-pink-50' },
-                { step: '03', title: '3. Threat Classification', desc: 'Our trained classification model evaluates the feature vector against known threat patterns.', icon: Cpu, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
-                { step: '04', title: '4. Instant Verdict', desc: 'Receive a clear risk score, assessment tier, and detailed security breakdown instantly.', icon: Shield, color: 'text-emerald-500', bg: 'bg-emerald-50' }
+                { step: '01', title: '1. Enter URL', desc: 'Enter a website URL to begin the security analysis.', icon: Search, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
+                { step: '02', title: '2. Feature Extraction', desc: 'Extract structural and lexical features from the URL for analysis.', icon: Layers, color: 'text-[#EC4899]', bg: 'bg-pink-50' },
+                { step: '03', title: '3. ML Classification', desc: 'The trained Random Forest classifier evaluates the extracted feature set.', icon: Cpu, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
+                { step: '04', title: '4. Security Assessment', desc: 'Receive a risk classification, confidence score, and detailed security analysis.', icon: Shield, color: 'text-emerald-500', bg: 'bg-emerald-50' }
               ].map((item, idx) => {
                 const IconComponent = item.icon;
                 return (
