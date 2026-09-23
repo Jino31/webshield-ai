@@ -12,9 +12,8 @@ export const adminService = {
     return res.data;
   },
   async getUsers() {
-    return [
-      { id: 'usr_01', name: 'S. Jeffrin Jino', email: 'jino@webshield.ai', role: 'User', status: 'Active', scansCount: 12 }
-    ];
+    const res = await axios.get(`${API_BASE_URL}/api/admin/users`);
+    return res.data.users;
   },
   async getSystemHealth() {
     const res = await axios.get(`${API_BASE_URL}/api/admin/health`);
