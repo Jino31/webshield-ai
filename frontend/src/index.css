@@ -25,9 +25,9 @@ footer {
 }
 
 /* ----------------------------------------------------
-   GeeksforGeeks (GFG) Theme Toggle Icon & Button Styles
+   Theme Toggle Icon & Button Styles
    ---------------------------------------------------- */
-.gfg-theme-btn {
+.theme-toggle-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -39,7 +39,7 @@ footer {
   user-select: none;
 }
 
-.gfg-icon {
+.theme-toggle-icon {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -52,11 +52,11 @@ footer {
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
 }
 
-.gfg-theme-btn:hover .gfg-icon {
+.theme-toggle-btn:hover .theme-toggle-icon {
   transform: rotate(18deg) scale(1.1);
 }
 
-.gfg-theme-btn:active .gfg-icon {
+.theme-toggle-btn:active .theme-toggle-icon {
   transform: rotate(-25deg) scale(0.92);
 }
 

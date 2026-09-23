@@ -11,16 +11,16 @@ export default function ThemeToggle({ showLabel = false, className = '' }) {
     <button
       type="button"
       onClick={toggleTheme}
-      className={`gfg-theme-btn group flex items-center justify-center gap-2 p-2 rounded-xl transition-all duration-300 cursor-pointer border ${isDark
+      className={`theme-toggle-btn group flex items-center justify-center gap-2 p-2 rounded-xl transition-all duration-300 cursor-pointer border ${isDark
           ? 'bg-[#0C1220] hover:bg-[#101828] border-[#16223A] hover:border-amber-400/50 text-amber-400 shadow-sm hover:shadow-amber-500/10'
           : 'bg-white hover:bg-slate-100 border-slate-200 hover:border-cyan-500 text-slate-700 shadow-sm hover:shadow-cyan-500/10'
         } ${className}`}
       title={tooltipText}
       aria-label={ariaLabel}
     >
-      {/* GeeksforGeeks standard icon structure matching <i class="gfg-icon gfg-icon_dark-mode"></i> */}
+      {/* Theme Toggle Icon Container */}
       <i
-        className={`gfg-icon gfg-icon_dark-mode ${isDark ? 'gfg-icon_light-mode' : ''} inline-flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-active:rotate-45`}
+        className="theme-toggle-icon inline-flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-active:rotate-45"
         aria-hidden="true"
       >
         {isDark ? (

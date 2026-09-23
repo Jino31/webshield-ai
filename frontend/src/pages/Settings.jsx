@@ -15,7 +15,9 @@ import {
   ArrowLeft,
   ChevronRight,
   Activity,
-  Palette
+  Palette,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -319,7 +321,7 @@ export default function Settings() {
                 </h2>
                 
                 <p className="text-xs text-neutral-400 mb-6">
-                  Select your preferred UI color scheme. WebShield AI includes a fast GeeksforGeeks-style theme toggle available both here and in the top navigation bar.
+                  Select your preferred UI color scheme. WebShield AI includes a fast theme toggle available both here and in the top navigation bar.
                 </p>
 
                 {/* Theme Selection Cards */}
@@ -336,7 +338,7 @@ export default function Settings() {
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="w-10 h-10 rounded-xl bg-[#101828] border border-[#1D2939] flex items-center justify-center text-cyan-400">
-                        <i className="gfg-icon gfg-icon_light-mode text-amber-400" />
+                        <Sun className="w-5 h-5 text-amber-400" />
                       </div>
                       {isDark && (
                         <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 text-[10px] font-bold font-mono">
@@ -359,7 +361,7 @@ export default function Settings() {
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800">
-                        <i className="gfg-icon gfg-icon_dark-mode" />
+                        <Moon className="w-5 h-5 text-slate-700" />
                       </div>
                       {!isDark && (
                         <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-600 text-[10px] font-bold font-mono">
@@ -376,15 +378,15 @@ export default function Settings() {
                 {/* Quick Toggle Component Preview */}
                 <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <h4 className="text-xs font-semibold text-white">GeeksforGeeks Navbar Theme Switcher</h4>
+                    <h4 className="text-xs font-semibold text-white">Theme Switcher</h4>
                     <p className="text-[11px] text-neutral-400 mt-0.5">Click to toggle instantaneously across the whole platform.</p>
                   </div>
                   <button
                     type="button"
                     onClick={toggleTheme}
-                    className="gfg-theme-btn flex items-center gap-2.5 px-4 py-2 rounded-xl border border-neutral-800 bg-[#13111C] hover:bg-[#1A1528] text-xs font-semibold text-white transition cursor-pointer"
+                    className="theme-toggle-btn flex items-center gap-2.5 px-4 py-2 rounded-xl border border-neutral-800 bg-[#0C1220] hover:bg-[#101828] text-xs font-semibold text-white transition cursor-pointer"
                   >
-                    <i className={`gfg-icon ${isDark ? 'gfg-icon_light-mode' : 'gfg-icon_dark-mode'}`} />
+                    {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-cyan-400" />}
                     <span>Switch to {isDark ? 'Light' : 'Dark'} Mode</span>
                   </button>
                 </div>
