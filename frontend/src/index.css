@@ -77,6 +77,7 @@ body.light {
 [data-theme="light"] .min-h-screen,
 [data-theme="light"] [class*="min-h-screen"],
 [data-theme="light"] [class*="bg-[#0A0A0F]"],
+[data-theme="light"] [class*="bg-[#07090E]"],
 [data-theme="light"] [class*="bg-[#05070A]"] {
   background-color: #F8FAFC !important;
   color: #0F172A !important;
@@ -84,7 +85,8 @@ body.light {
 
 /* Navbar light styling */
 [data-theme="light"] nav,
-[data-theme="light"] [class*="bg-[#0A0A0F]/80"] {
+[data-theme="light"] [class*="bg-[#0A0A0F]/80"],
+[data-theme="light"] [class*="bg-[#07090E]/85"] {
   background-color: rgba(255, 255, 255, 0.9) !important;
   border-color: #E2E8F0 !important;
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05) !important;
@@ -93,7 +95,11 @@ body.light {
 /* Elevated Cards & Panels */
 [data-theme="light"] [class*="bg-[#13111C]"],
 [data-theme="light"] [class*="bg-[#111118]"],
-[data-theme="light"] [class*="bg-[#0D1117]"] {
+[data-theme="light"] [class*="bg-[#0D1117]"],
+[data-theme="light"] [class*="bg-[#0C1220]"],
+[data-theme="light"] [class*="bg-[#0E1528]"],
+[data-theme="light"] [class*="bg-[#080D1A]"],
+[data-theme="light"] [class*="bg-[#0A0F1E]"] {
   background-color: #FFFFFF !important;
   border-color: #E2E8F0 !important;
   box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 4px 6px -2px rgba(15, 23, 42, 0.02) !important;
@@ -101,6 +107,9 @@ body.light {
 
 /* Insets, Sub-containers & Badges */
 [data-theme="light"] [class*="bg-[#1A1528]"],
+[data-theme="light"] [class*="bg-[#101728]"],
+[data-theme="light"] [class*="bg-[#101828]"],
+[data-theme="light"] [class*="bg-[#121B30]"],
 [data-theme="light"] [class*="bg-neutral-900"] {
   background-color: #F1F5F9 !important;
   border-color: #E2E8F0 !important;
@@ -110,6 +119,13 @@ body.light {
 [data-theme="light"] [class*="border-[#231E33]"],
 [data-theme="light"] [class*="border-[#27272F]"],
 [data-theme="light"] [class*="border-[#2B2340]"],
+[data-theme="light"] [class*="border-[#1D2939]"],
+[data-theme="light"] [class*="border-[#152035]"],
+[data-theme="light"] [class*="border-[#16223A]"],
+[data-theme="light"] [class*="border-[#172540]"],
+[data-theme="light"] [class*="border-[#1C2C4E]"],
+[data-theme="light"] [class*="border-[#192744]"],
+[data-theme="light"] [class*="border-[#151F33]"],
 [data-theme="light"] [class*="border-neutral-800"] {
   border-color: #E2E8F0 !important;
 }

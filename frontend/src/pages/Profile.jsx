@@ -374,7 +374,7 @@ export default function Profile() {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-[#05070A] text-[#FAFAFA]">
         <div className="flex items-center gap-3 text-sm text-neutral-400 font-medium">
-          <Activity className="w-5 h-5 text-[#8B5CF6] animate-spin" /> Loading your profile...
+          <Activity className="w-5 h-5 text-cyan-400 animate-spin" /> Loading your profile...
         </div>
       </div>
     );
@@ -386,7 +386,7 @@ export default function Profile() {
   const email = user.email || 'No email provided';
 
   const statCards = [
-    { label: 'Sites Scanned', value: stats?.totalScans ?? 0, icon: ScanSearch, color: '#8B5CF6' },
+    { label: 'Sites Scanned', value: stats?.totalScans ?? 0, icon: ScanSearch, color: '#06B6D4' },
     { label: 'Threats Flagged', value: stats?.threatsFlagged ?? 0, icon: ShieldX, color: '#F43F5E' },
     { label: 'Confirmed Safe', value: stats?.safeSites ?? 0, icon: ShieldCheck, color: '#10B981' },
   ];
@@ -400,13 +400,13 @@ export default function Profile() {
           aria-label="Go back to home page"
           className="inline-flex items-center gap-2 text-xs font-semibold text-neutral-300 hover:text-white bg-[#0D1117]/80 backdrop-blur-md border border-neutral-800 px-4 py-2.5 rounded-xl transition shadow-lg cursor-pointer"
         >
-          <ArrowLeft className="w-4 h-4 text-[#8B5CF6]" /> Back to Home
+          <ArrowLeft className="w-4 h-4 text-cyan-400" /> Back to Home
         </button>
       </div>
 
       {/* Background Ambient Glows */}
-      <div className="absolute top-20 left-10 w-96 h-96 bg-[#8B5CF6]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#EC4899]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-20 left-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-4xl flex flex-col gap-6 mt-8">
         {/* Profile Container */}
@@ -422,10 +422,10 @@ export default function Profile() {
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}
-                    className="w-24 h-24 rounded-2xl object-cover border-2 border-[#8B5CF6]/40 shadow-lg shadow-purple-950/50"
+                    className="w-24 h-24 rounded-2xl object-cover border-2 border-cyan-500/40 shadow-lg shadow-cyan-950/50"
                   />
                 ) : (
-                  <div className="w-24 h-24 rounded-2xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6] font-bold text-2xl shadow-lg shadow-purple-950/50">
+                  <div className="w-24 h-24 rounded-2xl bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-bold text-2xl shadow-lg shadow-cyan-950/50">
                     {getInitials(displayName, email)}
                   </div>
                 )}
@@ -467,7 +467,7 @@ export default function Profile() {
             {!isEditing && (
               <button
                 onClick={handleEditClick}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 text-white px-5 py-2.5 rounded-xl transition text-xs font-semibold cursor-pointer shadow-lg shadow-purple-950/30"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:opacity-95 text-white px-5 py-2.5 rounded-xl transition text-xs font-semibold cursor-pointer shadow-lg shadow-cyan-950/30"
               >
                 <Edit3 className="w-4 h-4" /> Edit Profile
               </button>
@@ -476,7 +476,7 @@ export default function Profile() {
 
           {/* Security Stats — product-specific, fits a fake-website detector */}
           <div className="space-y-3">
-            <h3 className="text-xs font-semibold text-[#8B5CF6] uppercase tracking-wider">
+            <h3 className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">
               Detection Activity
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -512,7 +512,7 @@ export default function Profile() {
               className="space-y-5 bg-[#05070A] p-6 rounded-2xl border border-neutral-800 animate-fadeIn"
             >
               <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                <Edit3 className="w-4 h-4 text-[#8B5CF6]" /> Update Profile Details
+                <Edit3 className="w-4 h-4 text-cyan-400" /> Update Profile Details
               </h3>
 
               {saveStatus.error && (
@@ -540,9 +540,9 @@ export default function Profile() {
                     Profile Avatar
                   </label>
                   <div className="flex items-center gap-4 mb-3">
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden border border-neutral-800 bg-[#13111C] flex items-center justify-center shrink-0">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden border border-neutral-800 bg-[#0C1220] flex items-center justify-center shrink-0">
                       {avatarUploading ? (
-                        <Loader2 className="w-5 h-5 animate-spin text-[#8B5CF6]" />
+                        <Loader2 className="w-5 h-5 animate-spin text-cyan-400" />
                       ) : editPhotoUrl ? (
                         <img
                           src={editPhotoUrl}
@@ -591,7 +591,7 @@ export default function Profile() {
                       value={editPhotoUrl}
                       onChange={(e) => setEditPhotoUrl(e.target.value)}
                       placeholder="Or paste an image URL"
-                      className="w-full bg-[#13111C] border border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#8B5CF6] transition-colors"
+                      className="w-full bg-[#080D1A] border border-[#16223A] rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                     />
                   </div>
                 </div>
@@ -608,7 +608,7 @@ export default function Profile() {
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="Your name"
-                      className="w-full bg-[#13111C] border border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#8B5CF6] transition-colors"
+                      className="w-full bg-[#080D1A] border border-[#16223A] rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                     />
                   </div>
                 </div>
@@ -625,7 +625,7 @@ export default function Profile() {
                       value={editEmail}
                       onChange={(e) => setEditEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="w-full bg-[#13111C] border border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#8B5CF6] transition-colors"
+                      className="w-full bg-[#080D1A] border border-[#16223A] rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-cyan-400 transition-colors"
                     />
                   </div>
                   {editEmail !== (user.email || '') && (
@@ -649,7 +649,7 @@ export default function Profile() {
                 <button
                   type="submit"
                   disabled={saveStatus.loading || avatarUploading}
-                  className="px-4 py-2.5 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-semibold transition flex items-center gap-2 cursor-pointer shadow-lg disabled:opacity-50"
+                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:opacity-95 text-white text-xs font-semibold transition flex items-center gap-2 cursor-pointer shadow-lg shadow-cyan-950/40 disabled:opacity-50"
                 >
                   {saveStatus.loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -663,13 +663,13 @@ export default function Profile() {
           ) : (
             /* VIEW MODE: User Account Details */
             <div className="space-y-4 animate-fadeIn">
-              <h3 className="text-xs font-semibold text-[#8B5CF6] uppercase tracking-wider">
+              <h3 className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">
                 User Account Details & Login History
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl flex items-start gap-3.5">
-                  <div className="p-2.5 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6] mt-0.5">
+                  <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 mt-0.5">
                     <Calendar className="w-4 h-4" />
                   </div>
                   <div>
@@ -683,7 +683,7 @@ export default function Profile() {
                 </div>
 
                 <div className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl flex items-start gap-3.5">
-                  <div className="p-2.5 rounded-xl bg-[#EC4899]/10 text-[#EC4899] mt-0.5">
+                  <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 mt-0.5">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>

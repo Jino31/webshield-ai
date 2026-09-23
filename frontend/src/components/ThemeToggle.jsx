@@ -12,8 +12,8 @@ export default function ThemeToggle({ showLabel = false, className = '' }) {
       type="button"
       onClick={toggleTheme}
       className={`gfg-theme-btn group flex items-center justify-center gap-2 p-2 rounded-xl transition-all duration-300 cursor-pointer border ${isDark
-          ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-amber-400/50 text-amber-400 shadow-sm hover:shadow-amber-500/10'
-          : 'bg-white hover:bg-slate-100 border-slate-200 hover:border-purple-400 text-slate-700 shadow-sm hover:shadow-purple-500/10'
+          ? 'bg-[#0C1220] hover:bg-[#101828] border-[#16223A] hover:border-amber-400/50 text-amber-400 shadow-sm hover:shadow-amber-500/10'
+          : 'bg-white hover:bg-slate-100 border-slate-200 hover:border-cyan-500 text-slate-700 shadow-sm hover:shadow-cyan-500/10'
         } ${className}`}
       title={tooltipText}
       aria-label={ariaLabel}
@@ -58,8 +58,8 @@ export default function ThemeToggle({ showLabel = false, className = '' }) {
             className="w-5 h-5 text-slate-700"
           >
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" fill="currentColor" fillOpacity="0.15" />
-            <path d="M19 3v4" stroke="#8B5CF6" strokeWidth="1.5" />
-            <path d="M21 5h-4" stroke="#8B5CF6" strokeWidth="1.5" />
+            <path d="M19 3v4" stroke="#06B6D4" strokeWidth="1.5" />
+            <path d="M21 5h-4" stroke="#06B6D4" strokeWidth="1.5" />
           </svg>
         )}
       </i>

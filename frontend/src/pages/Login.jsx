@@ -237,10 +237,10 @@ export default function Login() {
       `}</style>
 
       {/* Background VFX Glow Orbs & Grid */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.06)_0,transparent_70%)] pointer-events-none" />
-      <div className="absolute top-1/4 left-10 w-[500px] h-[500px] bg-[#8B5CF6]/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-[#EC4899]/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none opacity-30" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.08)_0,transparent_70%)] pointer-events-none" />
+      <div className="absolute top-1/4 left-10 w-[500px] h-[500px] bg-cyan-500/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-indigo-500/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(6,182,212,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(6,182,212,0.04)_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none opacity-40" />
 
       {/* Main Split Layout Container */}
       <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center my-auto z-10 py-6">
@@ -248,67 +248,67 @@ export default function Login() {
         {/* Left Column: Branding & Value Pillars */}
         <div className="lg:col-span-6 flex flex-col justify-center space-y-8 px-2 sm:px-4">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#13111C] border border-[#8B5CF6]/30 text-[#C4B5FD] text-xs font-semibold uppercase tracking-wider">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#8B5CF6]" /> Stay Safe Online
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0C1220] border border-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider shadow-sm shadow-cyan-950/20">
+              <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" /> Stay Safe Online
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#FFFFFF] leading-[1.1]">
-              Welcome <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Back</span>
+              Welcome <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">Back</span>
             </h1>
-            <p className="text-neutral-400 text-base sm:text-lg max-w-xl leading-relaxed">
+            <p className="text-slate-400 text-base sm:text-lg max-w-xl leading-relaxed">
               Sign in to continue protecting yourself from malicious websites with AI-powered threat detection.
             </p>
           </div>
 
           {/* Feature Highlight Cards */}
           <div className="space-y-4 max-w-lg">
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#13111C]/80 border border-[#231E33] backdrop-blur-sm">
-              <div className="p-2.5 rounded-xl bg-[#1A1528] border border-[#2B2340] text-[#8B5CF6] shrink-0">
+            <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#0C1220]/80 border border-[#16223A] backdrop-blur-sm hover:border-cyan-500/30 transition-colors">
+              <div className="p-2.5 rounded-xl bg-[#101828] border border-[#1D2939] text-cyan-400 shrink-0">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-[#FAFAFA]">AI-Powered Detection</h3>
-                <p className="text-xs text-neutral-400 mt-0.5">Real-time threat analysis and lexical validation</p>
+                <p className="text-xs text-slate-400 mt-0.5">Real-time threat analysis and lexical validation</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#13111C]/80 border border-[#231E33] backdrop-blur-sm">
-              <div className="p-2.5 rounded-xl bg-[#1A1528] border border-[#2B2340] text-[#EC4899] shrink-0">
+            <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#0C1220]/80 border border-[#16223A] backdrop-blur-sm hover:border-indigo-500/30 transition-colors">
+              <div className="p-2.5 rounded-xl bg-[#101828] border border-[#1D2939] text-indigo-400 shrink-0">
                 <Zap className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-[#FAFAFA]">Lightning Fast</h3>
-                <p className="text-xs text-neutral-400 mt-0.5">Instant URL scanning and predictive confidence scoring</p>
+                <p className="text-xs text-slate-400 mt-0.5">Instant URL scanning and predictive confidence scoring</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#13111C]/80 border border-[#231E33] backdrop-blur-sm">
-              <div className="p-2.5 rounded-xl bg-[#1A1528] border border-[#2B2340] text-[#8B5CF6] shrink-0">
+            <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#0C1220]/80 border border-[#16223A] backdrop-blur-sm hover:border-cyan-500/30 transition-colors">
+              <div className="p-2.5 rounded-xl bg-[#101828] border border-[#1D2939] text-cyan-400 shrink-0">
                 <Globe className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-[#FAFAFA]">Stay Protected</h3>
-                <p className="text-xs text-neutral-400 mt-0.5">Browse with confidence backed by enterprise security logs</p>
+                <p className="text-xs text-slate-400 mt-0.5">Browse with confidence backed by enterprise security logs</p>
               </div>
             </div>
           </div>
 
           {/* Testimonial Quote Box */}
-          <div className="p-4 rounded-2xl bg-[#13111C] border border-[#231E33] max-w-lg italic text-xs text-neutral-400">
+          <div className="p-4 rounded-2xl bg-[#0C1220] border border-[#16223A] max-w-lg italic text-xs text-slate-400">
             "A safer internet starts with your next click."
-            <div className="not-italic font-semibold text-[#C4B5FD] mt-1">— WebShield AI Security Core</div>
+            <div className="not-italic font-semibold text-cyan-400 mt-1">— WebShield AI Security Core</div>
           </div>
         </div>
 
         {/* Right Column: Authentication Card */}
         <div className="lg:col-span-6 flex justify-center">
-          <div className="relative w-full max-w-md bg-[#13111C]/90 backdrop-blur-2xl border border-[#231E33] hover:border-[#8B5CF6]/50 rounded-3xl p-7 sm:p-9 shadow-2xl shadow-purple-950/40 z-10 transition-all duration-700 overflow-hidden">
+          <div className="relative w-full max-w-md bg-[#0C1220]/90 backdrop-blur-2xl border border-[#16223A] hover:border-cyan-500/50 rounded-3xl p-7 sm:p-9 shadow-2xl shadow-cyan-950/40 z-10 transition-all duration-700 overflow-hidden">
             
             {/* Subtle Horizontal Scan Line VFX */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent opacity-40 animate-scanline pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-60 animate-scanline pointer-events-none" />
 
             {/* Card Header */}
             <div className="flex flex-col items-center text-center mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-[#1A1528] border border-[#2B2340] flex items-center justify-center text-[#8B5CF6] mb-3 shadow-inner">
+              <div className="w-12 h-12 rounded-2xl bg-[#101828] border border-[#1D2939] flex items-center justify-center text-cyan-400 mb-3 shadow-inner">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h2 className="text-2xl font-bold text-[#FFFFFF] tracking-tight">
@@ -349,7 +349,7 @@ export default function Login() {
                     Full Name
                   </label>
                   <div className="relative group">
-                    <User className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-500 group-focus-within:text-[#8B5CF6] transition" />
+                    <User className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500 group-focus-within:text-cyan-400 transition" />
                     <input
                       id="fullName"
                       name="name"
@@ -362,9 +362,9 @@ export default function Login() {
                         setFullName(e.target.value);
                         if (nameError) setNameError('');
                       }}
-                      className={`w-full bg-[#0A0A0F] border ${
-                        nameError ? 'border-rose-500' : 'border-[#231E33] focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30'
-                      } rounded-xl pl-10 pr-4 py-3 text-white placeholder-neutral-600 focus:outline-none transition text-sm`}
+                      className={`w-full bg-[#080D1A] border ${
+                        nameError ? 'border-rose-500' : 'border-[#16223A] focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30'
+                      } rounded-xl pl-10 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none transition text-sm`}
                     />
                   </div>
                   {nameError && (
@@ -377,11 +377,11 @@ export default function Login() {
 
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1.5">
+                <label htmlFor="email" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
                   Email Address
                 </label>
                 <div className="relative group">
-                  <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-500 group-focus-within:text-[#8B5CF6] transition" />
+                  <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500 group-focus-within:text-cyan-400 transition" />
                   <input
                     id="email"
                     name="email"
@@ -394,9 +394,9 @@ export default function Login() {
                       setEmail(e.target.value);
                       if (emailError) setEmailError('');
                     }}
-                    className={`w-full bg-[#0A0A0F] border ${
-                      emailError ? 'border-rose-500' : 'border-[#231E33] focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30'
-                    } rounded-xl pl-10 pr-4 py-3 text-white placeholder-neutral-600 focus:outline-none transition text-sm`}
+                    className={`w-full bg-[#080D1A] border ${
+                      emailError ? 'border-rose-500' : 'border-[#16223A] focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30'
+                    } rounded-xl pl-10 pr-4 py-3 text-white placeholder-slate-500 focus:outline-none transition text-sm`}
                   />
                 </div>
                 {emailError && (
@@ -410,7 +410,7 @@ export default function Login() {
               {!isForgotPassword && (
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label htmlFor="password" className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider">
+                    <label htmlFor="password" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
                       Password
                     </label>
                     {!isSignupRoute && (
@@ -421,14 +421,14 @@ export default function Login() {
                           setPasswordError('');
                           setNotification({ type: '', message: '' });
                         }}
-                        className="text-xs text-[#C4B5FD] hover:text-white transition cursor-pointer bg-transparent border-none p-0 font-medium"
+                        className="text-xs text-cyan-400 hover:text-white transition cursor-pointer bg-transparent border-none p-0 font-medium"
                       >
                         Forgot password?
                       </button>
                     )}
                   </div>
                   <div className="relative group">
-                    <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-500 group-focus-within:text-[#8B5CF6] transition" />
+                    <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500 group-focus-within:text-cyan-400 transition" />
                     <input
                       id="password"
                       name="password"
@@ -441,15 +441,15 @@ export default function Login() {
                         setPassword(e.target.value);
                         if (passwordError) setPasswordError('');
                       }}
-                      className={`w-full bg-[#0A0A0F] border ${
-                        passwordError ? 'border-rose-500' : 'border-[#231E33] focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30'
-                      } rounded-xl pl-10 pr-10 py-3 text-white placeholder-neutral-600 focus:outline-none transition text-sm`}
+                      className={`w-full bg-[#080D1A] border ${
+                        passwordError ? 'border-rose-500' : 'border-[#16223A] focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30'
+                      } rounded-xl pl-10 pr-10 py-3 text-white placeholder-slate-500 focus:outline-none transition text-sm`}
                     />
                     <button
                       type="button"
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-neutral-500 hover:text-white transition focus:outline-none cursor-pointer p-1"
+                      className="absolute right-3 top-3 text-slate-500 hover:text-white transition focus:outline-none cursor-pointer p-1"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -462,22 +462,22 @@ export default function Login() {
 
                   {/* Password Requirements Checklist (Signup Only) */}
                   {isSignupRoute && (
-                    <div className="mt-2.5 p-3 bg-[#0A0A0F] border border-[#231E33] rounded-xl space-y-2">
+                    <div className="mt-2.5 p-3 bg-[#080D1A] border border-[#16223A] rounded-xl space-y-2">
                       <div className="flex justify-between items-center text-[11px]">
-                        <span className="text-neutral-400">Requirements</span>
+                        <span className="text-slate-400">Requirements</span>
                         <span className={`font-semibold ${strength.color.split(' ')[0]}`}>{strength.label}</span>
                       </div>
-                      <div className="w-full bg-[#13111C] h-1.5 rounded-full overflow-hidden flex gap-1">
-                        <div className={`h-full transition-all duration-300 ${hasMinLength ? 'w-1/4 bg-[#8B5CF6]' : 'w-0'}`} />
-                        <div className={`h-full transition-all duration-300 ${hasUppercase ? 'w-1/4 bg-[#8B5CF6]' : 'w-0'}`} />
-                        <div className={`h-full transition-all duration-300 ${hasNumber ? 'w-1/4 bg-[#EC4899]' : 'w-0'}`} />
+                      <div className="w-full bg-[#0C1220] h-1.5 rounded-full overflow-hidden flex gap-1">
+                        <div className={`h-full transition-all duration-300 ${hasMinLength ? 'w-1/4 bg-cyan-400' : 'w-0'}`} />
+                        <div className={`h-full transition-all duration-300 ${hasUppercase ? 'w-1/4 bg-cyan-400' : 'w-0'}`} />
+                        <div className={`h-full transition-all duration-300 ${hasNumber ? 'w-1/4 bg-indigo-500' : 'w-0'}`} />
                         <div className={`h-full transition-all duration-300 ${hasSpecial ? 'w-1/4 bg-[#10B981]' : 'w-0'}`} />
                       </div>
                       <ul className="grid grid-cols-2 gap-1 text-[10px]">
-                        <li className={hasMinLength ? 'text-[#10B981]' : 'text-neutral-600'}>✓ 6+ chars</li>
-                        <li className={hasUppercase ? 'text-[#10B981]' : 'text-neutral-600'}>✓ 1 uppercase</li>
-                        <li className={hasNumber ? 'text-[#10B981]' : 'text-neutral-600'}>✓ 1 number</li>
-                        <li className={hasSpecial ? 'text-[#10B981]' : 'text-neutral-600'}>✓ 1 special</li>
+                        <li className={hasMinLength ? 'text-[#10B981]' : 'text-slate-500'}>✓ 6+ chars</li>
+                        <li className={hasUppercase ? 'text-[#10B981]' : 'text-slate-500'}>✓ 1 uppercase</li>
+                        <li className={hasNumber ? 'text-[#10B981]' : 'text-slate-500'}>✓ 1 number</li>
+                        <li className={hasSpecial ? 'text-[#10B981]' : 'text-slate-500'}>✓ 1 special</li>
                       </ul>
                     </div>
                   )}
@@ -487,11 +487,11 @@ export default function Login() {
               {/* Confirm Password Field (Signup Only) */}
               {isSignupRoute && !isForgotPassword && (
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-1.5">
+                  <label htmlFor="confirmPassword" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
                     Confirm Password
                   </label>
                   <div className="relative group">
-                    <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-500 group-focus-within:text-[#8B5CF6] transition" />
+                    <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500 group-focus-within:text-cyan-400 transition" />
                     <input
                       id="confirmPassword"
                       name="confirmPassword"
@@ -504,15 +504,15 @@ export default function Login() {
                         setConfirmPassword(e.target.value);
                         if (confirmError) setConfirmError('');
                       }}
-                      className={`w-full bg-[#0A0A0F] border ${
-                        confirmError ? 'border-rose-500' : 'border-[#231E33] focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/30'
-                      } rounded-xl pl-10 pr-10 py-3 text-white placeholder-neutral-600 focus:outline-none transition text-sm`}
+                      className={`w-full bg-[#080D1A] border ${
+                        confirmError ? 'border-rose-500' : 'border-[#16223A] focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30'
+                      } rounded-xl pl-10 pr-10 py-3 text-white placeholder-slate-500 focus:outline-none transition text-sm`}
                     />
                     <button
                       type="button"
                       aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-3 text-neutral-500 hover:text-white transition focus:outline-none cursor-pointer p-1"
+                      className="absolute right-3 top-3 text-slate-500 hover:text-white transition focus:outline-none cursor-pointer p-1"
                     >
                       {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -533,9 +533,9 @@ export default function Login() {
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 rounded bg-[#0A0A0F] border-[#231E33] text-[#8B5CF6] focus:ring-[#8B5CF6] focus:ring-offset-[#13111C] cursor-pointer"
+                      className="w-4 h-4 rounded bg-[#080D1A] border-[#16223A] text-cyan-500 focus:ring-cyan-400 focus:ring-offset-[#0C1220] cursor-pointer"
                     />
-                    <span className="text-xs text-neutral-400 font-medium">Remember me</span>
+                    <span className="text-xs text-slate-400 font-medium">Remember me</span>
                   </label>
                 </div>
               )}
@@ -551,15 +551,15 @@ export default function Login() {
                         setAgreeTerms(e.target.checked);
                         if (termsError) setTermsError('');
                       }}
-                      className="mt-0.5 w-4 h-4 rounded bg-[#0A0A0F] border-[#231E33] text-[#8B5CF6] focus:ring-[#8B5CF6] focus:ring-offset-[#13111C] cursor-pointer"
+                      className="mt-0.5 w-4 h-4 rounded bg-[#080D1A] border-[#16223A] text-cyan-500 focus:ring-cyan-400 focus:ring-offset-[#0C1220] cursor-pointer"
                     />
-                    <span className="text-xs text-neutral-400 font-medium leading-tight">
+                    <span className="text-xs text-slate-400 font-medium leading-tight">
                       I agree to the{' '}
-                      <button type="button" onClick={() => handlePlaceholderClick('Terms of Service will be available soon.')} className="text-[#C4B5FD] hover:underline bg-transparent border-none p-0 cursor-pointer font-medium">
+                      <button type="button" onClick={() => handlePlaceholderClick('Terms of Service will be available soon.')} className="text-cyan-400 hover:underline bg-transparent border-none p-0 cursor-pointer font-medium">
                         Terms of Service
                       </button>{' '}
                       and{' '}
-                      <button type="button" onClick={() => handlePlaceholderClick('Privacy Policy will be available soon.')} className="text-[#C4B5FD] hover:underline bg-transparent border-none p-0 cursor-pointer font-medium">
+                      <button type="button" onClick={() => handlePlaceholderClick('Privacy Policy will be available soon.')} className="text-cyan-400 hover:underline bg-transparent border-none p-0 cursor-pointer font-medium">
                         Privacy Policy
                       </button>
                     </span>
@@ -576,7 +576,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-950/50 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed mt-2 text-sm cursor-pointer"
+                className="w-full bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:opacity-95 text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/50 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed mt-2 text-sm cursor-pointer"
               >
                 {isLoading ? (
                   <>
@@ -602,9 +602,9 @@ export default function Login() {
             {!isForgotPassword && (
               <>
                 <div className="relative flex py-4 items-center">
-                  <div className="flex-grow border-t border-[#231E33]" />
-                  <span className="flex-shrink mx-3 text-neutral-600 text-[10px] uppercase tracking-wider font-medium">Or continue with</span>
-                  <div className="flex-grow border-t border-[#231E33]" />
+                  <div className="flex-grow border-t border-[#16223A]" />
+                  <span className="flex-shrink mx-3 text-slate-500 text-[10px] uppercase tracking-wider font-medium">Or continue with</span>
+                  <div className="flex-grow border-t border-[#16223A]" />
                 </div>
 
                 {/* Google OAuth Functional Button */}
@@ -612,7 +612,7 @@ export default function Login() {
                   type="button"
                   disabled={isLoading}
                   onClick={handleGoogleAuth}
-                  className="w-full bg-[#0A0A0F] hover:bg-[#13111C] border border-[#231E33] text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-3 text-sm shadow-sm cursor-pointer disabled:opacity-70"
+                  className="w-full bg-[#080D1A] hover:bg-[#0C1220] border border-[#16223A] hover:border-cyan-500/40 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-3 text-sm shadow-sm cursor-pointer disabled:opacity-70"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.1 8.9 5 12 5z"/>
@@ -634,17 +634,17 @@ export default function Login() {
                     setIsForgotPassword(false);
                     setNotification({ type: '', message: '' });
                   }}
-                  className="text-[#C4B5FD] hover:text-white font-medium text-xs transition cursor-pointer bg-transparent border-none"
+                  className="text-cyan-400 hover:text-white font-medium text-xs transition cursor-pointer bg-transparent border-none"
                 >
                   Back to Sign In
                 </button>
               ) : (
-                <p className="text-neutral-400 text-xs">
+                <p className="text-slate-400 text-xs">
                   {isSignupRoute ? 'Already have an account? ' : "Don't have an account? "}
                   <button
                     type="button"
                     onClick={() => navigate(isSignupRoute ? '/signin' : '/signup')}
-                    className="text-[#C4B5FD] hover:underline font-medium transition cursor-pointer bg-transparent border-none p-0"
+                    className="text-cyan-400 hover:underline font-medium transition cursor-pointer bg-transparent border-none p-0"
                   >
                     {isSignupRoute ? 'Sign In' : 'Create an account'}
                   </button>
@@ -653,7 +653,7 @@ export default function Login() {
             </div>
 
             {/* Security Indicator Footer */}
-            <div className="mt-6 pt-3 border-t border-[#231E33] flex items-center justify-center gap-2 text-neutral-500 text-[11px]">
+            <div className="mt-6 pt-3 border-t border-[#16223A] flex items-center justify-center gap-2 text-slate-500 text-[11px]">
               <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
               <span>Protected Connection • Secure Credentials</span>
             </div>

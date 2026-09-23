@@ -330,22 +330,22 @@ export default function Settings() {
                     onClick={() => setTheme('dark')}
                     className={`p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
                       isDark 
-                        ? 'bg-[#13111C] border-[#8B5CF6] shadow-lg shadow-purple-950/40 ring-1 ring-[#8B5CF6]' 
+                        ? 'bg-[#0C1220] border-cyan-500 shadow-lg shadow-cyan-950/40 ring-1 ring-cyan-500' 
                         : 'bg-[#05070A] border-neutral-800/80 hover:border-neutral-700 opacity-80'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#1A1528] border border-[#2B2340] flex items-center justify-center text-[#8B5CF6]">
+                      <div className="w-10 h-10 rounded-xl bg-[#101828] border border-[#1D2939] flex items-center justify-center text-cyan-400">
                         <i className="gfg-icon gfg-icon_light-mode text-amber-400" />
                       </div>
                       {isDark && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 text-[#C4B5FD] text-[10px] font-bold font-mono">
+                        <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 text-[10px] font-bold font-mono">
                           ACTIVE
                         </span>
                       )}
                     </div>
                     <h3 className="text-sm font-bold text-white mb-1">Cyber SecOps Dark</h3>
-                    <p className="text-xs text-neutral-400">Deep obsidian background (#0A0A0F) with glowing cyan & purple threat telemetry.</p>
+                    <p className="text-xs text-neutral-400">Deep obsidian background with glowing electric cyan & quantum indigo telemetry.</p>
                   </div>
 
                   {/* Light Mode Option */}
@@ -353,7 +353,7 @@ export default function Settings() {
                     onClick={() => setTheme('light')}
                     className={`p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
                       !isDark 
-                        ? 'bg-white border-[#8B5CF6] shadow-lg shadow-purple-950/20 ring-1 ring-[#8B5CF6]' 
+                        ? 'bg-white border-cyan-500 shadow-lg shadow-cyan-950/20 ring-1 ring-cyan-500' 
                         : 'bg-[#05070A] border-neutral-800/80 hover:border-neutral-700 opacity-80'
                     }`}
                   >
@@ -362,7 +362,7 @@ export default function Settings() {
                         <i className="gfg-icon gfg-icon_dark-mode" />
                       </div>
                       {!isDark && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 text-[#8B5CF6] text-[10px] font-bold font-mono">
+                        <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-600 text-[10px] font-bold font-mono">
                           ACTIVE
                         </span>
                       )}
