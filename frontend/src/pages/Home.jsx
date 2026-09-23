@@ -388,20 +388,20 @@ export default function Home() {
         )}
       </div>
 
-      {/* Specified Footer Section */}
-      <footer className={`w-full max-w-5xl mx-auto border-t py-12 px-6 mt-16 text-xs transition-colors ${
+      {/* Widened Footer Section */}
+      <footer className={`w-full max-w-7xl mx-auto border-t py-14 px-6 sm:px-12 lg:px-16 mt-16 text-xs transition-colors ${
         isDark ? 'border-neutral-800/80 text-neutral-400' : 'border-slate-200 text-slate-600'
       }`}>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div className="space-y-3">
             <h3 className={`font-bold text-sm tracking-tight ${isDark ? 'text-white' : 'text-slate-950'}`}>WEB SHIELD AI</h3>
             <p className="text-xs leading-relaxed">AI-Powered Website Security</p>
             <p className="text-[11px] opacity-80">Scan suspicious URLs • Detect phishing • Stay protected</p>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>PRODUCT</h4>
-            <ul className="space-y-1.5">
+            <ul className="space-y-2.5">
               <li><button onClick={() => navigate('/')} className="hover:text-[#8B5CF6] transition">URL Scanner</button></li>
               <li><button onClick={() => navigate('/history')} className="hover:text-[#8B5CF6] transition">Scan History</button></li>
               <li><button onClick={() => navigate('/')} className="hover:text-[#8B5CF6] transition">Risk Analysis</button></li>
@@ -409,9 +409,9 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>RESOURCES</h4>
-            <ul className="space-y-1.5">
+            <ul className="space-y-2.5">
               <li><button onClick={scrollToHowItWorks} className="hover:text-[#8B5CF6] transition">How It Works</button></li>
               <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">Case Studies</button></li>
               <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">FAQ</button></li>
@@ -419,9 +419,9 @@ export default function Home() {
             </ul>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>COMPANY</h4>
-            <ul className="space-y-1.5">
+            <ul className="space-y-2.5">
               <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">About</button></li>
               <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Contact</button></li>
               <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Feedback</button></li>
@@ -430,7 +430,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className={`pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4 ${
+        <div className={`pt-8 border-t flex flex-col lg:flex-row items-center justify-between gap-6 ${
           isDark ? 'border-neutral-800/60' : 'border-slate-200'
         }`}>
           <div className="flex flex-wrap items-center gap-6">
@@ -441,14 +441,14 @@ export default function Home() {
             <button onClick={() => navigate('/settings')} className="hover:underline">Cookie Policy</button>
           </div>
 
-          <div className={`p-3 rounded-xl border flex items-center gap-2 ${
+          <div className={`p-3.5 rounded-xl border flex items-center gap-2.5 ${
             isDark ? 'bg-[#13111C] border-neutral-800 text-neutral-300' : 'bg-white border-slate-200 text-slate-700 shadow-sm'
           }`}>
             <span>🛡️ Your security matters — WebShield AI helps identify dangerous websites using machine-learning.</span>
           </div>
         </div>
 
-        <div className="mt-8 text-center text-[11px] opacity-70">
+        <div className="mt-10 text-center text-[11px] opacity-70">
           © 2026 WebShield AI. Built for safer browsing.
         </div>
       </footer>
