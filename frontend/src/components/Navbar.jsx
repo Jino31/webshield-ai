@@ -89,10 +89,10 @@ export default function Navbar() {
           {isOpen ? <X className="w-5 h-5 text-[#8B5CF6]" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Brand Name with Fully Filled Logo Shield */}
+        {/* Brand Name with Borderless Logo Shield */}
         <Link to="/" className={`flex items-center gap-3 font-bold text-xl tracking-tight group ${isDark ? 'text-white' : 'text-slate-900'}`}>
-          <div className={`w-10 h-10 rounded-xl border flex items-center justify-center overflow-hidden transition shadow-inner ${
-            isDark ? 'bg-[#13111C] border-[#231E33] group-hover:border-[#8B5CF6]/50' : 'bg-slate-100 border-slate-300 group-hover:border-[#8B5CF6]/50'
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden transition shadow-inner ${
+            isDark ? 'bg-[#13111C]' : 'bg-slate-100'
           }`}>
             <img 
               src="/logo.png" 
