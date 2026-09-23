@@ -4,6 +4,7 @@ import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle
 import { useTheme } from '../context/ThemeContext';
 import ShieldAIBot from '../components/ShieldAIBot';
 import TiltCard3D from '../components/TiltCard3D';
+import ShieldCore3D from '../components/ShieldCore3D'; // <--- Imported 3D Security Core Canvas
 
 const scanStages = [
   'Initializing security scan...',
@@ -176,7 +177,7 @@ export default function Home() {
     <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-between px-4 sm:px-8 lg:px-12 pt-16 transition-colors duration-300 overflow-x-hidden animate-fadeIn ${
       isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
     }`}>
-      {/* 3-Second Cinematic Intro Overlay (Played once per session) */}
+      {/* 3-Second Cinematic Intro Overlay */}
       {showIntroAnimation && (
         <div className="fixed inset-0 z-[150] bg-[#0A0A0F] flex flex-col items-center justify-center animate-fadeOut">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15)_0,transparent_70%)] pointer-events-none" />
@@ -209,58 +210,72 @@ export default function Home() {
         isDark ? 'bg-[#EC4899]/10' : 'bg-[#EC4899]/5'
       }`} />
 
-      <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-5xl mx-auto w-full flex-1 animate-slideDownStagger1 [transform-style:preserve-3d]">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-6xl mx-auto w-full flex-1 animate-slideDownStagger1 [transform-style:preserve-3d]">
         
-        {/* Hero Title */}
-        <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight transition-colors animate-cinematicReveal ${
-          isDark ? 'text-[#FAFAFA]' : 'text-slate-900'
-        }`}>
-          Detect Phishing & Malicious Websites <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Instantly</span>
-        </h1>
-        
-        <p className={`text-lg md:text-xl max-w-2xl mb-8 leading-relaxed transition-colors ${
-          isDark ? 'text-neutral-400' : 'text-slate-600'
-        }`}>
-          Analyze suspicious URLs using advanced lexical feature extraction and machine-learning-based threat classification.
-        </p>
+        {/* Hero Section Grid: Heading + 3D Shield Model */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full mb-8">
+          <div className="lg:col-span-7 text-center lg:text-left space-y-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#13111C] border border-[#231E33] text-[#8B5CF6] text-xs font-mono uppercase tracking-wider shadow-inner">
+              <Zap className="w-3.5 h-3.5" /> Next-Gen Phishing Defense Matrix
+            </div>
+            
+            <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight transition-colors animate-cinematicReveal ${
+              isDark ? 'text-[#FAFAFA]' : 'text-slate-900'
+            }`}>
+              Detect Phishing & Malicious Websites <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Instantly</span>
+            </h1>
+            
+            <p className={`text-base md:text-lg max-w-xl leading-relaxed transition-colors ${
+              isDark ? 'text-neutral-400' : 'text-slate-600'
+            }`}>
+              Analyze suspicious URLs using advanced lexical feature extraction and machine-learning-based threat classification.
+            </p>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-10 animate-slideDownStagger2">
-          <button
-            type="button"
-            onClick={scrollToHowItWorks}
-            className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
-              isDark 
-                ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#8B5CF6]/50 text-neutral-300 hover:text-[#FAFAFA]' 
-                : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
-            }`}
-          >
-            <Zap className="w-4 h-4 text-[#8B5CF6]" /> How It Works
-          </button>
-          
-          <button
-            type="button"
-            onClick={() => navigate('/about')}
-            className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
-              isDark 
-                ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#8B5CF6]/50 text-neutral-300 hover:text-[#FAFAFA]' 
-                : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
-            }`}
-          >
-            <Info className="w-4 h-4 text-[#8B5CF6]" /> About
-          </button>
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
+              <button
+                type="button"
+                onClick={scrollToHowItWorks}
+                className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
+                  isDark 
+                    ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#8B5CF6]/50 text-neutral-300 hover:text-[#FAFAFA]' 
+                    : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
+                }`}
+              >
+                <Zap className="w-4 h-4 text-[#8B5CF6]" /> How It Works
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => navigate('/about')}
+                className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
+                  isDark 
+                    ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#8B5CF6]/50 text-neutral-300 hover:text-[#FAFAFA]' 
+                    : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
+                }`}
+              >
+                <Info className="w-4 h-4 text-[#8B5CF6]" /> About
+              </button>
 
-          <button
-            type="button"
-            onClick={() => navigate('/feedback')}
-            className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
-              isDark 
-                ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#EC4899]/50 text-neutral-300 hover:text-[#FAFAFA]' 
-                : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-pink-300 text-slate-700 hover:text-slate-900'
-            }`}
-          >
-            <MessageSquare className="w-4 h-4 text-[#EC4899]" /> Feedback
-          </button>
+              <button
+                type="button"
+                onClick={() => navigate('/feedback')}
+                className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
+                  isDark 
+                    ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#EC4899]/50 text-neutral-300 hover:text-[#FAFAFA]' 
+                    : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-pink-300 text-slate-700 hover:text-slate-900'
+                }`}
+              >
+                <MessageSquare className="w-4 h-4 text-[#EC4899]" /> Feedback
+              </button>
+            </div>
+          </div>
+
+          {/* 3D Interactive Canvas Model Integration */}
+          <div className="lg:col-span-5 relative flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6]/10 to-[#EC4899]/15 rounded-full blur-3xl pointer-events-none" />
+            <ShieldCore3D />
+          </div>
         </div>
 
         {/* 3D Interactive URL Scan Input Form Container */}
@@ -568,7 +583,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* Widened Footer Section with Fixed Navigation */}
+      {/* Widened Footer Section */}
       <footer className={`w-full max-w-7xl mx-auto border-t py-14 px-6 sm:px-12 lg:px-16 mt-16 text-xs transition-colors ${
         isDark ? 'border-neutral-800/80 text-neutral-400' : 'border-slate-200 text-slate-600'
       }`}>
