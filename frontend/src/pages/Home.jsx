@@ -178,20 +178,20 @@ export default function Home() {
     }`}>
       {/* 3-Second Cinematic Intro Overlay (Played once per session) */}
       {showIntroAnimation && (
-        <div className="fixed inset-0 z-[150] bg-[#07090E] flex flex-col items-center justify-center animate-fadeOut">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.15)_0,transparent_70%)] pointer-events-none" />
+        <div className="fixed inset-0 z-[150] bg-[#0A0A0F] flex flex-col items-center justify-center animate-fadeOut">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15)_0,transparent_70%)] pointer-events-none" />
           <div className="relative flex flex-col items-center space-y-4 animate-cinematicReveal">
             <div className="relative">
-              <div className="absolute inset-0 bg-cyan-500/50 blur-3xl rounded-full animate-pulse" />
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500 via-sky-500 to-indigo-600 p-1 flex items-center justify-center text-white shadow-[0_0_40px_rgba(0,240,255,0.6)] relative z-15 border border-cyan-400/50">
-                <img src="/logo.png" alt="WebShield AI Logo" className="w-full h-full object-cover rounded-xl" />
+              <div className="absolute inset-0 bg-[#8B5CF6]/50 blur-3xl rounded-full animate-pulse" />
+              <div className="w-20 h-20 rounded-2xl bg-[#13111C] p-1 flex items-center justify-center text-white shadow-[0_0_40px_rgba(139,92,246,0.4)] relative z-15 border border-[#231E33]">
+                <img src="/logo.png" alt="WebShield AI Logo" className="w-full h-full object-contain rounded-xl" />
               </div>
             </div>
             <div className="flex items-center font-extrabold text-3xl md:text-5xl tracking-tighter">
-              <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.4)]">WebShield</span>
-              <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent ml-2">AI</span>
+              <span className="text-[#FAFAFA]">WebShield</span>
+              <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent ml-2">AI</span>
             </div>
-            <p className="text-cyan-400/80 text-xs font-mono uppercase tracking-widest mt-2 animate-pulse">Initializing Threat Intelligence Core...</p>
+            <p className="text-neutral-400 text-xs font-mono uppercase tracking-widest mt-2 animate-pulse">Initializing Security Engine...</p>
           </div>
         </div>
       )}
@@ -213,9 +213,9 @@ export default function Home() {
         
         {/* Hero Title */}
         <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight transition-colors animate-cinematicReveal ${
-          isDark ? 'text-white' : 'text-slate-900'
+          isDark ? 'text-[#FAFAFA]' : 'text-slate-900'
         }`}>
-          Detect Phishing & Malicious Websites <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(6,182,212,0.4)]">Instantly</span>
+          Detect Phishing & Malicious Websites <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Instantly</span>
         </h1>
         
         <p className={`text-lg md:text-xl max-w-2xl mb-8 leading-relaxed transition-colors ${
@@ -231,11 +231,11 @@ export default function Home() {
             onClick={scrollToHowItWorks}
             className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
               isDark 
-                ? 'bg-[#0E1528] hover:bg-[#15203C] border-[#1C2C4E] hover:border-cyan-400/50 text-neutral-300 hover:text-white' 
-                : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-cyan-300 text-slate-700 hover:text-slate-900'
+                ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#8B5CF6]/50 text-neutral-300 hover:text-[#FAFAFA]' 
+                : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
             }`}
           >
-            <Zap className="w-4 h-4 text-cyan-400" /> How It Works
+            <Zap className="w-4 h-4 text-[#8B5CF6]" /> How It Works
           </button>
           
           <button
@@ -243,11 +243,11 @@ export default function Home() {
             onClick={() => navigate('/about')}
             className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
               isDark 
-                ? 'bg-[#0E1528] hover:bg-[#15203C] border-[#1C2C4E] hover:border-indigo-400/50 text-neutral-300 hover:text-white' 
-                : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-slate-900'
+                ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#8B5CF6]/50 text-neutral-300 hover:text-[#FAFAFA]' 
+                : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
             }`}
           >
-            <Info className="w-4 h-4 text-indigo-400" /> About
+            <Info className="w-4 h-4 text-[#8B5CF6]" /> About
           </button>
 
           <button
@@ -255,11 +255,11 @@ export default function Home() {
             onClick={() => navigate('/feedback')}
             className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
               isDark 
-                ? 'bg-[#0E1528] hover:bg-[#15203C] border-[#1C2C4E] hover:border-emerald-400/50 text-neutral-300 hover:text-white' 
-                : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-slate-900'
+                ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#EC4899]/50 text-neutral-300 hover:text-[#FAFAFA]' 
+                : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-pink-300 text-slate-700 hover:text-slate-900'
             }`}
           >
-            <MessageSquare className="w-4 h-4 text-emerald-400" /> Feedback
+            <MessageSquare className="w-4 h-4 text-[#EC4899]" /> Feedback
           </button>
         </div>
 
@@ -269,7 +269,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
                 <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500">
-                  <Search className="w-5 h-5 text-cyan-400/80" />
+                  <Search className="w-5 h-5 text-neutral-400" />
                 </span>
                 <input
                   type="text"
@@ -281,9 +281,9 @@ export default function Home() {
                   }}
                   placeholder="Enter website URL (e.g., https://example.com)..."
                   disabled={isLoading}
-                  className={`w-full pl-11 pr-4 py-4 rounded-xl border focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/40 outline-none transition-all duration-300 shadow-inner text-base ${
+                  className={`w-full pl-11 pr-4 py-4 rounded-xl border focus:border-[#8B5CF6] focus:ring-1 focus:ring-[#8B5CF6]/40 outline-none transition-all duration-300 shadow-inner text-base ${
                     isDark 
-                      ? 'bg-[#0A0F1E]/90 border-[#192744] text-white placeholder-neutral-500' 
+                      ? 'bg-[#13111C]/90 border-[#231E33] text-[#FAFAFA] placeholder-neutral-500' 
                       : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
                   }`}
                 />
@@ -292,7 +292,7 @@ export default function Home() {
                 type="submit"
                 disabled={isLoading}
                 aria-label="Scan URL"
-                className="bg-gradient-to-r from-cyan-500 via-sky-500 to-indigo-600 hover:opacity-95 disabled:opacity-50 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/40 text-base active:scale-[0.98] whitespace-nowrap cursor-pointer"
+                className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 disabled:opacity-50 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 shadow-lg shadow-purple-950/40 text-base active:scale-[0.98] whitespace-nowrap cursor-pointer"
               >
                 {isLoading ? (
                   <>
@@ -325,8 +325,8 @@ export default function Home() {
                 onClick={() => handleQuickExample(site)}
                 className={`px-3 py-1 rounded-lg border text-xs transition-all duration-300 hover:scale-105 cursor-pointer ${
                   isDark 
-                    ? 'bg-[#0E1528] border-[#1C2C4E] hover:border-cyan-400/50 text-neutral-300 hover:text-white' 
-                    : 'bg-white border-slate-200 hover:border-cyan-300 text-slate-700 hover:text-slate-900 shadow-sm'
+                    ? 'bg-[#13111C] border-[#231E33] hover:border-[#8B5CF6]/50 text-neutral-300 hover:text-[#FAFAFA]' 
+                    : 'bg-white border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900 shadow-sm'
                 }`}
               >
                 {site}
@@ -340,37 +340,37 @@ export default function Home() {
           <TiltCard3D maxTilt={7} glare={true} depth={25} className="w-full max-w-2xl mb-16">
             <div className={`backdrop-blur-xl border p-8 sm:p-10 rounded-3xl text-center transition-all duration-300 shadow-2xl animate-fadeIn ${
               isDark 
-                ? 'bg-[#0C1220]/95 border-cyan-500/30 shadow-cyan-950/40' 
-                : 'bg-white border-cyan-200 shadow-cyan-200/50'
+                ? 'bg-[#13111C]/95 border-[#8B5CF6]/30 shadow-purple-950/40' 
+                : 'bg-white border-purple-200 shadow-purple-200/50'
             }`}>
               <div className="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
                 <div 
-                  className="absolute inset-0 rounded-full border-2 border-dashed border-cyan-400" 
+                  className="absolute inset-0 rounded-full border-2 border-dashed border-[#8B5CF6]" 
                   style={{ animation: 'spin 4s linear infinite' }} 
                 />
                 <div 
-                  className="absolute inset-2 rounded-full border-2 border-transparent border-t-indigo-400 border-b-cyan-400" 
+                  className="absolute inset-2 rounded-full border-2 border-transparent border-t-[#EC4899] border-b-[#8B5CF6]" 
                   style={{ animation: 'spin 2.5s linear infinite reverse' }} 
                 />
                 <div 
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#121B30] text-cyan-400' : 'bg-cyan-50 text-cyan-600'} shadow-md`}
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#1A1528] text-[#8B5CF6]' : 'bg-purple-50 text-purple-600'} shadow-md`}
                   style={{ animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
                 >
                   <Shield className="w-5 h-5" />
                 </div>
               </div>
 
-              <h3 className={`text-base font-bold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-950'}`}>
+              <h3 className={`text-base font-bold tracking-tight mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-950'}`}>
                 WebShield Threat Intelligence Analysis
               </h3>
               
-              <p className="text-xs text-cyan-400 font-mono mb-6 h-5 transition-all duration-300">
+              <p className="text-xs text-[#8B5CF6] font-mono mb-6 h-5 transition-all duration-300">
                 {scanStages[scanStep]}
               </p>
 
-              <div className="w-full bg-[#07090E]/60 rounded-full h-2.5 overflow-hidden border border-[#16223A] p-0.5">
+              <div className="w-full bg-[#0A0A0F]/60 rounded-full h-2.5 overflow-hidden border border-[#231E33] p-0.5">
                 <div 
-                  className="bg-gradient-to-r from-cyan-400 to-indigo-500 h-full rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(6,182,212,0.6)]"
+                  className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] h-full rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(139,92,246,0.6)]"
                   style={{ width: `${Math.min(progress, 100)}%` }}
                 />
               </div>
@@ -387,10 +387,10 @@ export default function Home() {
           <TiltCard3D maxTilt={7} glare={true} depth={25} className="w-full max-w-2xl mb-16">
             <div className={`backdrop-blur-xl border p-6 sm:p-8 rounded-3xl text-left transition-all duration-300 shadow-2xl animate-fadeIn ${
               isDark 
-                ? 'bg-[#0C1220]/95 border-[#172540] shadow-cyan-950/20' 
+                ? 'bg-[#13111C]/95 border-[#231E33] shadow-purple-950/30' 
                 : 'bg-white border-slate-200 shadow-2xl shadow-slate-200/60'
             }`}>
-              <div className="flex items-center justify-between pb-4 border-b border-[#172540] mb-6">
+              <div className="flex items-center justify-between pb-4 border-b border-[#231E33] mb-6">
                 <div className="flex items-center gap-3">
                   {scanResult.status === 'safe' && (
                     <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
@@ -418,7 +418,7 @@ export default function Home() {
                 </div>
                 <button
                   onClick={handleReset}
-                  className="text-xs text-neutral-300 hover:text-white bg-[#121B30] border border-[#1E2E4E] hover:border-cyan-400/50 px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer"
+                  className="text-xs text-neutral-300 hover:text-[#FAFAFA] bg-[#13111C] border border-[#231E33] hover:border-[#8B5CF6]/50 px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer"
                 >
                   Scan Another
                 </button>
@@ -427,26 +427,26 @@ export default function Home() {
               <div className="space-y-4 mb-6">
                 <div>
                   <span className="text-xs text-neutral-400 block mb-1">Target URL</span>
-                  <div className="bg-[#07090E] border border-[#172540] px-3 py-2 rounded-lg text-sm text-neutral-300 font-mono break-all flex items-center gap-2">
-                    <Globe className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <div className="bg-[#0A0A0F] border border-[#231E33] px-3 py-2 rounded-lg text-sm text-neutral-300 font-mono break-all flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-[#8B5CF6] shrink-0" />
                     {scanResult.url}
                   </div>
                 </div>
 
-                <p className="text-sm text-neutral-300 leading-relaxed bg-[#101728]/70 p-4 rounded-xl border border-[#1B2844]">
+                <p className="text-sm text-neutral-300 leading-relaxed bg-[#1A1528]/50 p-4 rounded-xl border border-[#231E33]">
                   {scanResult.description}
                 </p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-                  <div className="bg-[#07090E] p-3 rounded-xl border border-[#172540]">
+                  <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
                     <span className="text-[11px] text-neutral-500 block">IP Address Check</span>
                     <span className="text-sm font-semibold text-white">{scanResult.checks.ipAddress}</span>
                   </div>
-                  <div className="bg-[#07090E] p-3 rounded-xl border border-[#172540]">
+                  <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
                     <span className="text-[11px] text-neutral-500 block">Protocol</span>
                     <span className="text-sm font-semibold text-white">{scanResult.checks.sslSecure}</span>
                   </div>
-                  <div className="bg-[#07090E] p-3 rounded-xl border border-[#172540]">
+                  <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
                     <span className="text-[11px] text-neutral-500 block">Lexical Rules</span>
                     <span className="text-sm font-semibold text-white">{scanResult.checks.lexicalMatch}</span>
                   </div>
@@ -462,12 +462,12 @@ export default function Home() {
             <TiltCard3D maxTilt={11} glare={true} depth={30} className="w-full h-full">
               <div className={`h-full backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 shadow-xl ${
                 isDark 
-                  ? 'bg-[#0C1220]/80 border-[#152035] hover:border-cyan-400/50 shadow-cyan-950/20' 
-                  : 'bg-white border-slate-200 hover:border-cyan-300 shadow-slate-200/50'
+                  ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#8B5CF6]/50 shadow-purple-950/20' 
+                  : 'bg-white border-slate-200 hover:border-purple-300 shadow-slate-200/50'
               }`}>
                 <div 
                   className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 transition-transform duration-300 [transform:translateZ(25px)] ${
-                    isDark ? 'bg-[#121B30] border-cyan-500/30 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]' : 'bg-cyan-50 border-cyan-200 text-cyan-600'
+                    isDark ? 'bg-[#1A1528] border-[#231E33] text-[#8B5CF6] shadow-[0_0_15px_rgba(139,92,246,0.2)]' : 'bg-purple-50 border-purple-200 text-purple-600'
                   }`}
                 >
                   <Cpu className="w-5 h-5" />
@@ -480,12 +480,12 @@ export default function Home() {
             <TiltCard3D maxTilt={11} glare={true} depth={30} className="w-full h-full">
               <div className={`h-full backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 shadow-xl ${
                 isDark 
-                  ? 'bg-[#0C1220]/80 border-[#152035] hover:border-emerald-400/50 shadow-emerald-950/20' 
-                  : 'bg-white border-slate-200 hover:border-emerald-300 shadow-slate-200/50'
+                  ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#8B5CF6]/50 shadow-purple-950/20' 
+                  : 'bg-white border-slate-200 hover:border-purple-300 shadow-slate-200/50'
               }`}>
                 <div 
                   className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 transition-transform duration-300 [transform:translateZ(25px)] ${
-                    isDark ? 'bg-[#121B30] border-emerald-500/30 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                    isDark ? 'bg-[#1A1528] border-[#231E33] text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 'bg-emerald-50 border-emerald-200 text-emerald-600'
                   }`}
                 >
                   <CheckCircle2 className="w-5 h-5" />
@@ -498,12 +498,12 @@ export default function Home() {
             <TiltCard3D maxTilt={11} glare={true} depth={30} className="w-full h-full">
               <div className={`h-full backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 shadow-xl ${
                 isDark 
-                  ? 'bg-[#0C1220]/80 border-[#152035] hover:border-indigo-400/50 shadow-indigo-950/20' 
-                  : 'bg-white border-slate-200 hover:border-indigo-300 shadow-slate-200/50'
+                  ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#EC4899]/50 shadow-purple-950/20' 
+                  : 'bg-white border-slate-200 hover:border-pink-300 shadow-slate-200/50'
               }`}>
                 <div 
                   className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 transition-transform duration-300 [transform:translateZ(25px)] ${
-                    isDark ? 'bg-[#121B30] border-indigo-500/30 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-indigo-50 border-indigo-200 text-indigo-600'
+                    isDark ? 'bg-[#1A1528] border-[#231E33] text-[#EC4899] shadow-[0_0_15px_rgba(236,72,153,0.2)]' : 'bg-pink-50 border-pink-200 text-pink-600'
                   }`}
                 >
                   <Lock className="w-5 h-5" />
@@ -518,15 +518,15 @@ export default function Home() {
         {/* How It Works Section */}
         {!scanResult && !isLoading && (
           <div id="how-it-works" className={`w-full max-w-5xl backdrop-blur-xl border p-8 sm:p-12 rounded-3xl text-left shadow-2xl transition-all mb-20 ${
-            isDark ? 'bg-[#0C1220]/70 border-[#16223A]' : 'bg-white border-slate-200 shadow-slate-200/60'
+            isDark ? 'bg-[#13111C]/70 border-[#231E33]' : 'bg-white border-slate-200 shadow-slate-200/60'
           }`}>
             <div className="text-center max-w-xl mx-auto mb-12">
               <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold mb-3 uppercase tracking-wider ${
-                isDark ? 'bg-[#121B30] border-cyan-500/30 text-cyan-400' : 'bg-cyan-50 border-cyan-200 text-cyan-700'
+                isDark ? 'bg-[#1A1528] border-[#231E33] text-[#8B5CF6]' : 'bg-purple-50 border-purple-200 text-purple-700'
               }`}>
-                <Zap className="w-3.5 h-3.5 text-cyan-400" /> Simple 4-Step Architecture
+                <Zap className="w-3.5 h-3.5 text-[#8B5CF6]" /> Simple 4-Step Architecture
               </div>
-              <h2 className={`text-2xl sm:text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>How WebShield AI Works</h2>
+              <h2 className={`text-2xl sm:text-3xl font-bold ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>How WebShield AI Works</h2>
               <p className={`text-sm mt-2 ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>
                 Our platform uses robust feature extraction and security classification to evaluate suspicious links in milliseconds.
               </p>
@@ -534,16 +534,16 @@ export default function Home() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 [perspective:1200px]">
               {[
-                { step: '01', title: '1. Enter URL', desc: 'Enter a website URL to begin the security analysis.', icon: Search, color: 'text-cyan-400', bg: 'bg-cyan-50' },
-                { step: '02', title: '2. Feature Extraction', desc: 'Extract structural and lexical features from the URL for analysis.', icon: Layers, color: 'text-sky-400', bg: 'bg-sky-50' },
-                { step: '03', title: '3. ML Classification', desc: 'The trained Random Forest classifier evaluates the extracted feature set.', icon: Cpu, color: 'text-indigo-400', bg: 'bg-indigo-50' },
+                { step: '01', title: '1. Enter URL', desc: 'Enter a website URL to begin the security analysis.', icon: Search, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
+                { step: '02', title: '2. Feature Extraction', desc: 'Extract structural and lexical features from the URL for analysis.', icon: Layers, color: 'text-[#EC4899]', bg: 'bg-pink-50' },
+                { step: '03', title: '3. ML Classification', desc: 'The trained Random Forest classifier evaluates the extracted feature set.', icon: Cpu, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
                 { step: '04', title: '4. Security Assessment', desc: 'Receive a risk classification, confidence score, and detailed security analysis.', icon: Shield, color: 'text-emerald-400', bg: 'bg-emerald-50' }
               ].map((item, idx) => {
                 const IconComponent = item.icon;
                 return (
                   <TiltCard3D key={idx} maxTilt={9} depth={20} className="w-full h-full">
                     <div className={`h-full border p-6 rounded-2xl relative transition-all duration-300 shadow-sm ${
-                      isDark ? 'bg-[#07090E] border-[#16223A] hover:border-cyan-500/40' : 'bg-slate-50 border-slate-200'
+                      isDark ? 'bg-[#0A0A0F] border-[#231E33] hover:border-[#8B5CF6]/40' : 'bg-slate-50 border-slate-200'
                     }`}>
                       <div 
                         className={`absolute top-4 right-4 text-xs font-mono font-bold [transform:translateZ(20px)] ${isDark ? 'text-neutral-600' : 'text-slate-400'}`}
@@ -551,11 +551,11 @@ export default function Home() {
                         {item.step}
                       </div>
                       <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 [transform:translateZ(22px)] ${
-                        isDark ? 'bg-[#0E1528] border-[#1A2846]' : `${item.bg} border-slate-200`
+                        isDark ? 'bg-[#13111C] border-[#231E33]' : `${item.bg} border-slate-200`
                       } ${item.color}`}>
                         <IconComponent className="w-5 h-5" />
                       </div>
-                      <h3 className={`text-sm font-semibold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.title}</h3>
+                      <h3 className={`text-sm font-semibold mb-1 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>{item.title}</h3>
                       <p className={`text-xs leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>
                         {item.desc}
                       </p>
@@ -574,7 +574,7 @@ export default function Home() {
       }`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div className="space-y-3">
-            <h3 className={`font-bold text-sm tracking-tight ${isDark ? 'text-white' : 'text-slate-950'}`}>WEB SHIELD AI</h3>
+            <h3 className={`font-bold text-sm tracking-tight ${isDark ? 'text-[#FAFAFA]' : 'text-slate-950'}`}>WEB SHIELD AI</h3>
             <p className="text-xs leading-relaxed">AI-Powered Website Security</p>
             <p className="text-[11px] opacity-80">Scan suspicious URLs • Detect phishing • Stay protected</p>
           </div>
@@ -582,30 +582,30 @@ export default function Home() {
           <div className="space-y-3">
             <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>PRODUCT</h4>
             <ul className="space-y-2.5">
-              <li><button onClick={() => navigate('/')} className="hover:text-cyan-400 transition cursor-pointer">URL Scanner</button></li>
-              <li><button onClick={() => navigate('/history')} className="hover:text-cyan-400 transition cursor-pointer">Scan History</button></li>
-              <li><button onClick={() => navigate('/')} className="hover:text-cyan-400 transition cursor-pointer">Risk Analysis</button></li>
-              <li><button onClick={() => navigate('/settings')} className="hover:text-cyan-400 transition cursor-pointer">Security Reports</button></li>
+              <li><button onClick={() => navigate('/')} className="hover:text-[#8B5CF6] transition cursor-pointer">URL Scanner</button></li>
+              <li><button onClick={() => navigate('/history')} className="hover:text-[#8B5CF6] transition cursor-pointer">Scan History</button></li>
+              <li><button onClick={() => navigate('/')} className="hover:text-[#8B5CF6] transition cursor-pointer">Risk Analysis</button></li>
+              <li><button onClick={() => navigate('/settings')} className="hover:text-[#8B5CF6] transition cursor-pointer">Security Reports</button></li>
             </ul>
           </div>
 
           <div className="space-y-3">
             <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>RESOURCES</h4>
             <ul className="space-y-2.5">
-              <li><button onClick={scrollToHowItWorks} className="hover:text-cyan-400 transition cursor-pointer">How It Works</button></li>
-              <li><button onClick={() => navigate('/about')} className="hover:text-cyan-400 transition cursor-pointer">Case Studies</button></li>
-              <li><button onClick={() => navigate('/about')} className="hover:text-cyan-400 transition cursor-pointer">FAQ</button></li>
-              <li><button onClick={() => navigate('/about')} className="hover:text-cyan-400 transition cursor-pointer">Documentation</button></li>
+              <li><button onClick={scrollToHowItWorks} className="hover:text-[#8B5CF6] transition cursor-pointer">How It Works</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition cursor-pointer">Case Studies</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition cursor-pointer">FAQ</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition cursor-pointer">Documentation</button></li>
             </ul>
           </div>
 
           <div className="space-y-3">
             <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>COMPANY</h4>
             <ul className="space-y-2.5">
-              <li><button onClick={() => navigate('/about')} className="hover:text-cyan-400 transition cursor-pointer">About</button></li>
-              <li><button onClick={() => navigate('/feedback')} className="hover:text-cyan-400 transition cursor-pointer">Contact</button></li>
-              <li><button onClick={() => navigate('/feedback')} className="hover:text-cyan-400 transition cursor-pointer">Feedback</button></li>
-              <li><button onClick={() => navigate('/settings')} className="hover:text-cyan-400 transition cursor-pointer">Changelog</button></li>
+              <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition cursor-pointer">About</button></li>
+              <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition cursor-pointer">Contact</button></li>
+              <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition cursor-pointer">Feedback</button></li>
+              <li><button onClick={() => navigate('/settings')} className="hover:text-[#8B5CF6] transition cursor-pointer">Changelog</button></li>
             </ul>
           </div>
         </div>
