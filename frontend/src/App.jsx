@@ -52,11 +52,15 @@ function AppContent() {
           {/* Luxury Glassmorphic Card Container */}
           <div className="relative z-10 flex flex-col items-center p-12 rounded-[32px] bg-[#12111A]/60 border border-white/10 backdrop-blur-2xl shadow-[0_0_100px_rgba(139,92,246,0.25)] animate-luxuryReveal">
             
-            {/* Glowing Shield Icon with Metallic Border Effect */}
+            {/* Glowing Logo Asset Container */}
             <div className="relative mb-6">
               <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] blur-2xl rounded-full opacity-70 animate-pulse" />
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#1A1829] to-[#0A0A0F] flex items-center justify-center text-4xl shadow-2xl relative z-10 border border-purple-400/30">
-                <span className="bg-gradient-to-r from-white via-purple-200 to-pink-300 bg-clip-text text-transparent drop-shadow-md">🛡️</span>
+              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#1A1829] to-[#0A0A0F] flex items-center justify-center p-3 shadow-2xl relative z-10 border border-purple-400/30">
+                <img 
+                  src="/logo.png" 
+                  alt="WebShield AI Logo" 
+                  className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(139,92,246,0.8)]" 
+                />
               </div>
             </div>
 
