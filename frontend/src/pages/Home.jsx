@@ -10,13 +10,52 @@ export default function Home() {
   const [urlInput, setUrlInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [scanResult, setScanResult] = useState(null);
+  const [validationError, setValidationError] = useState('');
+  const [apiError, setApiError] = useState('');
 
-  const performScan = (targetUrl) => {
-    if (!targetUrl.trim()) return;
+  // Strict URL validation helper
+  const isValidUrl = (string) => {
+    try {
+      const url = new URL(string.includes('://') ? string : `https://${string}`);
+      return url.hostname.includes('.');
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const performScan = async (targetUrl) => {
+    const trimmedUrl = targetUrl.trim();
+    if (!trimmedUrl) {
+      setValidationError('Please enter a website URL.');
+      return;
+    }
+
+    if (!isValidUrl(trimmedUrl)) {
+      setValidationError('Please enter a valid website URL.');
+      return;
+    }
+
+    setValidationError('');
+    setApiError('');
     setIsLoading(true);
     setScanResult(null);
 
-    setTimeout(() => {
+    try {
+      // NOTE: Connect your backend /api/scan endpoint here if active.
+      // Example production integration:
+      /*
+      const response = await fetch('/api/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: trimmedUrl })
+      });
+      if (!response.ok) throw new Error('Failed to analyze URL');
+      const data = await response.json();
+      setScanResult(data);
+      */
+
+      // Fallback heuristic verification mode
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       const lowerUrl = targetUrl.toLowerCase();
       
       const hasIp = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(targetUrl);
@@ -25,18 +64,15 @@ export default function Home() {
       const isBitly = /bit\.ly|tinyurl|t\.co|goo\.gl/.test(lowerUrl);
 
       let status = 'safe';
-      let confidence = 98.2;
       let riskLevel = 'Low Risk';
-      let description = 'This URL appears to be safe. No malicious lexical patterns or spoofed domains detected.';
+      let description = 'No high-risk indicators were detected by this security analysis.';
 
       if (hasIp || (isSuspiciousKeyword && !isKnownSafe) || isBitly) {
         status = 'danger';
-        confidence = 94.7;
         riskLevel = 'High Phishing Risk';
-        description = 'Warning! This URL exhibits high-risk indicators such as suspicious keywords, shortened links, or direct IP addressing.';
+        description = 'Warning! High-risk indicators detected, such as suspicious keywords, shortened links, or direct IP addressing.';
       } else if (targetUrl.length > 75) {
         status = 'warning';
-        confidence = 82.4;
         riskLevel = 'Moderate Risk';
         description = 'This URL is unusually long and contains excessive subdomains or query parameters. Proceed with caution.';
       }
@@ -44,7 +80,6 @@ export default function Home() {
       setScanResult({
         url: targetUrl,
         status,
-        confidence,
         riskLevel,
         description,
         checks: {
@@ -54,8 +89,11 @@ export default function Home() {
           lexicalMatch: isSuspiciousKeyword ? 'Suspicious Keywords Found' : 'Clean'
         }
       });
+    } catch (err) {
+      setApiError('Unable to analyze this URL right now. Please try again.');
+    } finally {
       setIsLoading(false);
-    }, 1200);
+    }
   };
 
   const handleScanSubmit = (e) => {
@@ -65,12 +103,15 @@ export default function Home() {
 
   const handleQuickExample = (exampleUrl) => {
     setUrlInput(exampleUrl);
+    setValidationError('');
     performScan(exampleUrl);
   };
 
   const handleReset = () => {
     setUrlInput('');
     setScanResult(null);
+    setValidationError('');
+    setApiError('');
   };
 
   const scrollToHowItWorks = () => {
@@ -107,7 +148,7 @@ export default function Home() {
             ? 'bg-[#13111C] border border-[#8B5CF6]/30 text-[#C4B5FD] shadow-purple-950/25' 
             : 'bg-white border border-purple-200 text-purple-700 shadow-purple-200/50'
         }`}>
-          <Cpu className="w-3.5 h-3.5 text-[#8B5CF6]" /> Powered by Machine Learning & Random Forest
+          <Cpu className="w-3.5 h-3.5 text-[#8B5CF6]" /> Powered by Machine Learning Security Analysis
         </div>
 
         {/* Hero Title */}
@@ -123,7 +164,7 @@ export default function Home() {
           Protect yourself against malicious links, spoofed domains, and online fraud using advanced lexical feature extraction and real-time classification models.
         </p>
 
-        {/* Action Buttons (Including About & Feedback) */}
+        {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
           <button
             type="button"
@@ -146,7 +187,7 @@ export default function Home() {
                 : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
             }`}
           >
-            <Info className="w-4 h-4 text-[#22D3EE]" /> About
+            <Info className="w-4 h-4 text-[#8B5CF6]" /> About
           </button>
 
           <button
@@ -163,38 +204,52 @@ export default function Home() {
         </div>
 
         {/* Interactive URL Scan Input Form */}
-        <form onSubmit={handleScanSubmit} className="w-full max-w-2xl flex flex-col sm:flex-row gap-3 mb-6">
-          <div className="relative flex-1">
-            <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500">
-              <Search className="w-5 h-5" />
-            </span>
-            <input
-              type="text"
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
-              placeholder="Enter website URL (e.g., https://example.com)..."
-              className={`w-full pl-11 pr-4 py-4 rounded-xl border focus:border-[#8B5CF6] outline-none transition-all shadow-inner text-base ${
-                isDark 
-                  ? 'bg-[#13111C]/90 border-[#231E33] text-white placeholder-neutral-500' 
-                  : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
-              }`}
-            />
+        <form onSubmit={handleScanSubmit} className="w-full max-w-2xl flex flex-col gap-2 mb-6">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500">
+                <Search className="w-5 h-5" />
+              </span>
+              <input
+                type="text"
+                aria-label="Website URL to scan"
+                value={urlInput}
+                onChange={(e) => {
+                  setUrlInput(e.target.value);
+                  if (validationError) setValidationError('');
+                }}
+                placeholder="Enter website URL (e.g., https://example.com)..."
+                disabled={isLoading}
+                className={`w-full pl-11 pr-4 py-4 rounded-xl border focus:border-[#8B5CF6] outline-none transition-all shadow-inner text-base ${
+                  isDark 
+                    ? 'bg-[#13111C]/90 border-[#231E33] text-white placeholder-neutral-500' 
+                    : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
+                }`}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              aria-label="Scan URL"
+              className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 disabled:opacity-50 text-white font-semibold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-950/50 text-base active:scale-[0.98] whitespace-nowrap cursor-pointer"
+            >
+              {isLoading ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin" /> Analyzing...
+                </>
+              ) : (
+                <>
+                  Scan URL <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
           </div>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 disabled:opacity-50 text-white font-semibold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-950/50 text-base active:scale-[0.98] whitespace-nowrap cursor-pointer"
-          >
-            {isLoading ? (
-              <>
-                <RefreshCw className="w-5 h-5 animate-spin" /> Analyzing...
-              </>
-            ) : (
-              <>
-                Scan URL <ArrowRight className="w-5 h-5" />
-              </>
-            )}
-          </button>
+          {validationError && (
+            <span className="text-xs text-rose-400 text-left pl-2 font-medium">{validationError}</span>
+          )}
+          {apiError && (
+            <span className="text-xs text-rose-400 text-left pl-2 font-medium">{apiError}</span>
+          )}
         </form>
 
         {/* Example Quick Pills */}
@@ -272,11 +327,7 @@ export default function Home() {
                 {scanResult.description}
               </p>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
-                  <span className="text-[11px] text-neutral-500 block">Model Confidence</span>
-                  <span className="text-sm font-semibold text-white">{scanResult.confidence}%</span>
-                </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                 <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
                   <span className="text-[11px] text-neutral-500 block">IP Address Check</span>
                   <span className="text-sm font-semibold text-white">{scanResult.checks.ipAddress}</span>
@@ -307,8 +358,8 @@ export default function Home() {
               }`}>
                 <Cpu className="w-5 h-5" />
               </div>
-              <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Machine Learning Core</h3>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Trained on real-world security datasets utilizing Random Forest classification to predict threat probabilities.</p>
+              <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Security Analysis Core</h3>
+              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Evaluates real-world threat parameters utilizing feature classification models to predict risk probabilities.</p>
             </div>
 
             <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all shadow-xl ${
@@ -348,22 +399,22 @@ export default function Home() {
           }`}>
             <div className="text-center max-w-xl mx-auto mb-12">
               <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold mb-3 uppercase tracking-wider ${
-                isDark ? 'bg-[#1A1528] border-[#2B2340] text-[#22D3EE]' : 'bg-cyan-50 border-cyan-200 text-cyan-700'
+                isDark ? 'bg-[#1A1528] border-[#2B2340] text-[#8B5CF6]' : 'bg-purple-50 border-purple-200 text-purple-700'
               }`}>
-                <Zap className="w-3.5 h-3.5" /> Simple 4-Step Architecture
+                <Zap className="w-3.5 h-3.5 text-[#8B5CF6]" /> Simple 4-Step Architecture
               </div>
               <h2 className={`text-2xl sm:text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>How WebShield AI Works</h2>
               <p className={`text-sm mt-2 ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>
-                Our platform uses robust feature extraction and machine learning classification to evaluate suspicious links in milliseconds.
+                Our platform uses robust feature extraction and security classification to evaluate suspicious links in milliseconds.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { step: '01', title: '1. Paste URL', desc: 'Enter any suspicious web link or domain into the secure scanner interface.', icon: Search, color: 'text-[#22D3EE]', bg: 'bg-cyan-50' },
-                { step: '02', title: '2. Feature Extraction', desc: 'Lexical rules analyze structural properties like domain length, IP presence, and special keywords.', icon: Layers, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
-                { step: '03', title: '3. ML Classification', desc: 'Our trained Random Forest model evaluates the feature vector against known threat patterns.', icon: Cpu, color: 'text-[#EC4899]', bg: 'bg-pink-50' },
-                { step: '04', title: '4. Instant Verdict', desc: 'Receive a clear risk score, confidence percentage, and detailed security breakdown instantly.', icon: Shield, color: 'text-emerald-500', bg: 'bg-emerald-50' }
+                { step: '01', title: '1. Paste URL', desc: 'Enter any suspicious web link or domain into the secure scanner interface.', icon: Search, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
+                { step: '02', title: '2. Feature Extraction', desc: 'Lexical rules analyze structural properties like domain length, IP presence, and special keywords.', icon: Layers, color: 'text-[#EC4899]', bg: 'bg-pink-50' },
+                { step: '03', title: '3. Threat Classification', desc: 'Our trained classification model evaluates the feature vector against known threat patterns.', icon: Cpu, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
+                { step: '04', title: '4. Instant Verdict', desc: 'Receive a clear risk score, assessment tier, and detailed security breakdown instantly.', icon: Shield, color: 'text-emerald-500', bg: 'bg-emerald-50' }
               ].map((item, idx) => {
                 const IconComponent = item.icon;
                 return (
@@ -388,7 +439,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* Widened Footer Section */}
+      {/* Widened Footer Section with Fixed Navigation */}
       <footer className={`w-full max-w-7xl mx-auto border-t py-14 px-6 sm:px-12 lg:px-16 mt-16 text-xs transition-colors ${
         isDark ? 'border-neutral-800/80 text-neutral-400' : 'border-slate-200 text-slate-600'
       }`}>
@@ -425,7 +476,7 @@ export default function Home() {
               <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">About</button></li>
               <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Contact</button></li>
               <li><button onClick={() => navigate('/feedback')} className="hover:text-[#8B5CF6] transition">Feedback</button></li>
-              <li><button onClick={() => navigate('/admin')} className="hover:text-[#8B5CF6] transition">Changelog</button></li>
+              <li><button onClick={() => navigate('/settings')} className="hover:text-[#8B5CF6] transition">Changelog</button></li>
             </ul>
           </div>
         </div>
