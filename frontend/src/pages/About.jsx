@@ -14,43 +14,43 @@ export default function About() {
       {/* Background VFX Glow Orbs & Subtle Grid */}
       <div className={`absolute inset-0 pointer-events-none ${
         isDark 
-          ? 'bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.06)_0,transparent_70%)]' 
-          : 'bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.03)_0,transparent_70%)]'
+          ? 'bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.06)_0,transparent_70%)]' 
+          : 'bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.03)_0,transparent_70%)]'
       }`} />
       <div className={`absolute top-1/4 left-10 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none ${
-        isDark ? 'bg-[#8B5CF6]/10' : 'bg-[#8B5CF6]/5'
+        isDark ? 'bg-cyan-500/10' : 'bg-cyan-500/5'
       }`} />
       <div className={`absolute bottom-10 right-10 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none ${
-        isDark ? 'bg-[#EC4899]/10' : 'bg-[#EC4899]/5'
+        isDark ? 'bg-indigo-500/10' : 'bg-indigo-500/5'
       }`} />
 
       <div className="max-w-4xl mx-auto w-full pt-6 pb-16 relative z-10">
         {/* Navigation back */}
         <button 
           onClick={() => navigate('/')} 
-          className="text-xs font-semibold text-[#8B5CF6] hover:text-[#C4B5FD] mb-6 flex items-center gap-2 transition-all cursor-pointer"
+          className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 mb-6 flex items-center gap-2 transition-all cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Home
         </button>
 
         {/* Hero Card */}
         <div className={`backdrop-blur-xl border rounded-3xl p-6 sm:p-10 shadow-2xl mb-8 transition-all ${
-          isDark ? 'bg-[#111118]/90 border-[#27272F] shadow-purple-950/20' : 'bg-white border-slate-200 shadow-slate-200/60'
+          isDark ? 'bg-[#0C1220]/90 border-[#152035] shadow-cyan-950/20' : 'bg-white border-slate-200 shadow-slate-200/60'
         }`}>
           <div className="flex items-center gap-3 mb-4">
-            <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center text-[#8B5CF6] shadow-inner ${
-              isDark ? 'bg-[#1A1528] border-[#2B2340]' : 'bg-purple-50 border-purple-200'
+            <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center text-cyan-400 shadow-inner ${
+              isDark ? 'bg-[#121B30] border-cyan-500/30' : 'bg-cyan-50 border-cyan-200'
             }`}>
               <Shield className="w-6 h-6" />
             </div>
             <div>
               <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider mb-1 ${
-                isDark ? 'bg-[#1A1528] border-[#2B2340] text-[#8B5CF6]' : 'bg-purple-50 border-purple-200 text-purple-700'
+                isDark ? 'bg-[#121B30] border-cyan-500/30 text-cyan-400' : 'bg-cyan-50 border-cyan-200 text-cyan-700'
               }`}>
                 Platform Architecture
               </div>
               <h1 className={`text-2xl sm:text-4xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                About <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">WebShield AI</span>
+                About <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 bg-clip-text text-transparent">WebShield AI</span>
               </h1>
             </div>
           </div>
