@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   onAuthStateChanged,
@@ -6,6 +6,7 @@ import {
   updateProfile,
   verifyBeforeUpdateEmail,
 } from 'firebase/auth';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth } from '../firebase';
 import {
   ArrowLeft,
@@ -20,7 +21,6 @@ import {
   Calendar,
   Clock,
   User,
-  Image as ImageIcon,
   Save,
   X,
   Copy,
@@ -28,7 +28,43 @@ import {
   ScanSearch,
   ShieldAlert,
   ShieldX,
+  Upload,
+  HardDrive,
+  Link as LinkIcon,
 } from 'lucide-react';
+
+// ---------------------------------------------------------------------------
+// Google Drive picker configuration
+// ---------------------------------------------------------------------------
+// To enable "Choose from Google Drive" you need a Google Cloud project with:
+//   1. The "Google Picker API" and "Google Drive API" enabled.
+//   2. An OAuth 2.0 Client ID (Web application) — add your app's origin(s)
+//      under "Authorized JavaScript origins" (e.g. http://localhost:5173,
+//      your production domain).
+//   3. An API key, restricted to the Picker API.
+// Fill in the two values below. Until you do, the Google Drive button will
+// show an error instead of opening the picker.
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_OAUTH_CLIENT_ID.apps.googleusercontent.com';
+const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY';
+const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
+
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5MB
+
+function loadScriptOnce(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load ${src}`));
+    document.body.appendChild(script);
+  });
+}
 
 // If you track scan history in Firestore/your backend, wire this up to a real
 // fetch (e.g. getUserStats(user.uid)) and replace the placeholder below.
@@ -54,6 +90,12 @@ export default function Profile() {
   const [editPhotoUrl, setEditPhotoUrl] = useState('');
   const [saveStatus, setSaveStatus] = useState({ loading: false, error: '', success: '' });
   const [pendingEmail, setPendingEmail] = useState('');
+
+  // Avatar picker states
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState('');
+  const pickerApiLoadedRef = useRef(false);
+  const tokenClientRef = useRef(null);
 
   // Product stats
   const [stats, setStats] = useState(null);
@@ -108,6 +150,7 @@ export default function Profile() {
     setEditEmail(user.email || '');
     setEditPhotoUrl(user.photoURL || '');
     setSaveStatus({ loading: false, error: '', success: '' });
+    setAvatarError('');
     setPendingEmail('');
     setIsEditing(true);
   };
@@ -189,6 +232,118 @@ export default function Profile() {
     }
   };
 
+  // ---- Avatar upload helpers -----------------------------------------
+  const uploadAvatarBlob = async (blob, filename = 'avatar') => {
+    const storage = getStorage();
+    const safeName = filename.replace(/[^\w.\-]/g, '_');
+    const path = `avatars/${user.uid}/${Date.now()}_${safeName}`;
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, blob, { contentType: blob.type || 'image/jpeg' });
+    return getDownloadURL(storageRef);
+  };
+
+  const handleLocalFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-selecting the same file later
+    if (!file) return;
+
+    setAvatarError('');
+    if (!file.type.startsWith('image/')) {
+      setAvatarError('Please choose an image file.');
+      return;
+    }
+    if (file.size > MAX_AVATAR_BYTES) {
+      setAvatarError('Image must be under 5MB.');
+      return;
+    }
+
+    setAvatarUploading(true);
+    try {
+      const url = await uploadAvatarBlob(file, file.name);
+      setEditPhotoUrl(url);
+    } catch (err) {
+      console.error(err);
+      setAvatarError('Upload failed. Please check your Firebase Storage rules and try again.');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  // ---- Google Drive picker ---------------------------------------------
+  const ensureGoogleApisLoaded = async () => {
+    if (GOOGLE_CLIENT_ID.startsWith('YOUR_') || GOOGLE_API_KEY.startsWith('YOUR_')) {
+      throw new Error('missing-config');
+    }
+    await Promise.all([
+      loadScriptOnce('https://apis.google.com/js/api.js'),
+      loadScriptOnce('https://accounts.google.com/gsi/client'),
+    ]);
+    if (!pickerApiLoadedRef.current) {
+      await new Promise((resolve) => window.gapi.load('picker', resolve));
+      pickerApiLoadedRef.current = true;
+    }
+    if (!tokenClientRef.current) {
+      tokenClientRef.current = window.google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: GOOGLE_DRIVE_SCOPE,
+        callback: () => {}, // overridden per-request below
+      });
+    }
+  };
+
+  const handlePickerResponse = async (data, accessToken) => {
+    if (data.action !== window.google.picker.Action.PICKED) return;
+    const file = data.docs[0];
+    if (!file) return;
+
+    setAvatarUploading(true);
+    setAvatarError('');
+    try {
+      const res = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`,
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      if (!res.ok) throw new Error('Drive download failed');
+      const blob = await res.blob();
+      const url = await uploadAvatarBlob(blob, file.name || 'drive-avatar');
+      setEditPhotoUrl(url);
+    } catch (err) {
+      console.error(err);
+      setAvatarError('Failed to import the selected image from Drive.');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handlePickFromDrive = async () => {
+    setAvatarError('');
+    try {
+      await ensureGoogleApisLoaded();
+      tokenClientRef.current.callback = (tokenResponse) => {
+        if (tokenResponse.error) {
+          setAvatarError('Google Drive authorization was cancelled or failed.');
+          return;
+        }
+        const accessToken = tokenResponse.access_token;
+        const picker = new window.google.picker.PickerBuilder()
+          .addView(window.google.picker.ViewId.DOCS_IMAGES)
+          .setOAuthToken(accessToken)
+          .setDeveloperKey(GOOGLE_API_KEY)
+          .setCallback((data) => handlePickerResponse(data, accessToken))
+          .build();
+        picker.setVisible(true);
+      };
+      tokenClientRef.current.requestAccessToken({ prompt: '' });
+    } catch (err) {
+      console.error(err);
+      if (err.message === 'missing-config') {
+        setAvatarError('Google Drive picker is not configured yet (missing client ID / API key).');
+      } else {
+        setAvatarError('Could not load the Google Drive picker.');
+      }
+    }
+  };
+
   // Helper to format timestamps locally
   const formatLocalDate = (timestamp) => {
     if (!timestamp) return 'Not available';
@@ -231,24 +386,9 @@ export default function Profile() {
   const email = user.email || 'No email provided';
 
   const statCards = [
-    {
-      label: 'Sites Scanned',
-      value: stats?.totalScans ?? 0,
-      icon: ScanSearch,
-      color: '#8B5CF6',
-    },
-    {
-      label: 'Threats Flagged',
-      value: stats?.threatsFlagged ?? 0,
-      icon: ShieldX,
-      color: '#F43F5E',
-    },
-    {
-      label: 'Confirmed Safe',
-      value: stats?.safeSites ?? 0,
-      icon: ShieldCheck,
-      color: '#10B981',
-    },
+    { label: 'Sites Scanned', value: stats?.totalScans ?? 0, icon: ScanSearch, color: '#8B5CF6' },
+    { label: 'Threats Flagged', value: stats?.threatsFlagged ?? 0, icon: ShieldX, color: '#F43F5E' },
+    { label: 'Confirmed Safe', value: stats?.safeSites ?? 0, icon: ShieldCheck, color: '#10B981' },
   ];
 
   return (
@@ -345,10 +485,7 @@ export default function Profile() {
                   key={label}
                   className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl flex items-center gap-3.5"
                 >
-                  <div
-                    className="p-2.5 rounded-xl shrink-0"
-                    style={{ backgroundColor: `${color}1A`, color }}
-                  >
+                  <div className="p-2.5 rounded-xl shrink-0" style={{ backgroundColor: `${color}1A`, color }}>
                     <Icon className="w-4 h-4" />
                   </div>
                   <div>
@@ -397,17 +534,63 @@ export default function Profile() {
               )}
 
               <div className="space-y-4">
+                {/* Avatar picker */}
                 <div>
                   <label className="block text-xs font-semibold text-neutral-400 mb-1.5">
-                    Profile Avatar URL (Optional)
+                    Profile Avatar
                   </label>
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden border border-neutral-800 bg-[#13111C] flex items-center justify-center shrink-0">
+                      {avatarUploading ? (
+                        <Loader2 className="w-5 h-5 animate-spin text-[#8B5CF6]" />
+                      ) : editPhotoUrl ? (
+                        <img
+                          src={editPhotoUrl}
+                          alt="Avatar preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <User className="w-6 h-6 text-neutral-600" />
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-[11px] font-semibold cursor-pointer transition">
+                        <Upload className="w-3.5 h-3.5" /> Upload from Device
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleLocalFileChange}
+                          disabled={avatarUploading}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handlePickFromDrive}
+                        disabled={avatarUploading}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-neutral-700 text-neutral-300 hover:bg-neutral-800 text-[11px] font-semibold cursor-pointer transition disabled:opacity-50"
+                      >
+                        <HardDrive className="w-3.5 h-3.5" /> Google Drive
+                      </button>
+                    </div>
+                  </div>
+
+                  {avatarError && (
+                    <div className="mb-2 text-[11px] text-rose-400 flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" /> {avatarError}
+                    </div>
+                  )}
+
                   <div className="relative">
-                    <ImageIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                    <LinkIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
                     <input
                       type="url"
                       value={editPhotoUrl}
                       onChange={(e) => setEditPhotoUrl(e.target.value)}
-                      placeholder="https://example.com/your-image.png"
+                      placeholder="Or paste an image URL"
                       className="w-full bg-[#13111C] border border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#8B5CF6] transition-colors"
                     />
                   </div>
@@ -465,7 +648,7 @@ export default function Profile() {
                 </button>
                 <button
                   type="submit"
-                  disabled={saveStatus.loading}
+                  disabled={saveStatus.loading || avatarUploading}
                   className="px-4 py-2.5 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-semibold transition flex items-center gap-2 cursor-pointer shadow-lg disabled:opacity-50"
                 >
                   {saveStatus.loading ? (
