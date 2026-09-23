@@ -9,7 +9,7 @@ import History from './pages/History';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import ReportScam from './pages/ReportScam';
-import ScanTrends from './pages/ScanTrends';
+import ScanTrends from './pages/ScamTrends';
 import Admin from './pages/Admin';
 import About from './pages/About';
 import Feedback from './pages/Feedback';
