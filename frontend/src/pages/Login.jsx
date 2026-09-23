@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
+import axios from 'axios';
 
 import {
   ArrowLeft,
@@ -24,6 +25,8 @@ import {
   Zap,
   Globe
 } from 'lucide-react';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -145,28 +148,40 @@ export default function Login() {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsLoading(true);
     setNotification({ type: '', message: '' });
 
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
       if (isForgotPassword) {
         setNotification({ type: 'success', message: 'Reset instructions sent successfully.' });
-      } else if (isSignupRoute) {
-        setNotification({ type: 'success', message: 'Account created successfully.' });
-        setTimeout(() => navigate('/Profile', { replace: true }), 700);
       } else {
-        setNotification({ type: 'success', message: 'Signed in successfully.' });
+        // Sync user to MongoDB backend so admin dashboard picks it up in real time
+        await axios.post(`${API_BASE_URL}/api/users/sync`, {
+          name: isSignupRoute ? fullName : email.split('@')[0],
+          email: email.trim().toLowerCase(),
+          role: 'User',
+          status: 'Active'
+        }).catch(() => {});
+
+        if (isSignupRoute) {
+          setNotification({ type: 'success', message: 'Account created successfully.' });
+        } else {
+          setNotification({ type: 'success', message: 'Signed in successfully.' });
+        }
         setTimeout(() => navigate('/Profile', { replace: true }), 700);
       }
-    }, 850);
+    } catch (err) {
+      setNotification({ type: 'error', message: 'Authentication failed.' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Functional Google Firebase Authentication Handler -> Redirects and replaces history
+  // Functional Google Firebase Authentication Handler -> Syncs user to backend database
   const handleGoogleAuth = async (e) => {
     e.preventDefault();
     if (isLoading) return;
@@ -177,6 +192,14 @@ export default function Login() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+
+      // Sync Google account details to backend database for real-time admin view
+      await axios.post(`${API_BASE_URL}/api/users/sync`, {
+        name: user.displayName || user.email.split('@')[0],
+        email: user.email.toLowerCase(),
+        role: 'User',
+        status: 'Active'
+      }).catch(() => {});
 
       setNotification({ 
         type: 'success', 
