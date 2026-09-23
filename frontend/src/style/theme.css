@@ -1,0 +1,11 @@
+/* Centralized Global Theme Variables */
+:root {
+  --bg-deep: #0A0A0F;
+  --bg-card: #13111C;
+  --bg-elevated: #1A1528;
+  --borderline: #231E33;
+  --primary: #8B5CF6;
+  --secondary: #EC4899;
+  --text-main: #FAFAFA;
+  --text-muted: #A1A1AA;
+}
