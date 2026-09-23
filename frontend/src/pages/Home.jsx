@@ -25,16 +25,6 @@ export default function Home() {
   const [scanResult, setScanResult] = useState(null);
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState('');
-  const [scrollY, setScrollY] = useState(0);
-
-  // Track scroll position for 3D parallax hero dynamics
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY || window.pageYOffset || 0);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // 3-Second Introductory Entrance Animation State (Played once per session)
   const [showIntroAnimation, setShowIntroAnimation] = useState(() => {
@@ -221,64 +211,6 @@ export default function Home() {
 
       <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-5xl mx-auto w-full flex-1 animate-slideDownStagger1 [transform-style:preserve-3d]">
         
-        {/* 3D Interactive Cyber Holo-Shield Core with Gyroscope Orbit Rings & Scroll Tilt */}
-        <div 
-          className="relative mb-6 flex items-center justify-center [perspective:1000px] select-none pointer-events-auto"
-          style={{
-            transform: `perspective(900px) translateY(${Math.min(40, scrollY * -0.06)}px) rotateX(${Math.min(18, scrollY * 0.03)}deg) rotateY(${Math.sin(scrollY * 0.01) * 8}deg)`,
-            transition: 'transform 0.15s ease-out',
-            transformStyle: 'preserve-3d'
-          }}
-        >
-          {/* Outer 3D Gyroscope Orbit Ring */}
-          <div className="absolute w-48 h-48 sm:w-56 sm:h-56 rounded-full border border-purple-500/35 border-dashed animate-spin3D-1 pointer-events-none" />
-
-          {/* Middle 3D Gyroscope Orbit Ring */}
-          <div className="absolute w-40 h-40 sm:w-48 sm:h-48 rounded-full border border-pink-500/35 border-dotted animate-spin3D-2 pointer-events-none" />
-
-          {/* Inner 3D Inclined Laser Ring */}
-          <div className="absolute w-32 h-32 sm:w-40 sm:h-40 rounded-full border border-cyan-400/30 animate-spin3D-3 pointer-events-none" />
-
-          {/* Ambient Core Holographic Glow */}
-          <div className="absolute w-24 h-24 bg-gradient-to-tr from-[#8B5CF6]/50 via-purple-500/40 to-[#EC4899]/50 rounded-full blur-2xl animate-pulse pointer-events-none" />
-
-          {/* Center 3D Floating Shield Emblem */}
-          <div 
-            className="relative z-10 w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-[#1C182E] to-[#0D0B18] border border-purple-400/40 p-4 shadow-[0_0_40px_rgba(139,92,246,0.6)] flex items-center justify-center animate-float3D [transform-style:preserve-3d] cursor-pointer hover:scale-105 transition-transform"
-          >
-            <Shield className="w-10 h-10 sm:w-12 sm:h-12 text-[#8B5CF6] drop-shadow-[0_0_15px_rgba(139,92,246,0.9)]" />
-            <span className="absolute -bottom-2.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-[9px] font-mono tracking-widest uppercase font-bold shadow-lg">
-              3D CORE
-            </span>
-          </div>
-
-          {/* 3D Floating Telemetry Pill Left */}
-          <div 
-            className="absolute -left-8 sm:-left-28 top-3 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border backdrop-blur-md shadow-xl pointer-events-none transition-transform duration-300"
-            style={{
-              transform: `perspective(800px) translateZ(35px) translateY(${scrollY * -0.1}px) rotateY(-10deg)`,
-              backgroundColor: isDark ? 'rgba(19, 17, 28, 0.85)' : 'rgba(255, 255, 255, 0.92)',
-              borderColor: isDark ? '#2B2340' : '#E2E8F0'
-            }}
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-[11px] font-mono font-semibold">AI Shield: Active</span>
-          </div>
-
-          {/* 3D Floating Telemetry Pill Right */}
-          <div 
-            className="absolute -right-8 sm:-right-28 bottom-3 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border backdrop-blur-md shadow-xl pointer-events-none transition-transform duration-300"
-            style={{
-              transform: `perspective(800px) translateZ(35px) translateY(${scrollY * -0.08}px) rotateY(10deg)`,
-              backgroundColor: isDark ? 'rgba(19, 17, 28, 0.85)' : 'rgba(255, 255, 255, 0.92)',
-              borderColor: isDark ? '#2B2340' : '#E2E8F0'
-            }}
-          >
-            <Cpu className="w-3.5 h-3.5 text-[#EC4899]" />
-            <span className="text-[11px] font-mono font-semibold">Latency: 12ms</span>
-          </div>
-        </div>
-
         {/* Hero Title */}
         <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight transition-colors animate-cinematicReveal ${
           isDark ? 'text-white' : 'text-slate-900'
