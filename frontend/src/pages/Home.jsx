@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
-import ShieldAIBot from '../components/ShieldAIBot'; // <-- Separate ShieldSense assistant component
+import EntryAnimation from '../components/EntryAnimation';
 import { useTheme } from '../context/ThemeContext';
 
 const scanStages = [
@@ -176,28 +176,8 @@ export default function Home() {
     <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-between px-4 sm:px-8 lg:px-12 pt-16 transition-colors duration-300 overflow-x-hidden ${
       isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
     }`}>
-      {/* 3-Second Entry Animation Overlay */}
-      {showIntroAnimation && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0A0A0F]/95 backdrop-blur-2xl animate-fadeIn transition-opacity duration-700">
-          <div className="flex flex-col items-center space-y-6 animate-pulse">
-            <div className="w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden shadow-2xl shadow-purple-950/60 bg-[#13111C]">
-              <img 
-                src="/logo.png" 
-                alt="WebShield AI Logo" 
-                className="w-full h-full object-cover scale-150" 
-              />
-            </div>
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">
-                Welcome to WebShield AI
-              </h2>
-              <p className="text-xs uppercase tracking-widest text-neutral-400 font-mono">
-                INITIALIZING SECURE ENVIRONMENT...
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 3-Second Entry Animation Component (Played once per session entry) */}
+      {showIntroAnimation && <EntryAnimation />}
 
       {/* Background VFX Glow Orbs & Subtle Grid */}
       <div className={`absolute inset-0 pointer-events-none ${
@@ -571,7 +551,7 @@ export default function Home() {
           </div>
 
           <div className="space-y-3">
-            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>RESOURCE</h4>
+            <h4 className={`font-bold uppercase tracking-wider text-[11px] ${isDark ? 'text-neutral-200' : 'text-slate-800'}`}>RESOURCES</h4>
             <ul className="space-y-2.5">
               <li><button onClick={scrollToHowItWorks} className="hover:text-[#8B5CF6] transition">How It Works</button></li>
               <li><button onClick={() => navigate('/about')} className="hover:text-[#8B5CF6] transition">Case Studies</button></li>

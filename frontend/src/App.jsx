@@ -14,6 +14,8 @@ import About from './pages/About';
 import Feedback from './pages/Feedback';
 // Corrected import path pointing to ShieldAIBot.jsx
 import ShieldSenseAI from './components/ShieldAIBot';
+// Import Entry Animation component (if needed globally, or handled directly inside Home.jsx)
+import EntryAnimation from './components/EntryAnimation';
 
 function AppContent() {
   const { isDark } = useTheme();
