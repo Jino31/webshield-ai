@@ -90,13 +90,13 @@ export default function Navbar() {
           {isOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Brand Name with Modern Cyber Shield Logo */}
+        {/* Brand Name with Seamless Transparent Logo Wrapper */}
         <Link to="/" className={`flex items-center gap-3 font-bold text-xl tracking-tight group ${isDark ? 'text-white' : 'text-slate-900'}`}>
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center p-1 overflow-hidden transition-all duration-300 group-hover:scale-105 bg-gradient-to-br from-[#0F172A] to-[#07090E] border border-cyan-500/35 shadow-[0_0_15px_rgba(6,182,212,0.3)] group-hover:border-cyan-400">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center p-0.5 overflow-hidden transition-all duration-300 group-hover:scale-105 bg-transparent">
             <img 
               src="/logo.png" 
               alt="WebShield AI Logo" 
-              className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" 
+              className="w-full h-full object-contain" 
             />
           </div>
           <span className="flex items-center tracking-tight">
