@@ -19,7 +19,6 @@ export default function CyberSpace3D() {
     let targetScrollY = window.scrollY || window.pageYOffset || 0;
     let currentScrollY = targetScrollY;
     let scrollVelocity = 0;
-    let lastScrollY = targetScrollY;
 
     // Mouse parallax tracking
     let targetMouseX = 0;
@@ -62,14 +61,8 @@ export default function CyberSpace3D() {
     }
 
     // 3D Geometric Objects (Wireframe Polyhedra)
-    // 1. Octahedron vertices
     const octahedronVertices = [
-      [0, 1, 0],
-      [0, -1, 0],
-      [1, 0, 0],
-      [-1, 0, 0],
-      [0, 0, 1],
-      [0, 0, -1]
+      [0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1]
     ];
     const octahedronEdges = [
       [0, 2], [0, 3], [0, 4], [0, 5],
@@ -77,7 +70,6 @@ export default function CyberSpace3D() {
       [2, 4], [4, 3], [3, 5], [5, 2]
     ];
 
-    // 2. Cube vertices
     const cubeVertices = [
       [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
       [-1, -1, 1],  [1, -1, 1],  [1, 1, 1],  [-1, 1, 1]
@@ -88,7 +80,6 @@ export default function CyberSpace3D() {
       [0, 4], [1, 5], [2, 6], [3, 7]
     ];
 
-    // Floating 3D objects placed in space along the scroll track
     const floatingObjects = [
       {
         type: 'octa',
@@ -152,22 +143,17 @@ export default function CyberSpace3D() {
       }
     ];
 
-    // 3D rotation helper
     function rotate3D(vertex, rx, ry, rz) {
       let [x, y, z] = vertex;
-      // Rotate around X
       let y1 = y * Math.cos(rx) - z * Math.sin(rx);
       let z1 = y * Math.sin(rx) + z * Math.cos(rx);
-      // Rotate around Y
       let x2 = x * Math.cos(ry) + z1 * Math.sin(ry);
       let z2 = -x * Math.sin(ry) + z1 * Math.cos(ry);
-      // Rotate around Z
       let x3 = x2 * Math.cos(rz) - y1 * Math.sin(rz);
       let y3 = x2 * Math.sin(rz) + y1 * Math.cos(rz);
       return [x3, y3, z2];
     }
 
-    // Perspective projection helper
     const FOCAL_LENGTH = 550;
 
     function project3D(x, y, z, cx, cy) {
@@ -181,52 +167,37 @@ export default function CyberSpace3D() {
       };
     }
 
-    // Render loop
     let tick = 0;
 
     const render = () => {
       tick++;
 
-      // Lerp mouse
       mouseX += (targetMouseX - mouseX) * 0.06;
       mouseY += (targetMouseY - mouseY) * 0.06;
 
-      // Lerp scroll
       const prevScrollY = currentScrollY;
       currentScrollY += (targetScrollY - currentScrollY) * 0.09;
       scrollVelocity = currentScrollY - prevScrollY;
 
-      // Clear canvas
       ctx.clearRect(0, 0, width, height);
 
-      // Camera center with mouse gyro tilt
       const cx = width / 2 + mouseX * 40;
       const cy = height / 2 + mouseY * 30;
 
-      // ==========================================
-      // 1. ENDLESS 3D CYBER FLOOR PERSPECTIVE GRID
-      // ==========================================
+      // 1. Grid Floor
       const gridFloorY = 320;
       const gridZStart = 120;
       const gridZEnd = 1600;
       const gridSpacingX = 140;
       const gridCrossInterval = 120;
-      
-      // Moving scroll offset for endless streaming grid effect
       const streamOffset = (currentScrollY * 0.85 + tick * 0.8) % gridCrossInterval;
 
       ctx.save();
       ctx.lineWidth = 1;
 
-      // Grid color styles based on theme (Electric Cyan & Royal Indigo)
-      const primaryGridColor = isDark
-        ? 'rgba(6, 182, 212, ' // Cyan
-        : 'rgba(2, 132, 199, '; // Sky
-      const accentGridColor = isDark
-        ? 'rgba(99, 102, 241, ' // Royal Indigo
-        : 'rgba(79, 70, 229, '; // Deep Indigo
+      const primaryGridColor = isDark ? 'rgba(6, 182, 212, ' : 'rgba(2, 132, 199, ';
+      const accentGridColor = isDark ? 'rgba(99, 102, 241, ' : 'rgba(79, 70, 229, ';
 
-      // Longitudinal lines (perspective rays to vanishing horizon)
       const lineSpread = 16;
       for (let i = -lineSpread; i <= lineSpread; i++) {
         const lx = i * gridSpacingX;
@@ -247,7 +218,6 @@ export default function CyberSpace3D() {
         }
       }
 
-      // Transverse lines (cross lines traveling with scroll)
       for (let z = gridZStart; z < gridZEnd; z += gridCrossInterval) {
         let actualZ = z - streamOffset;
         if (actualZ < gridZStart) actualZ += (gridZEnd - gridZStart);
@@ -271,26 +241,20 @@ export default function CyberSpace3D() {
       }
       ctx.restore();
 
-      // ==========================================
-      // 2. 3D FLOATING CYBER WIREFRAME POLYHEDRA
-      // ==========================================
+      // 2. Floating Wireframes
       floatingObjects.forEach((obj) => {
-        // Continuous rotation + scroll tumble
         obj.rotX += obj.speedRotX + scrollVelocity * 0.002;
         obj.rotY += obj.speedRotY + scrollVelocity * 0.0015;
         obj.rotZ += 0.003;
 
-        // Position shifts with camera & scroll travel
         const cameraScrollRel = (currentScrollY * 0.45) % WORLD_DEPTH;
         let relativeZ = obj.z - cameraScrollRel;
         if (relativeZ < 50) relativeZ += WORLD_DEPTH;
         if (relativeZ > WORLD_DEPTH) relativeZ -= WORLD_DEPTH;
 
-        // Dynamic slight bobbing
         const currentY = obj.y + Math.sin(tick * 0.02 + obj.z) * 18;
         const currentX = obj.x + Math.cos(tick * 0.015 + obj.z) * 15;
 
-        // Project vertices
         const projectedVertices = obj.vertices.map((v) => {
           const rot = rotate3D(v, obj.rotX, obj.rotY, obj.rotZ);
           const worldX = currentX + rot[0] * obj.scale;
@@ -299,7 +263,6 @@ export default function CyberSpace3D() {
           return project3D(worldX, worldY, worldZ, cx, cy);
         });
 
-        // Depth-based opacity & glow
         const depthRatio = Math.max(0, Math.min(1, 1 - relativeZ / WORLD_DEPTH));
         const alpha = depthRatio * (isDark ? 0.65 : 0.45);
 
@@ -308,7 +271,6 @@ export default function CyberSpace3D() {
         ctx.globalAlpha = alpha;
         ctx.lineWidth = Math.max(1, depthRatio * 2.2);
 
-        // Draw edges
         obj.edges.forEach(([i, j]) => {
           const p1 = projectedVertices[i];
           const p2 = projectedVertices[j];
@@ -320,7 +282,6 @@ export default function CyberSpace3D() {
           }
         });
 
-        // Glowing core vertex points
         projectedVertices.forEach((p) => {
           if (p && p.visible) {
             ctx.fillStyle = obj.color;
@@ -333,17 +294,13 @@ export default function CyberSpace3D() {
         ctx.restore();
       });
 
-      // ==========================================
-      // 3. 3D PARTICLE FIELD WITH SCROLL WARP
-      // ==========================================
+      // 3. Particle Field
       ctx.save();
       const velocityStretch = Math.min(Math.abs(scrollVelocity) * 1.5, 30);
 
       particles.forEach((pt) => {
-        // Move particle towards/away from camera based on scroll
         pt.z -= scrollVelocity * 0.85 * pt.speedOffset + 0.3;
 
-        // Wrap around boundary
         if (pt.z < 20) pt.z += WORLD_DEPTH;
         if (pt.z > WORLD_DEPTH) pt.z -= WORLD_DEPTH;
 
@@ -353,15 +310,9 @@ export default function CyberSpace3D() {
           const radius = Math.max(0.6, pt.size * proj.scale * 1.6);
           const alpha = depthRatio * (isDark ? 0.75 : 0.5);
 
-          ctx.fillStyle =
-            pt.colorType === 'cyan'
-              ? isDark ? `rgba(6, 182, 212, ${alpha})` : `rgba(2, 132, 199, ${alpha})`
-              : pt.colorType === 'indigo'
-              ? isDark ? `rgba(99, 102, 241, ${alpha})` : `rgba(79, 70, 229, ${alpha})`
-              : isDark ? `rgba(16, 185, 129, ${alpha})` : `rgba(5, 150, 105, ${alpha})`;
+          ctx.fillStyle = isDark ? `rgba(139, 92, 246, ${alpha})` : `rgba(124, 58, 237, ${alpha})`;
 
           if (velocityStretch > 2) {
-            // Draw warp velocity line along camera motion
             const prevZ = pt.z + (scrollVelocity > 0 ? velocityStretch * 12 : -velocityStretch * 12);
             const prevProj = project3D(pt.x, pt.y, prevZ, cx, cy);
             if (prevProj) {
@@ -373,7 +324,6 @@ export default function CyberSpace3D() {
               ctx.stroke();
             }
           } else {
-            // Normal 3D particle orb
             ctx.beginPath();
             ctx.arc(proj.px, proj.py, radius, 0, Math.PI * 2);
             ctx.fill();
@@ -397,11 +347,7 @@ export default function CyberSpace3D() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      <canvas
-        ref={canvasRef}
-        className="w-full h-full block opacity-90 transition-opacity duration-700"
-      />
-      {/* 3D Horizon Vignette / Depth Mask */}
+      <canvas ref={canvasRef} className="w-full h-full block opacity-90 transition-opacity duration-700" />
       <div 
         className={`absolute inset-0 pointer-events-none transition-colors duration-500 ${
           isDark
