@@ -205,112 +205,115 @@ export default function Settings() {
         <div className="md:col-span-3 bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-xl">
           <form onSubmit={handleSave} className="space-y-8">
 
-            {/* SECURITY & SCANNER COMBINED TAB VIEW */}
-            {(activeTab === 'security' || activeTab === 'scanner') && (
-              <>
-                {/* Security & Protection Section */}
-                <div>
-                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                    <Shield className="w-4 h-4" /> Security & Protection
-                  </h2>
+            {/* SECURITY TAB VIEW */}
+            {activeTab === 'security' && (
+              <div>
+                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+                  <Shield className="w-4 h-4" /> Security & Protection
+                </h2>
+                <p className="text-xs text-neutral-400 mb-6">
+                  Manage active network interception, machine learning phishing models, and SSL verification.
+                </p>
 
-                  <div className="space-y-3">
-                    {[
-                      { title: 'Real-time URL Protection', desc: 'Actively intercept and inspect links prior to navigation', state: realTimeProtection, setter: setRealTimeProtection },
-                      { title: 'Phishing Detection', desc: 'Machine learning heuristic evaluation for known spoof patterns', state: phishingDetection, setter: setPhishingDetection },
-                      { title: 'SSL Verification', desc: 'Inspect certificate authority validity and TLS handshake security', state: sslVerification, setter: setSslVerification },
-                      { title: 'Redirect Detection', desc: 'Monitor multi-hop redirects and chain obfuscation tactics', state: redirectDetection, setter: setRedirectDetection },
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                        <div>
-                          <h3 className="text-xs font-medium text-white">{item.title}</h3>
-                          <p className="text-[11px] text-neutral-400 mt-0.5">{item.desc}</p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => item.setter(!item.state)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                            item.state 
-                              ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30 shadow-sm shadow-cyan-950/50' 
-                              : 'bg-neutral-900 text-neutral-500 border-neutral-800'
-                          }`}
-                        >
-                          {item.state ? 'ON' : 'OFF'}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="border-t border-neutral-800/80 pt-2"></div>
-
-                {/* Scanner Configuration Section */}
-                <div>
-                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                    <Sliders className="w-4 h-4" /> Scanner Configuration
-                  </h2>
-
-                  <div className="space-y-4">
-                    {/* Threshold Slider */}
-                    <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="text-xs font-medium text-white">Detection Threshold</label>
-                        <span className="text-xs font-mono text-[#22D3EE] font-semibold">{detectionThreshold}%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="50"
-                        max="100"
-                        value={detectionThreshold}
-                        onChange={(e) => setDetectionThreshold(Number(e.target.value))}
-                        className="w-full accent-[#22D3EE] bg-neutral-900 cursor-pointer"
-                      />
-                      <p className="text-[11px] text-neutral-500 mt-1">Minimum model confidence required to trigger a high-risk flag.</p>
-                    </div>
-
-                    {/* Scan Depth Selector */}
-                    <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between">
+                <div className="space-y-3">
+                  {[
+                    { title: 'Real-time URL Protection', desc: 'Actively intercept and inspect links prior to navigation', state: realTimeProtection, setter: setRealTimeProtection },
+                    { title: 'Phishing Detection', desc: 'Machine learning heuristic evaluation for known spoof patterns', state: phishingDetection, setter: setPhishingDetection },
+                    { title: 'SSL Verification', desc: 'Inspect certificate authority validity and TLS handshake security', state: sslVerification, setter: setSslVerification },
+                    { title: 'Redirect Detection', desc: 'Monitor multi-hop redirects and chain obfuscation tactics', state: redirectDetection, setter: setRedirectDetection },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
                       <div>
-                        <h3 className="text-xs font-medium text-white">Scan Depth</h3>
-                        <p className="text-[11px] text-neutral-400 mt-0.5">Determines lexical heuristics vs. deep inspection depth.</p>
+                        <h3 className="text-xs font-medium text-white">{item.title}</h3>
+                        <p className="text-[11px] text-neutral-400 mt-0.5">{item.desc}</p>
                       </div>
-                      <select
-                        value={scanDepth}
-                        onChange={(e) => setScanDepth(e.target.value)}
-                        className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-lg px-3 py-2 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
+                      <button
+                        type="button"
+                        onClick={() => item.setter(!item.state)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
+                          item.state 
+                            ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30 shadow-sm shadow-cyan-950/50' 
+                            : 'bg-neutral-900 text-neutral-500 border-neutral-800'
+                        }`}
                       >
-                        <option value="Fast">Fast</option>
-                        <option value="Standard">Standard</option>
-                        <option value="Deep">Deep</option>
-                      </select>
+                        {item.state ? 'ON' : 'OFF'}
+                      </button>
                     </div>
-
-                    {/* Additional Toggles */}
-                    {[
-                      { title: 'URL Feature Analysis', desc: 'Extract lexical attributes (length, entropy, symbols)', state: urlFeatureAnalysis, setter: setUrlFeatureAnalysis },
-                      { title: 'Domain Reputation', desc: 'Cross-reference WHOIS age and threat intelligence feeds', state: domainReputation, setter: setDomainReputation },
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                        <div>
-                          <h3 className="text-xs font-medium text-white">{item.title}</h3>
-                          <p className="text-[11px] text-neutral-400 mt-0.5">{item.desc}</p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => item.setter(!item.state)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                            item.state 
-                              ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30 shadow-sm shadow-cyan-950/50' 
-                              : 'bg-neutral-900 text-neutral-500 border-neutral-800'
-                          }`}
-                        >
-                          {item.state ? 'ON' : 'OFF'}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-              </>
+              </div>
+            )}
+
+            {/* SCANNER TAB VIEW */}
+            {activeTab === 'scanner' && (
+              <div>
+                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+                  <Sliders className="w-4 h-4" /> Scanner Configuration
+                </h2>
+                <p className="text-xs text-neutral-400 mb-6">
+                  Fine-tune URL scanning parameters, sensitivity thresholds, and lexical heuristic analysis.
+                </p>
+
+                <div className="space-y-4">
+                  {/* Threshold Slider */}
+                  <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="text-xs font-medium text-white">Detection Threshold</label>
+                      <span className="text-xs font-mono text-[#22D3EE] font-semibold">{detectionThreshold}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="50"
+                      max="100"
+                      value={detectionThreshold}
+                      onChange={(e) => setDetectionThreshold(Number(e.target.value))}
+                      className="w-full accent-[#22D3EE] bg-neutral-900 cursor-pointer"
+                    />
+                    <p className="text-[11px] text-neutral-500 mt-1">Minimum model confidence required to trigger a high-risk flag.</p>
+                  </div>
+
+                  {/* Scan Depth Selector */}
+                  <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xs font-medium text-white">Scan Depth</h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Determines lexical heuristics vs. deep inspection depth.</p>
+                    </div>
+                    <select
+                      value={scanDepth}
+                      onChange={(e) => setScanDepth(e.target.value)}
+                      className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-lg px-3 py-2 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
+                    >
+                      <option value="Fast">Fast</option>
+                      <option value="Standard">Standard</option>
+                      <option value="Deep">Deep</option>
+                    </select>
+                  </div>
+
+                  {/* Additional Toggles */}
+                  {[
+                    { title: 'URL Feature Analysis', desc: 'Extract lexical attributes (length, entropy, symbols)', state: urlFeatureAnalysis, setter: setUrlFeatureAnalysis },
+                    { title: 'Domain Reputation', desc: 'Cross-reference WHOIS age and threat intelligence feeds', state: domainReputation, setter: setDomainReputation },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                      <div>
+                        <h3 className="text-xs font-medium text-white">{item.title}</h3>
+                        <p className="text-[11px] text-neutral-400 mt-0.5">{item.desc}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => item.setter(!item.state)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
+                          item.state 
+                            ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30 shadow-sm shadow-cyan-950/50' 
+                            : 'bg-neutral-900 text-neutral-500 border-neutral-800'
+                        }`}
+                      >
+                        {item.state ? 'ON' : 'OFF'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* APPEARANCE & THEME TAB VIEW */}
