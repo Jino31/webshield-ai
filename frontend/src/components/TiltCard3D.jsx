@@ -1,81 +1,64 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 /**
- * TiltCard3D v2.0 - Enterprise Edition
+ * TiltCard3D
+ * Wraps any card or section in an interactive 3D physics container.
  * Features:
- * - Damped Spring Physics & Mouse Parallax Interpolation (Lerp)
- * - Dynamic Mobile Gyroscope / DeviceOrientation Support
- * - Holographic Specular Glare & Multi-layer Depth Projection
+ * - Dynamic cursor 3D tilt (rotateX, rotateY)
+ * - Scroll-velocity pitch response (reacts while scrolling)
+ * - Holographic specular glare highlight
+ * - Nested 3D depth preserve-3d
  */
 export default function TiltCard3D({ 
   children, 
   className = '', 
-  maxTilt = 12, 
+  maxTilt = 10, 
   glare = true,
-  scale = 1.03,
-  depth = 40,
-  enableGyro = true,
+  scale = 1.02,
+  depth = 30,
   ...props 
 }) {
   const cardRef = useRef(null);
-  const [isHovered, setIsHovered] = useState(false);
-  
-  // Physics & Animation Refs for high-performance 60fps interpolation
-  const mousePos = useRef({ x: 0, y: 0 });
-  const targetPos = useRef({ x: 0, y: 0 });
-  const currentRot = useRef({ x: 0, y: 0 });
-  const animFrameId = useRef(null);
-
-  const [glareStyle, setGlareStyle] = useState({ opacity: 0 });
   const [transformStyle, setTransformStyle] = useState('');
+  const [glareStyle, setGlareStyle] = useState({ opacity: 0 });
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Smooth interpolation loop (Lerp) for buttery 60fps physics
-  const updatePhysics = useCallback(() => {
-    // Lerp factor (0.1 = smooth & responsive damping)
-    mousePos.current.x += (targetPos.current.x - mousePos.current.x) * 0.12;
-    mousePos.current.y += (targetPos.current.y - mousePos.current.y) * 0.12;
-
-    const rotX = -mousePos.current.y * maxTilt;
-    const rotY = mousePos.current.x * maxTilt;
-
-    currentRot.current.x += (rotX - currentRot.current.x) * 0.2;
-    currentRot.current.y += (rotY - currentRot.current.y) * 0.2;
-
-    if (cardRef.current) {
-      const activeScale = isHovered ? scale : 1;
-      const activeDepth = isHovered ? depth : 0;
-      setTransformStyle(
-        `perspective(1000px) rotateX(${currentRot.current.x.toFixed(2)}deg) rotateY(${currentRot.current.y.toFixed(2)}deg) scale3d(${activeScale}, ${activeScale}, ${activeScale}) translateZ(${activeDepth}px)`
-      );
-    }
-
-    animFrameId.current = requestAnimationFrame(updatePhysics);
-  }, [isHovered, maxTilt, scale, depth]);
-
+  // Scroll reaction
   useEffect(() => {
-    animFrameId.current = requestAnimationFrame(updatePhysics);
+    let lastY = window.scrollY || window.pageYOffset || 0;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentY = window.scrollY || window.pageYOffset || 0;
+          const deltaY = currentY - lastY;
+          lastY = currentY;
+
+          // If not actively hovered, apply subtle scroll pitch
+          if (!isHovered && cardRef.current) {
+            const scrollPitch = Math.max(-5, Math.min(5, deltaY * 0.12));
+            setTransformStyle(`perspective(1000px) rotateX(${-scrollPitch}deg) translateZ(0)`);
+            
+            // Auto return to level after scroll settles
+            clearTimeout(cardRef.current._scrollTimer);
+            cardRef.current._scrollTimer = setTimeout(() => {
+              if (!isHovered) {
+                setTransformStyle('perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0)');
+              }
+            }, 180);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
-      if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, [updatePhysics]);
-
-  // Mobile Gyroscope Integration
-  useEffect(() => {
-    if (!enableGyro || !window.DeviceOrientationEvent) return;
-
-    const handleOrientation = (e) => {
-      if (isHovered) return;
-      const tiltX = (e.beta || 0) / 45; // -1 to 1 range approx
-      const tiltY = (e.gamma || 0) / 45;
-      targetPos.current = {
-        x: Math.max(-1, Math.min(1, tiltY)),
-        y: Math.max(-1, Math.min(1, tiltX))
-      };
-    };
-
-    window.addEventListener('deviceorientation', handleOrientation);
-    return () => window.removeEventListener('deviceorientation', handleOrientation);
-  }, [enableGyro, isHovered]);
+  }, [isHovered]);
 
   const handleMouseMove = (e) => {
     if (!cardRef.current) return;
@@ -86,26 +69,33 @@ export default function TiltCard3D({
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    targetPos.current = {
-      x: (x - centerX) / centerX,
-      y: (y - centerY) / centerY
-    };
+    const percentX = (x - centerX) / centerX;
+    const percentY = (y - centerY) / centerY;
+
+    const rotX = -percentY * maxTilt;
+    const rotY = percentX * maxTilt;
+
+    setTransformStyle(
+      `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(${scale}, ${scale}, ${scale}) translateZ(${depth}px)`
+    );
 
     if (glare) {
       const glareX = (x / rect.width) * 100;
       const glareY = (y / rect.height) * 100;
       setGlareStyle({
-        opacity: 0.28,
-        background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255, 255, 255, 0.5) 0%, rgba(139, 92, 246, 0.2) 50%, transparent 75%)`
+        opacity: 0.22,
+        background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255, 255, 255, 0.45) 0%, rgba(139, 92, 246, 0.15) 45%, transparent 70%)`
       });
     }
   };
 
-  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    targetPos.current = { x: 0, y: 0 };
+    setTransformStyle('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1) translateZ(0)');
     setGlareStyle({ opacity: 0 });
   };
 
@@ -118,20 +108,26 @@ export default function TiltCard3D({
       style={{
         transform: transformStyle || 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0)',
         transformStyle: 'preserve-3d',
+        transition: isHovered 
+          ? 'transform 0.1s ease-out' 
+          : 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
         willChange: 'transform'
       }}
-      className={`relative group cursor-pointer ${className}`}
+      className={`relative group ${className}`}
       {...props}
     >
-      {/* Holographic Specular Glare Layer */}
+      {/* 3D Specular Light Glare Overlay */}
       {glare && (
         <div
           className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-300 z-30"
-          style={{ ...glareStyle, mixBlendMode: 'overlay' }}
+          style={{
+            ...glareStyle,
+            mixBlendMode: 'overlay'
+          }}
         />
       )}
 
-      {/* 3D Depth Isolation Layer */}
+      {/* Content Container with 3D Depth support */}
       <div className="relative z-10 w-full h-full [transform-style:preserve-3d]">
         {children}
       </div>
