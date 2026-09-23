@@ -1,62 +1,62 @@
 import React from 'react';
-import { Shield, Globe, Cpu, CheckCircle2, Activity, Lock, Zap } from 'lucide-react';
+import { Globe, Cpu, CheckCircle2, Activity, Lock, Zap } from 'lucide-react';
 
 export default function Hero3DShield() {
   return (
-    <div className="relative w-full max-w-5xl mx-auto h-[480px] sm:h-[560px] flex items-center justify-center my-8 [perspective:1200px] select-none pointer-events-none">
+    <div className="relative w-full max-w-6xl mx-auto h-[500px] sm:h-[600px] flex items-center justify-center my-6 [perspective:1400px] select-none pointer-events-none">
       
-      {/* Background Ambient Holographic Glow Orbs */}
-      <div className="absolute w-[500px] h-[500px] bg-gradient-to-tr from-[#8B5CF6]/30 via-[#EC4899]/20 to-transparent rounded-full blur-[140px] animate-pulse pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.12)_0,transparent_70%)] pointer-events-none" />
+      {/* Deep Cyberpunk Atmospheric Glows */}
+      <div className="absolute w-[600px] h-[600px] bg-gradient-to-tr from-[#8B5CF6]/25 via-[#EC4899]/15 to-transparent rounded-full blur-[160px] animate-pulse pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.1)_0,transparent_75%)] pointer-events-none" />
 
       {/* ========================================================= */}
-      {/* 1. LEFT FLOATING TELEMETRY HUD CARDS                      */}
+      {/* 1. LEFT TELEMETRY HUD CARDS                               */}
       {/* ========================================================= */}
-      <div className="absolute left-2 sm:left-6 lg:left-12 top-12 sm:top-16 z-30 flex flex-col gap-4 animate-floatSlow">
-        {/* Card 1: Scanning URL */}
-        <div className="backdrop-blur-xl bg-[#13111C]/80 border border-purple-500/30 px-4 py-3 rounded-2xl shadow-[0_0_25px_rgba(139,92,246,0.2)] flex items-center gap-3 w-56 sm:w-64">
-          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+      <div className="absolute left-2 sm:left-8 lg:left-14 top-16 sm:top-20 z-30 flex flex-col gap-5 animate-floatSlow">
+        {/* Card 1 */}
+        <div className="backdrop-blur-2xl bg-[#13111C]/90 border border-purple-500/30 px-5 py-3.5 rounded-2xl shadow-[0_0_30px_rgba(139,92,246,0.25)] flex items-center gap-3.5 w-60 sm:w-68">
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/40 flex items-center justify-center text-purple-400 shrink-0 shadow-inner">
             <Globe className="w-4 h-4" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex justify-between text-[11px] font-mono text-neutral-300 mb-1">
+            <div className="flex justify-between text-xs font-mono text-neutral-300 mb-1">
               <span>Scanning URL...</span>
-              <span className="text-purple-400">98%</span>
+              <span className="text-purple-400 font-bold">98%</span>
             </div>
             <div className="w-full bg-[#0A0A0F] rounded-full h-1.5 overflow-hidden border border-purple-500/20">
-              <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-full w-[98%] rounded-full animate-pulse" />
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-full w-[98%] rounded-full animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
             </div>
           </div>
         </div>
 
-        {/* Card 2: Analyzing Threats */}
-        <div className="backdrop-blur-xl bg-[#13111C]/80 border border-purple-500/30 px-4 py-3 rounded-2xl shadow-[0_0_25px_rgba(139,92,246,0.2)] flex items-center gap-3 w-56 sm:w-64 translate-x-[-10px] sm:translate-x-[-20px]">
-          <div className="w-9 h-9 rounded-xl bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-400 shrink-0">
+        {/* Card 2 */}
+        <div className="backdrop-blur-2xl bg-[#13111C]/90 border border-purple-500/30 px-5 py-3.5 rounded-2xl shadow-[0_0_30px_rgba(139,92,246,0.25)] flex items-center gap-3.5 w-60 sm:w-68 translate-x-[-12px] sm:translate-x-[-24px]">
+          <div className="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/40 flex items-center justify-center text-pink-400 shrink-0 shadow-inner">
             <Activity className="w-4 h-4" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex justify-between text-[11px] font-mono text-neutral-300 mb-1">
+            <div className="flex justify-between text-xs font-mono text-neutral-300 mb-1">
               <span>Analyzing Threats...</span>
-              <span className="text-pink-400">Active</span>
+              <span className="text-pink-400 font-bold">Active</span>
             </div>
             <div className="w-full bg-[#0A0A0F] rounded-full h-1.5 overflow-hidden border border-pink-500/20">
-              <div className="bg-gradient-to-r from-pink-500 to-purple-500 h-full w-[85%] rounded-full animate-pulse" />
+              <div className="bg-gradient-to-r from-pink-500 to-purple-500 h-full w-[85%] rounded-full animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.8)]" />
             </div>
           </div>
         </div>
 
-        {/* Card 3: AI Detection */}
-        <div className="backdrop-blur-xl bg-[#13111C]/80 border border-purple-500/30 px-4 py-3 rounded-2xl shadow-[0_0_25px_rgba(139,92,246,0.2)] flex items-center gap-3 w-56 sm:w-64">
-          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+        {/* Card 3 */}
+        <div className="backdrop-blur-2xl bg-[#13111C]/90 border border-purple-500/30 px-5 py-3.5 rounded-2xl shadow-[0_0_30px_rgba(139,92,246,0.25)] flex items-center gap-3.5 w-60 sm:w-68">
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/40 flex items-center justify-center text-purple-400 shrink-0 shadow-inner">
             <Cpu className="w-4 h-4" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex justify-between text-[11px] font-mono text-neutral-300 mb-1">
+            <div className="flex justify-between text-xs font-mono text-neutral-300 mb-1">
               <span>AI Detection...</span>
-              <span className="text-purple-400">Stable</span>
+              <span className="text-purple-400 font-bold">Stable</span>
             </div>
             <div className="w-full bg-[#0A0A0F] rounded-full h-1.5 overflow-hidden border border-purple-500/20">
-              <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full w-[100%] rounded-full" />
+              <div className="bg-gradient-to-r from-purple-500 to-indigo-500 h-full w-[100%] rounded-full shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
             </div>
           </div>
         </div>
@@ -64,100 +64,104 @@ export default function Hero3DShield() {
 
 
       {/* ========================================================= */}
-      {/* 2. RIGHT FLOATING TELEMETRY HUD CARDS                     */}
+      {/* 2. RIGHT TELEMETRY HUD CARDS                              */}
       {/* ========================================================= */}
-      <div className="absolute right-2 sm:right-6 lg:right-12 top-12 sm:top-16 z-30 flex flex-col gap-4 animate-floatFast">
-        {/* Card 4: Safe Browsing */}
-        <div className="backdrop-blur-xl bg-[#13111C]/80 border border-pink-500/30 px-4 py-3 rounded-2xl shadow-[0_0_25px_rgba(236,72,153,0.2)] flex items-center gap-3 w-52 sm:w-60">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+      <div className="absolute right-2 sm:right-8 lg:right-14 top-16 sm:top-20 z-30 flex flex-col gap-5 animate-floatFast">
+        {/* Card 4 */}
+        <div className="backdrop-blur-2xl bg-[#13111C]/90 border border-pink-500/30 px-5 py-3.5 rounded-2xl shadow-[0_0_30px_rgba(236,72,153,0.25)] flex items-center gap-3.5 w-56 sm:w-64">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
             <CheckCircle2 className="w-4 h-4" />
           </div>
           <div>
-            <p className="text-xs font-bold text-white">Safe Browsing</p>
-            <p className="text-[10px] text-emerald-400 font-mono">Status: Verified Secure</p>
+            <p className="text-xs font-bold text-white tracking-wide">Safe Browsing</p>
+            <p className="text-[11px] text-emerald-400 font-mono">Status: Verified Secure</p>
           </div>
         </div>
 
-        {/* Card 5: Real-Time Protection */}
-        <div className="backdrop-blur-xl bg-[#13111C]/80 border border-pink-500/30 px-4 py-3 rounded-2xl shadow-[0_0_25px_rgba(236,72,153,0.2)] flex items-center gap-3 w-52 sm:w-60 translate-x-[10px] sm:translate-x-[20px]">
-          <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+        {/* Card 5 */}
+        <div className="backdrop-blur-2xl bg-[#13111C]/90 border border-pink-500/30 px-5 py-3.5 rounded-2xl shadow-[0_0_30px_rgba(236,72,153,0.25)] flex items-center gap-3.5 w-56 sm:w-64 translate-x-[12px] sm:translate-x-[24px]">
+          <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/40 flex items-center justify-center text-purple-400 shrink-0 shadow-inner">
             <Lock className="w-4 h-4" />
           </div>
           <div>
-            <p className="text-xs font-bold text-white">Real-Time Defense</p>
-            <p className="text-[10px] text-purple-400 font-mono">0.42s Latency</p>
+            <p className="text-xs font-bold text-white tracking-wide">Real-Time Defense</p>
+            <p className="text-[11px] text-purple-400 font-mono">0.42s Latency</p>
           </div>
         </div>
 
-        {/* Card 6: A Safer Internet */}
-        <div className="backdrop-blur-xl bg-[#13111C]/80 border border-pink-500/30 px-4 py-3 rounded-2xl shadow-[0_0_25px_rgba(236,72,153,0.2)] flex items-center gap-3 w-52 sm:w-60">
-          <div className="w-9 h-9 rounded-xl bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-400 shrink-0">
+        {/* Card 6 */}
+        <div className="backdrop-blur-2xl bg-[#13111C]/90 border border-pink-500/30 px-5 py-3.5 rounded-2xl shadow-[0_0_30px_rgba(236,72,153,0.25)] flex items-center gap-3.5 w-56 sm:w-64">
+          <div className="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/40 flex items-center justify-center text-pink-400 shrink-0 shadow-inner">
             <Zap className="w-4 h-4" />
           </div>
           <div>
-            <p className="text-xs font-bold text-white">Global Grid</p>
-            <p className="text-[10px] text-pink-400 font-mono">142,850+ Indexed</p>
+            <p className="text-xs font-bold text-white tracking-wide">Global Grid</p>
+            <p className="text-[11px] text-pink-400 font-mono">142,850+ Indexed</p>
           </div>
         </div>
       </div>
 
 
       {/* ========================================================= */}
-      {/* 3. CENTERPIECE: 3D SHIELD, HOLOGRAPHIC ORBITS & GLOBE      */}
+      {/* 3. CENTERPIECE: 3D HOLOGRAPHIC SHIELD & ORBITAL RINGS     */}
       {/* ========================================================= */}
       <div className="relative z-20 flex flex-col items-center justify-center [transform-style:preserve-3d]">
         
-        {/* Holographic Wireframe Globe in Background */}
-        <div className="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full border border-purple-500/20 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.1)_0,transparent_70%)] animate-spinSlow flex items-center justify-center opacity-40">
+        {/* Holographic Wireframe Globe Background */}
+        <div className="absolute w-80 h-80 sm:w-[420px] sm:h-[420px] rounded-full border border-purple-500/25 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.12)_0,transparent_75%)] animate-spinSlow flex items-center justify-center opacity-50">
           <div className="w-full h-full rounded-full border border-dashed border-pink-500/30 animate-pulse" />
         </div>
 
-        {/* Orbiting Ring Beam */}
-        <div className="absolute w-[340px] h-[120px] sm:w-[420px] sm:h-[150px] rounded-full border-2 border-purple-500/40 rotate-[-15deg] shadow-[0_0_30px_rgba(139,92,246,0.5)] animate-orbit" />
+        {/* Orbital Neon Energy Beam Ring */}
+        <div className="absolute w-[380px] h-[130px] sm:w-[480px] sm:h-[160px] rounded-full border-2 border-purple-500/50 rotate-[-18deg] shadow-[0_0_40px_rgba(139,92,246,0.7)] animate-orbit" />
 
-        {/* Central 3D Metallic Shield Emblem */}
+        {/* Upgraded 3D Multi-Layered Shield Emblem */}
         <div className="relative z-30 flex items-center justify-center animate-floatCenter">
-          {/* Outer Neon Aura */}
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 blur-3xl opacity-70 rounded-full animate-pulse" />
+          {/* Intense Outer Neon Rim Glow */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-purple-600 via-pink-600 to-indigo-500 blur-3xl opacity-80 rounded-full animate-pulse" />
 
-          {/* Shield Container */}
-          <div className="relative w-36 h-44 sm:w-44 sm:h-52 bg-gradient-to-b from-[#1A1528] via-[#13111C] to-[#0A0A0F] border-2 border-purple-400/60 rounded-[36px] flex flex-col items-center justify-center shadow-[0_0_60px_rgba(139,92,246,0.6)] [clip-path:polygon(50%_0%,100%_15%,100%_75%,50%_100%,0%_75%,0%_15%)]">
+          {/* Outer Shield Bevel Shell */}
+          <div className="relative w-40 h-48 sm:w-48 sm:h-56 bg-gradient-to-b from-[#2A2045] via-[#13111C] to-[#0A0A0F] border-[2.5px] border-purple-400/80 rounded-[40px] flex flex-col items-center justify-center shadow-[0_0_80px_rgba(139,92,246,0.7)] [clip-path:polygon(50%_0%,100%_15%,100%_75%,50%_100%,0%_75%,0%_15%)]">
             
-            {/* Inner Shield Bevel */}
-            <div className="absolute inset-1.5 bg-gradient-to-b from-[#13111C] to-[#0A0A0F] rounded-[32px] flex items-center justify-center [clip-path:polygon(50%_0%,100%_15%,100%_75%,50%_100%,0%_75%,0%_15%)] border border-purple-500/30">
+            {/* Middle Inset Glass Layer */}
+            <div className="absolute inset-1.5 bg-gradient-to-b from-[#1A1528] to-[#0A0A0F] rounded-[36px] flex items-center justify-center [clip-path:polygon(50%_0%,100%_15%,100%_75%,50%_100%,0%_75%,0%_15%)] border border-purple-500/40">
               
-              {/* WS Logo Typography */}
-              <div className="flex items-center font-black text-4xl sm:text-5xl tracking-tighter drop-shadow-[0_0_20px_rgba(139,92,246,0.9)]">
-                <span className="text-white">W</span>
-                <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">S</span>
+              {/* Deep Inner Core Dark Plate */}
+              <div className="absolute w-[82%] h-[82%] bg-[#0A0A0F] rounded-[28px] border border-purple-400/30 flex items-center justify-center [clip-path:polygon(50%_0%,100%_15%,100%_75%,50%_100%,0%_75%,0%_15%)] shadow-inner">
+                
+                {/* WS Typography with Precision Gradient */}
+                <div className="flex items-center font-black text-5xl sm:text-6xl tracking-tighter drop-shadow-[0_0_25px_rgba(139,92,246,0.95)]">
+                  <span className="text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.5)]">W</span>
+                  <span className="bg-gradient-to-r from-purple-400 via-purple-300 to-pink-500 bg-clip-text text-transparent ml-0.5">S</span>
+                </div>
               </div>
             </div>
 
-            {/* Specular Light Reflection Sweep Line */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-50 pointer-events-none animate-shimmer" />
+            {/* Specular Light Reflection Sweep */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/25 to-transparent opacity-60 pointer-events-none animate-shimmer" />
           </div>
         </div>
 
         {/* ========================================================= */}
-        {/* 4. CYBER COMMAND PEDESTRIAL STAGE AT THE BOTTOM           */}
+        {/* 4. CYBER COMMAND PEDESTAL STAGE                           */}
         {/* ========================================================= */}
-        <div className="absolute -bottom-16 sm:-bottom-20 z-10 flex flex-col items-center">
-          {/* Glowing Platform Rings */}
-          <div className="w-72 sm:w-96 h-16 sm:h-20 rounded-[100%] bg-gradient-to-r from-purple-600/30 via-pink-600/40 to-purple-600/30 border border-purple-400/50 shadow-[0_0_50px_rgba(139,92,246,0.4)] flex items-center justify-center backdrop-blur-md">
-            <div className="w-56 sm:w-72 h-10 sm:h-12 rounded-[100%] border border-pink-500/40 bg-[#0A0A0F]/80" />
+        <div className="absolute -bottom-18 sm:-bottom-24 z-10 flex flex-col items-center">
+          {/* Grounding Holographic Rings */}
+          <div className="w-80 sm:w-[420px] h-20 sm:h-24 rounded-[100%] bg-gradient-to-r from-purple-600/30 via-pink-600/50 to-purple-600/30 border-2 border-purple-400/60 shadow-[0_0_70px_rgba(139,92,246,0.55)] flex items-center justify-center backdrop-blur-xl">
+            <div className="w-60 sm:w-80 h-12 sm:h-14 rounded-[100%] border border-pink-500/50 bg-[#0A0A0F]/90 shadow-inner" />
           </div>
 
-          {/* Holographic Floor Projection Beam */}
-          <div className="w-32 sm:w-48 h-12 bg-gradient-to-t from-transparent via-purple-500/20 to-pink-500/40 blur-xl -mt-6" />
+          {/* Upward Volumetric Floor Beam */}
+          <div className="w-40 sm:w-56 h-16 bg-gradient-to-t from-transparent via-purple-500/30 to-pink-500/50 blur-2xl -mt-8" />
         </div>
 
       </div>
 
-      {/* CSS Keyframe Animations for Float, Orbit & Shimmer */}
+      {/* Advanced Animation Keyframes */}
       <style>{`
         @keyframes floatSlow {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+          50% { transform: translateY(-12px); }
         }
         .animate-floatSlow {
           animation: floatSlow 6s ease-in-out infinite;
@@ -165,7 +169,7 @@ export default function Hero3DShield() {
 
         @keyframes floatFast {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-14px); }
+          50% { transform: translateY(-16px); }
         }
         .animate-floatFast {
           animation: floatFast 5s ease-in-out infinite;
@@ -173,7 +177,7 @@ export default function Hero3DShield() {
 
         @keyframes floatCenter {
           0%, 100% { transform: translateY(0px) rotateX(0deg); }
-          50% { transform: translateY(-8px) rotateX(4deg); }
+          50% { transform: translateY(-10px) rotateX(5deg); }
         }
         .animate-floatCenter {
           animation: floatCenter 4s ease-in-out infinite;
@@ -184,15 +188,15 @@ export default function Hero3DShield() {
           to { transform: rotate(360deg); }
         }
         .animate-spinSlow {
-          animation: spinSlow 30s linear infinite;
+          animation: spinSlow 35s linear infinite;
         }
 
         @keyframes orbit {
-          0% { transform: rotateX(70deg) rotateZ(0deg); }
-          100% { transform: rotateX(70deg) rotateZ(360deg); }
+          0% { transform: rotateX(72deg) rotateZ(0deg); }
+          100% { transform: rotateX(72deg) rotateZ(360deg); }
         }
         .animate-orbit {
-          animation: orbit 10s linear infinite;
+          animation: orbit 12s linear infinite;
         }
 
         @keyframes shimmer {
@@ -200,7 +204,7 @@ export default function Hero3DShield() {
           100% { transform: translateX(100%) translateY(100%); }
         }
         .animate-shimmer {
-          animation: shimmer 3s ease-in-out infinite;
+          animation: shimmer 3.5s ease-in-out infinite;
         }
       `}</style>
     </div>
