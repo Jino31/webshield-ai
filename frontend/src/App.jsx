@@ -18,7 +18,6 @@ import EntryAnimation from './components/EntryAnimation';
 function AppContent() {
   const { isDark } = useTheme();
   
-  // Initialize and instantly lock session storage on first load to prevent re-triggers
   const [showIntro, setShowIntro] = useState(() => {
     const hasPlayed = sessionStorage.getItem('webshield_intro_played');
     if (!hasPlayed) {
@@ -29,6 +28,13 @@ function AppContent() {
   });
 
   useEffect(() => {
+    // Hide the native HTML loader as soon as React hydrates
+    const nativeLoader = document.getElementById('native-loader');
+    if (nativeLoader) {
+      nativeLoader.style.opacity = '0';
+      setTimeout(() => nativeLoader.remove(), 300);
+    }
+
     if (showIntro) {
       const timer = setTimeout(() => {
         setShowIntro(false);
@@ -43,7 +49,6 @@ function AppContent() {
         isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
       }`}
     >
-      {/* Simple Startup Animation Screen */}
       {showIntro && <EntryAnimation />}
 
       <Navbar />
@@ -64,7 +69,6 @@ function AppContent() {
         </Routes>
       </main>
 
-      {/* Global Floating ShieldSense AI Assistant - hidden while intro animation runs */}
       {!showIntro && <ShieldSenseAI />}
     </div>
   );
