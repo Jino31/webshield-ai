@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
-import EntryAnimation from '../components/EntryAnimation';
 import { useTheme } from '../context/ThemeContext';
 import ShieldAIBot from '../components/ShieldAIBot';
 
@@ -25,23 +24,6 @@ export default function Home() {
   const [scanResult, setScanResult] = useState(null);
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState('');
-  
-  // Introductory Entrance Animation State (Triggers once per session entry, not on refresh)
-  const [showIntroAnimation, setShowIntroAnimation] = useState(() => {
-    const hasSeenIntro = sessionStorage.getItem('webshield_intro_played');
-    return !hasSeenIntro;
-  });
-
-  // Handle intro animation timer
-  useEffect(() => {
-    if (showIntroAnimation) {
-      sessionStorage.setItem('webshield_intro_played', 'true');
-      const timer = setTimeout(() => {
-        setShowIntroAnimation(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showIntroAnimation]);
 
   // Scanning Animation States
   const [scanStep, setScanStep] = useState(0);
@@ -102,7 +84,6 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      // Synchronized ~3-second security analysis duration
       await new Promise((resolve) => setTimeout(resolve, 3000));
       const lowerUrl = trimmedUrl.toLowerCase();
       
@@ -174,12 +155,9 @@ export default function Home() {
   };
 
   return (
-    <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-between px-4 sm:px-8 lg:px-12 pt-16 transition-colors duration-300 overflow-x-hidden ${
+    <div className={`relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center justify-between px-4 sm:px-8 lg:px-12 pt-16 transition-colors duration-300 overflow-x-hidden animate-fadeIn ${
       isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
     }`}>
-      {/* 3-Second Entry Animation Component (Played once per session entry) */}
-      {showIntroAnimation && <EntryAnimation />}
-
       {/* Background VFX Glow Orbs & Subtle Grid */}
       <div className={`absolute inset-0 pointer-events-none ${
         isDark 
@@ -187,18 +165,15 @@ export default function Home() {
           : 'bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.03)_0,transparent_70%)]'
       }`} />
       <div className={`absolute top-1/4 left-10 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none ${
-        isDark ? 'bg-[#8B5CF6]/15' : 'bg-[#8B5CF6]/10'
+        isDark ? 'bg-[#8B5CF6]/15 animate-pulse' : 'bg-[#8B5CF6]/10'
       }`} />
       <div className={`absolute bottom-10 right-10 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none ${
         isDark ? 'bg-[#EC4899]/10' : 'bg-[#EC4899]/5'
       }`} />
-      <div className={`absolute inset-0 bg-[linear-gradient(to_right,rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none ${
-        isDark ? 'opacity-30' : 'opacity-15'
-      }`} />
 
-      <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-5xl mx-auto w-full flex-1">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-5xl mx-auto w-full flex-1 animate-slideDownStagger1">
         {/* Hero Title */}
-        <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight transition-colors ${
+        <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight transition-colors animate-cinematicReveal ${
           isDark ? 'text-white' : 'text-slate-900'
         }`}>
           Detect Phishing & Malicious Websites <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Instantly</span>
@@ -211,11 +186,11 @@ export default function Home() {
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-10 animate-slideDownStagger2">
           <button
             type="button"
             onClick={scrollToHowItWorks}
-            className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 shadow-md ${
+            className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
               isDark 
                 ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#8B5CF6]/40 text-neutral-300 hover:text-white' 
                 : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
@@ -227,7 +202,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => navigate('/about')}
-            className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 shadow-md ${
+            className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
               isDark 
                 ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#8B5CF6]/40 text-neutral-300 hover:text-white' 
                 : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
@@ -239,7 +214,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => navigate('/feedback')}
-            className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 shadow-md ${
+            className={`px-5 py-3 rounded-xl border text-sm font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer flex items-center gap-2 shadow-md ${
               isDark 
                 ? 'bg-[#13111C] hover:bg-[#1A1528] border-[#231E33] hover:border-[#8B5CF6]/40 text-neutral-300 hover:text-white' 
                 : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900'
@@ -266,7 +241,7 @@ export default function Home() {
                 }}
                 placeholder="Enter website URL (e.g., https://example.com)..."
                 disabled={isLoading}
-                className={`w-full pl-11 pr-4 py-4 rounded-xl border focus:border-[#8B5CF6] outline-none transition-all shadow-inner text-base ${
+                className={`w-full pl-11 pr-4 py-4 rounded-xl border focus:border-[#8B5CF6] outline-none transition-all duration-300 shadow-inner text-base ${
                   isDark 
                     ? 'bg-[#13111C]/90 border-[#231E33] text-white placeholder-neutral-500' 
                     : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
@@ -277,7 +252,7 @@ export default function Home() {
               type="submit"
               disabled={isLoading}
               aria-label="Scan URL"
-              className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-90 disabled:opacity-50 text-white font-semibold px-8 py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-950/50 text-base active:scale-[0.98] whitespace-nowrap cursor-pointer"
+              className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 disabled:opacity-50 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 shadow-lg shadow-purple-950/50 text-base active:scale-[0.98] whitespace-nowrap cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -291,10 +266,10 @@ export default function Home() {
             </button>
           </div>
           {validationError && (
-            <span className="text-xs text-rose-400 text-left pl-2 font-medium">{validationError}</span>
+            <span className="text-xs text-rose-400 text-left pl-2 font-medium animate-fadeIn">{validationError}</span>
           )}
           {apiError && (
-            <span className="text-xs text-rose-400 text-left pl-2 font-medium">{apiError}</span>
+            <span className="text-xs text-rose-400 text-left pl-2 font-medium animate-fadeIn">{apiError}</span>
           )}
         </form>
 
@@ -307,7 +282,7 @@ export default function Home() {
                 key={site}
                 type="button"
                 onClick={() => handleQuickExample(site)}
-                className={`px-3 py-1 rounded-lg border text-xs transition-all cursor-pointer ${
+                className={`px-3 py-1 rounded-lg border text-xs transition-all duration-300 hover:scale-105 cursor-pointer ${
                   isDark 
                     ? 'bg-[#13111C] border-[#231E33] hover:border-[#8B5CF6]/40 text-neutral-300 hover:text-white' 
                     : 'bg-white border-slate-200 hover:border-purple-300 text-slate-700 hover:text-slate-900 shadow-sm'
@@ -321,7 +296,7 @@ export default function Home() {
 
         {/* Active Cybersecurity Scanning Animation Card */}
         {isLoading && (
-          <div className={`w-full max-w-2xl backdrop-blur-xl border p-8 sm:p-10 rounded-3xl text-center mb-16 transition-all duration-300 shadow-2xl ${
+          <div className={`w-full max-w-2xl backdrop-blur-xl border p-8 sm:p-10 rounded-3xl text-center mb-16 transition-all duration-300 shadow-2xl animate-fadeIn ${
             isDark 
               ? 'bg-[#13111C]/95 border-[#8B5CF6]/30 shadow-purple-950/40' 
               : 'bg-white border-purple-200 shadow-purple-200/50'
@@ -366,7 +341,7 @@ export default function Home() {
 
         {/* Scan Results Display Section */}
         {scanResult && !isLoading && (
-          <div className={`w-full max-w-2xl backdrop-blur-xl border p-6 sm:p-8 rounded-3xl text-left mb-16 transition-all duration-300 shadow-2xl ${
+          <div className={`w-full max-w-2xl backdrop-blur-xl border p-6 sm:p-8 rounded-3xl text-left mb-16 transition-all duration-300 shadow-2xl animate-fadeIn ${
             isDark 
               ? 'bg-[#13111C]/95 border-[#231E33] shadow-purple-950/30' 
               : 'bg-white border-slate-200 shadow-2xl shadow-slate-200/60'
@@ -399,7 +374,7 @@ export default function Home() {
               </div>
               <button
                 onClick={handleReset}
-                className="text-xs text-neutral-400 hover:text-white bg-[#1A1528] border border-[#2B2340] px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+                className="text-xs text-neutral-400 hover:text-white bg-[#1A1528] border border-[#2B2340] px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer"
               >
                 Scan Another
               </button>
@@ -439,7 +414,7 @@ export default function Home() {
         {/* Feature Highlights Grid */}
         {!scanResult && !isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left mb-20">
-            <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all shadow-xl ${
+            <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 shadow-xl ${
               isDark 
                 ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#8B5CF6]/50 shadow-purple-950/20' 
                 : 'bg-white border-slate-200 hover:border-purple-300 shadow-slate-200/50'
@@ -453,7 +428,7 @@ export default function Home() {
               <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Uses a trained Random Forest classifier to analyze URL features and identify patterns associated with potentially malicious websites.</p>
             </div>
 
-            <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all shadow-xl ${
+            <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 shadow-xl ${
               isDark 
                 ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#EC4899]/50 shadow-purple-950/20' 
                 : 'bg-white border-slate-200 hover:border-pink-300 shadow-slate-200/50'
@@ -467,7 +442,7 @@ export default function Home() {
               <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Analyzes URL structure, including length, IP address usage, special characters, and protocol characteristics.</p>
             </div>
 
-            <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all shadow-xl ${
+            <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 shadow-xl ${
               isDark 
                 ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#8B5CF6]/50 shadow-purple-950/20' 
                 : 'bg-white border-slate-200 hover:border-purple-300 shadow-slate-200/50'
@@ -509,7 +484,7 @@ export default function Home() {
               ].map((item, idx) => {
                 const IconComponent = item.icon;
                 return (
-                  <div key={idx} className={`border p-6 rounded-2xl relative transition-all ${
+                  <div key={idx} className={`border p-6 rounded-2xl relative transition-all duration-300 hover:scale-[1.02] ${
                     isDark ? 'bg-[#0A0A0F] border-[#231E33]' : 'bg-slate-50 border-slate-200 shadow-sm'
                   }`}>
                     <div className={`absolute top-4 right-4 text-xs font-mono font-bold ${isDark ? 'text-neutral-600' : 'text-slate-400'}`}>{item.step}</div>
@@ -589,8 +564,51 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Render ShieldSense Assistant conditionally only AFTER the introductory animation completes */}
-      {!showIntroAnimation && <ShieldAIBot scanContext={scanResult} />}
+      {/* Render ShieldSense Assistant */}
+      <ShieldAIBot scanContext={scanResult} />
+
+      {/* CSS Keyframes & Animation Utilities */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cinematicReveal {
+          0% {
+            opacity: 0;
+            transform: scale(0.95) translateY(15px);
+            filter: blur(8px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0px);
+          }
+        }
+        .animate-cinematicReveal {
+          animation: cinematicReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideDownStagger1 {
+          from { opacity: 0; transform: translateY(-15px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slideDownStagger1 {
+          animation: slideDownStagger1 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideDownStagger2 {
+          from { opacity: 0; transform: translateY(-15px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slideDownStagger2 {
+          animation: slideDownStagger2 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
     </div>
   );
 }

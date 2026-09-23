@@ -13,28 +13,16 @@ import Admin from './pages/Admin';
 import About from './pages/About';
 import Feedback from './pages/Feedback';
 import ShieldSenseAI from './components/ShieldAIBot';
-import EntryAnimation from './components/EntryAnimation';
 
 function AppContent() {
   const { isDark } = useTheme();
   
+  // Track introductory animation state globally in App so the bot respects it
   const [showIntro, setShowIntro] = useState(() => {
-    const hasPlayed = sessionStorage.getItem('webshield_intro_played');
-    if (!hasPlayed) {
-      sessionStorage.setItem('webshield_intro_played', 'true');
-      return true;
-    }
-    return false;
+    return !sessionStorage.getItem('webshield_intro_played');
   });
 
   useEffect(() => {
-    // Hide the native HTML loader as soon as React hydrates
-    const nativeLoader = document.getElementById('native-loader');
-    if (nativeLoader) {
-      nativeLoader.style.opacity = '0';
-      setTimeout(() => nativeLoader.remove(), 300);
-    }
-
     if (showIntro) {
       const timer = setTimeout(() => {
         setShowIntro(false);
@@ -49,8 +37,6 @@ function AppContent() {
         isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
       }`}
     >
-      {showIntro && <EntryAnimation />}
-
       <Navbar />
       <main className="flex-1 flex flex-col items-center w-full">
         <Routes>
@@ -69,6 +55,7 @@ function AppContent() {
         </Routes>
       </main>
 
+      {/* Global Floating ShieldSense AI Assistant - hidden while intro animation runs */}
       {!showIntro && <ShieldSenseAI />}
     </div>
   );
@@ -84,4 +71,4 @@ function App() {
   );
 }
 
-export default App;
+ export default App;
