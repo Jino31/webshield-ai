@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import ShieldAIBot from '../components/ShieldAIBot';
+import TiltCard3D from '../components/TiltCard3D';
 
 const scanStages = [
   'Initializing security scan...',
@@ -24,6 +25,16 @@ export default function Home() {
   const [scanResult, setScanResult] = useState(null);
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState('');
+  const [scrollY, setScrollY] = useState(0);
+
+  // Track scroll position for 3D parallax hero dynamics
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY || window.pageYOffset || 0);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // 3-Second Introductory Entrance Animation State (Played once per session)
   const [showIntroAnimation, setShowIntroAnimation] = useState(() => {
@@ -208,7 +219,66 @@ export default function Home() {
         isDark ? 'bg-[#EC4899]/10' : 'bg-[#EC4899]/5'
       }`} />
 
-      <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-5xl mx-auto w-full flex-1 animate-slideDownStagger1">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center max-w-5xl mx-auto w-full flex-1 animate-slideDownStagger1 [transform-style:preserve-3d]">
+        
+        {/* 3D Interactive Cyber Holo-Shield Core with Gyroscope Orbit Rings & Scroll Tilt */}
+        <div 
+          className="relative mb-6 flex items-center justify-center [perspective:1000px] select-none pointer-events-auto"
+          style={{
+            transform: `perspective(900px) translateY(${Math.min(40, scrollY * -0.06)}px) rotateX(${Math.min(18, scrollY * 0.03)}deg) rotateY(${Math.sin(scrollY * 0.01) * 8}deg)`,
+            transition: 'transform 0.15s ease-out',
+            transformStyle: 'preserve-3d'
+          }}
+        >
+          {/* Outer 3D Gyroscope Orbit Ring */}
+          <div className="absolute w-48 h-48 sm:w-56 sm:h-56 rounded-full border border-purple-500/35 border-dashed animate-spin3D-1 pointer-events-none" />
+
+          {/* Middle 3D Gyroscope Orbit Ring */}
+          <div className="absolute w-40 h-40 sm:w-48 sm:h-48 rounded-full border border-pink-500/35 border-dotted animate-spin3D-2 pointer-events-none" />
+
+          {/* Inner 3D Inclined Laser Ring */}
+          <div className="absolute w-32 h-32 sm:w-40 sm:h-40 rounded-full border border-cyan-400/30 animate-spin3D-3 pointer-events-none" />
+
+          {/* Ambient Core Holographic Glow */}
+          <div className="absolute w-24 h-24 bg-gradient-to-tr from-[#8B5CF6]/50 via-purple-500/40 to-[#EC4899]/50 rounded-full blur-2xl animate-pulse pointer-events-none" />
+
+          {/* Center 3D Floating Shield Emblem */}
+          <div 
+            className="relative z-10 w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-[#1C182E] to-[#0D0B18] border border-purple-400/40 p-4 shadow-[0_0_40px_rgba(139,92,246,0.6)] flex items-center justify-center animate-float3D [transform-style:preserve-3d] cursor-pointer hover:scale-105 transition-transform"
+          >
+            <Shield className="w-10 h-10 sm:w-12 sm:h-12 text-[#8B5CF6] drop-shadow-[0_0_15px_rgba(139,92,246,0.9)]" />
+            <span className="absolute -bottom-2.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-[9px] font-mono tracking-widest uppercase font-bold shadow-lg">
+              3D CORE
+            </span>
+          </div>
+
+          {/* 3D Floating Telemetry Pill Left */}
+          <div 
+            className="absolute -left-8 sm:-left-28 top-3 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border backdrop-blur-md shadow-xl pointer-events-none transition-transform duration-300"
+            style={{
+              transform: `perspective(800px) translateZ(35px) translateY(${scrollY * -0.1}px) rotateY(-10deg)`,
+              backgroundColor: isDark ? 'rgba(19, 17, 28, 0.85)' : 'rgba(255, 255, 255, 0.92)',
+              borderColor: isDark ? '#2B2340' : '#E2E8F0'
+            }}
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <span className="text-[11px] font-mono font-semibold">AI Shield: Active</span>
+          </div>
+
+          {/* 3D Floating Telemetry Pill Right */}
+          <div 
+            className="absolute -right-8 sm:-right-28 bottom-3 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border backdrop-blur-md shadow-xl pointer-events-none transition-transform duration-300"
+            style={{
+              transform: `perspective(800px) translateZ(35px) translateY(${scrollY * -0.08}px) rotateY(10deg)`,
+              backgroundColor: isDark ? 'rgba(19, 17, 28, 0.85)' : 'rgba(255, 255, 255, 0.92)',
+              borderColor: isDark ? '#2B2340' : '#E2E8F0'
+            }}
+          >
+            <Cpu className="w-3.5 h-3.5 text-[#EC4899]" />
+            <span className="text-[11px] font-mono font-semibold">Latency: 12ms</span>
+          </div>
+        </div>
+
         {/* Hero Title */}
         <h1 className={`text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight transition-colors animate-cinematicReveal ${
           isDark ? 'text-white' : 'text-slate-900'
@@ -261,54 +331,56 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Interactive URL Scan Input Form */}
-        <form onSubmit={handleScanSubmit} className="w-full max-w-2xl flex flex-col gap-2 mb-6">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500">
-                <Search className="w-5 h-5" />
-              </span>
-              <input
-                type="text"
-                aria-label="Website URL to scan"
-                value={urlInput}
-                onChange={(e) => {
-                  setUrlInput(e.target.value);
-                  if (validationError) setValidationError('');
-                }}
-                placeholder="Enter website URL (e.g., https://example.com)..."
+        {/* 3D Interactive URL Scan Input Form Container */}
+        <TiltCard3D maxTilt={6} glare={true} depth={20} className="w-full max-w-2xl mb-6">
+          <form onSubmit={handleScanSubmit} className="w-full flex flex-col gap-2 p-2 rounded-2xl">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-500">
+                  <Search className="w-5 h-5" />
+                </span>
+                <input
+                  type="text"
+                  aria-label="Website URL to scan"
+                  value={urlInput}
+                  onChange={(e) => {
+                    setUrlInput(e.target.value);
+                    if (validationError) setValidationError('');
+                  }}
+                  placeholder="Enter website URL (e.g., https://example.com)..."
+                  disabled={isLoading}
+                  className={`w-full pl-11 pr-4 py-4 rounded-xl border focus:border-[#8B5CF6] outline-none transition-all duration-300 shadow-inner text-base ${
+                    isDark 
+                      ? 'bg-[#13111C]/90 border-[#231E33] text-white placeholder-neutral-500' 
+                      : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
+                  }`}
+                />
+              </div>
+              <button
+                type="submit"
                 disabled={isLoading}
-                className={`w-full pl-11 pr-4 py-4 rounded-xl border focus:border-[#8B5CF6] outline-none transition-all duration-300 shadow-inner text-base ${
-                  isDark 
-                    ? 'bg-[#13111C]/90 border-[#231E33] text-white placeholder-neutral-500' 
-                    : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
-                }`}
-              />
+                aria-label="Scan URL"
+                className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 disabled:opacity-50 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 shadow-lg shadow-purple-950/50 text-base active:scale-[0.98] whitespace-nowrap cursor-pointer"
+              >
+                {isLoading ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" /> Analyzing...
+                  </>
+                ) : (
+                  <>
+                    Scan URL <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
+              </button>
             </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              aria-label="Scan URL"
-              className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 disabled:opacity-50 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2 shadow-lg shadow-purple-950/50 text-base active:scale-[0.98] whitespace-nowrap cursor-pointer"
-            >
-              {isLoading ? (
-                <>
-                  <RefreshCw className="w-5 h-5 animate-spin" /> Analyzing...
-                </>
-              ) : (
-                <>
-                  Scan URL <ArrowRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          </div>
-          {validationError && (
-            <span className="text-xs text-rose-400 text-left pl-2 font-medium animate-fadeIn">{validationError}</span>
-          )}
-          {apiError && (
-            <span className="text-xs text-rose-400 text-left pl-2 font-medium animate-fadeIn">{apiError}</span>
-          )}
-        </form>
+            {validationError && (
+              <span className="text-xs text-rose-400 text-left pl-2 font-medium animate-fadeIn">{validationError}</span>
+            )}
+            {apiError && (
+              <span className="text-xs text-rose-400 text-left pl-2 font-medium animate-fadeIn">{apiError}</span>
+            )}
+          </form>
+        </TiltCard3D>
 
         {/* Example Quick Pills */}
         {!scanResult && !isLoading && (
@@ -333,165 +405,181 @@ export default function Home() {
 
         {/* Active Cybersecurity Scanning Animation Card */}
         {isLoading && (
-          <div className={`w-full max-w-2xl backdrop-blur-xl border p-8 sm:p-10 rounded-3xl text-center mb-16 transition-all duration-300 shadow-2xl animate-fadeIn ${
-            isDark 
-              ? 'bg-[#13111C]/95 border-[#8B5CF6]/30 shadow-purple-950/40' 
-              : 'bg-white border-purple-200 shadow-purple-200/50'
-          }`}>
-            <div className="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
-              <div 
-                className="absolute inset-0 rounded-full border-2 border-dashed border-[#8B5CF6]" 
-                style={{ animation: 'spin 4s linear infinite' }} 
-              />
-              <div 
-                className="absolute inset-2 rounded-full border-2 border-transparent border-t-[#EC4899] border-b-[#8B5CF6]" 
-                style={{ animation: 'spin 2.5s linear infinite reverse' }} 
-              />
-              <div 
-                className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#1A1528] text-[#8B5CF6]' : 'bg-purple-50 text-purple-600'} shadow-md`}
-                style={{ animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
-              >
-                <Shield className="w-5 h-5" />
+          <TiltCard3D maxTilt={7} glare={true} depth={25} className="w-full max-w-2xl mb-16">
+            <div className={`backdrop-blur-xl border p-8 sm:p-10 rounded-3xl text-center transition-all duration-300 shadow-2xl animate-fadeIn ${
+              isDark 
+                ? 'bg-[#13111C]/95 border-[#8B5CF6]/30 shadow-purple-950/40' 
+                : 'bg-white border-purple-200 shadow-purple-200/50'
+            }`}>
+              <div className="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                <div 
+                  className="absolute inset-0 rounded-full border-2 border-dashed border-[#8B5CF6]" 
+                  style={{ animation: 'spin 4s linear infinite' }} 
+                />
+                <div 
+                  className="absolute inset-2 rounded-full border-2 border-transparent border-t-[#EC4899] border-b-[#8B5CF6]" 
+                  style={{ animation: 'spin 2.5s linear infinite reverse' }} 
+                />
+                <div 
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#1A1528] text-[#8B5CF6]' : 'bg-purple-50 text-purple-600'} shadow-md`}
+                  style={{ animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
+                >
+                  <Shield className="w-5 h-5" />
+                </div>
+              </div>
+
+              <h3 className={`text-base font-bold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-950'}`}>
+                WebShield Threat Intelligence Analysis
+              </h3>
+              
+              <p className="text-xs text-[#8B5CF6] font-mono mb-6 h-5 transition-all duration-300">
+                {scanStages[scanStep]}
+              </p>
+
+              <div className="w-full bg-[#0A0A0F]/60 rounded-full h-2.5 overflow-hidden border border-[#231E33] p-0.5">
+                <div 
+                  className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] h-full rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(progress, 100)}%` }}
+                />
+              </div>
+              <div className="flex justify-between items-center mt-2 text-[10px] text-neutral-500 font-mono">
+                <span>SecOps Scanner v2.4</span>
+                <span>{Math.min(progress, 100)}% Complete</span>
               </div>
             </div>
-
-            <h3 className={`text-base font-bold tracking-tight mb-2 ${isDark ? 'text-white' : 'text-slate-950'}`}>
-              WebShield Threat Intelligence Analysis
-            </h3>
-            
-            <p className="text-xs text-[#8B5CF6] font-mono mb-6 h-5 transition-all duration-300">
-              {scanStages[scanStep]}
-            </p>
-
-            <div className="w-full bg-[#0A0A0F]/60 rounded-full h-2.5 overflow-hidden border border-[#231E33] p-0.5">
-              <div 
-                className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] h-full rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
-            </div>
-            <div className="flex justify-between items-center mt-2 text-[10px] text-neutral-500 font-mono">
-              <span>SecOps Scanner v2.4</span>
-              <span>{Math.min(progress, 100)}% Complete</span>
-            </div>
-          </div>
+          </TiltCard3D>
         )}
 
         {/* Scan Results Display Section */}
         {scanResult && !isLoading && (
-          <div className={`w-full max-w-2xl backdrop-blur-xl border p-6 sm:p-8 rounded-3xl text-left mb-16 transition-all duration-300 shadow-2xl animate-fadeIn ${
-            isDark 
-              ? 'bg-[#13111C]/95 border-[#231E33] shadow-purple-950/30' 
-              : 'bg-white border-slate-200 shadow-2xl shadow-slate-200/60'
-          }`}>
-            <div className="flex items-center justify-between pb-4 border-b border-[#231E33] mb-6">
-              <div className="flex items-center gap-3">
-                {scanResult.status === 'safe' && (
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                    <CheckCircle2 className="w-6 h-6" />
+          <TiltCard3D maxTilt={7} glare={true} depth={25} className="w-full max-w-2xl mb-16">
+            <div className={`backdrop-blur-xl border p-6 sm:p-8 rounded-3xl text-left transition-all duration-300 shadow-2xl animate-fadeIn ${
+              isDark 
+                ? 'bg-[#13111C]/95 border-[#231E33] shadow-purple-950/30' 
+                : 'bg-white border-slate-200 shadow-2xl shadow-slate-200/60'
+            }`}>
+              <div className="flex items-center justify-between pb-4 border-b border-[#231E33] mb-6">
+                <div className="flex items-center gap-3">
+                  {scanResult.status === 'safe' && (
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                      <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                  )}
+                  {scanResult.status === 'warning' && (
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                      <AlertTriangle className="w-6 h-6" />
+                    </div>
+                  )}
+                  {scanResult.status === 'danger' && (
+                    <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                      <ShieldAlert className="w-6 h-6" />
+                    </div>
+                  )}
+                  <div>
+                    <h4 className="text-xs uppercase tracking-wider text-neutral-400 font-medium">Scan Result Assessment</h4>
+                    <span className={`text-lg font-bold ${
+                      scanResult.status === 'safe' ? 'text-emerald-400' : scanResult.status === 'warning' ? 'text-amber-400' : 'text-rose-400'
+                    }`}>
+                      {scanResult.riskLevel}
+                    </span>
                   </div>
-                )}
-                {scanResult.status === 'warning' && (
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                    <AlertTriangle className="w-6 h-6" />
-                  </div>
-                )}
-                {scanResult.status === 'danger' && (
-                  <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                    <ShieldAlert className="w-6 h-6" />
-                  </div>
-                )}
+                </div>
+                <button
+                  onClick={handleReset}
+                  className="text-xs text-neutral-400 hover:text-white bg-[#1A1528] border border-[#2B2340] px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer"
+                >
+                  Scan Another
+                </button>
+              </div>
+
+              <div className="space-y-4 mb-6">
                 <div>
-                  <h4 className="text-xs uppercase tracking-wider text-neutral-400 font-medium">Scan Result Assessment</h4>
-                  <span className={`text-lg font-bold ${
-                    scanResult.status === 'safe' ? 'text-emerald-400' : scanResult.status === 'warning' ? 'text-amber-400' : 'text-rose-400'
-                  }`}>
-                    {scanResult.riskLevel}
-                  </span>
+                  <span className="text-xs text-neutral-500 block mb-1">Target URL</span>
+                  <div className="bg-[#0A0A0F] border border-[#231E33] px-3 py-2 rounded-lg text-sm text-neutral-300 font-mono break-all flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-[#8B5CF6] shrink-0" />
+                    {scanResult.url}
+                  </div>
                 </div>
-              </div>
-              <button
-                onClick={handleReset}
-                className="text-xs text-neutral-400 hover:text-white bg-[#1A1528] border border-[#2B2340] px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer"
-              >
-                Scan Another
-              </button>
-            </div>
 
-            <div className="space-y-4 mb-6">
-              <div>
-                <span className="text-xs text-neutral-500 block mb-1">Target URL</span>
-                <div className="bg-[#0A0A0F] border border-[#231E33] px-3 py-2 rounded-lg text-sm text-neutral-300 font-mono break-all flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-[#8B5CF6] shrink-0" />
-                  {scanResult.url}
-                </div>
-              </div>
+                <p className="text-sm text-neutral-300 leading-relaxed bg-[#1A1528]/50 p-4 rounded-xl border border-[#2B2340]">
+                  {scanResult.description}
+                </p>
 
-              <p className="text-sm text-neutral-300 leading-relaxed bg-[#1A1528]/50 p-4 rounded-xl border border-[#2B2340]">
-                {scanResult.description}
-              </p>
-
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-                <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
-                  <span className="text-[11px] text-neutral-500 block">IP Address Check</span>
-                  <span className="text-sm font-semibold text-white">{scanResult.checks.ipAddress}</span>
-                </div>
-                <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
-                  <span className="text-[11px] text-neutral-500 block">Protocol</span>
-                  <span className="text-sm font-semibold text-white">{scanResult.checks.sslSecure}</span>
-                </div>
-                <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
-                  <span className="text-[11px] text-neutral-500 block">Lexical Rules</span>
-                  <span className="text-sm font-semibold text-white">{scanResult.checks.lexicalMatch}</span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                  <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
+                    <span className="text-[11px] text-neutral-500 block">IP Address Check</span>
+                    <span className="text-sm font-semibold text-white">{scanResult.checks.ipAddress}</span>
+                  </div>
+                  <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
+                    <span className="text-[11px] text-neutral-500 block">Protocol</span>
+                    <span className="text-sm font-semibold text-white">{scanResult.checks.sslSecure}</span>
+                  </div>
+                  <div className="bg-[#0A0A0F] p-3 rounded-xl border border-[#231E33]">
+                    <span className="text-[11px] text-neutral-500 block">Lexical Rules</span>
+                    <span className="text-sm font-semibold text-white">{scanResult.checks.lexicalMatch}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </TiltCard3D>
         )}
 
-        {/* Feature Highlights Grid */}
+        {/* Feature Highlights Grid in 3D */}
         {!scanResult && !isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left mb-20">
-            <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 shadow-xl ${
-              isDark 
-                ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#8B5CF6]/50 shadow-purple-950/20' 
-                : 'bg-white border-slate-200 hover:border-purple-300 shadow-slate-200/50'
-            }`}>
-              <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 ${
-                isDark ? 'bg-[#1A1528] border-[#2B2340] text-[#8B5CF6]' : 'bg-purple-50 border-purple-200 text-purple-600'
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left mb-20 [perspective:1200px]">
+            <TiltCard3D maxTilt={11} glare={true} depth={30} className="w-full h-full">
+              <div className={`h-full backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 shadow-xl ${
+                isDark 
+                  ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#8B5CF6]/50 shadow-purple-950/20' 
+                  : 'bg-white border-slate-200 hover:border-purple-300 shadow-slate-200/50'
               }`}>
-                <Cpu className="w-5 h-5" />
+                <div 
+                  className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 transition-transform duration-300 [transform:translateZ(25px)] ${
+                    isDark ? 'bg-[#1A1528] border-[#2B2340] text-[#8B5CF6]' : 'bg-purple-50 border-purple-200 text-purple-600'
+                  }`}
+                >
+                  <Cpu className="w-5 h-5" />
+                </div>
+                <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Machine Learning Core</h3>
+                <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Uses a trained Random Forest classifier to analyze URL features and identify patterns associated with potentially malicious websites.</p>
               </div>
-              <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Machine Learning Core</h3>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Uses a trained Random Forest classifier to analyze URL features and identify patterns associated with potentially malicious websites.</p>
-            </div>
+            </TiltCard3D>
 
-            <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 shadow-xl ${
-              isDark 
-                ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#EC4899]/50 shadow-purple-950/20' 
-                : 'bg-white border-slate-200 hover:border-pink-300 shadow-slate-200/50'
-            }`}>
-              <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 ${
-                isDark ? 'bg-[#1A1528] border-[#2B2340] text-[#10B981]' : 'bg-emerald-50 border-emerald-200 text-emerald-600'
+            <TiltCard3D maxTilt={11} glare={true} depth={30} className="w-full h-full">
+              <div className={`h-full backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 shadow-xl ${
+                isDark 
+                  ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#EC4899]/50 shadow-purple-950/20' 
+                  : 'bg-white border-slate-200 hover:border-pink-300 shadow-slate-200/50'
               }`}>
-                <CheckCircle2 className="w-5 h-5" />
+                <div 
+                  className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 transition-transform duration-300 [transform:translateZ(25px)] ${
+                    isDark ? 'bg-[#1A1528] border-[#2B2340] text-[#10B981]' : 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                  }`}
+                >
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Instant Lexical Analysis</h3>
+                <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Analyzes URL structure, including length, IP address usage, special characters, and protocol characteristics.</p>
               </div>
-              <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Instant Lexical Analysis</h3>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Analyzes URL structure, including length, IP address usage, special characters, and protocol characteristics.</p>
-            </div>
+            </TiltCard3D>
 
-            <div className={`backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 hover:-translate-y-1 shadow-xl ${
-              isDark 
-                ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#8B5CF6]/50 shadow-purple-950/20' 
-                : 'bg-white border-slate-200 hover:border-purple-300 shadow-slate-200/50'
-            }`}>
-              <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 ${
-                isDark ? 'bg-[#1A1528] border-[#2B2340] text-[#EC4899]' : 'bg-pink-50 border-pink-200 text-pink-600'
+            <TiltCard3D maxTilt={11} glare={true} depth={30} className="w-full h-full">
+              <div className={`h-full backdrop-blur-xl border p-6 rounded-3xl transition-all duration-300 shadow-xl ${
+                isDark 
+                  ? 'bg-[#13111C]/80 border-[#231E33] hover:border-[#8B5CF6]/50 shadow-purple-950/20' 
+                  : 'bg-white border-slate-200 hover:border-purple-300 shadow-slate-200/50'
               }`}>
-                <Lock className="w-5 h-5" />
+                <div 
+                  className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 transition-transform duration-300 [transform:translateZ(25px)] ${
+                    isDark ? 'bg-[#1A1528] border-[#2B2340] text-[#EC4899]' : 'bg-pink-50 border-pink-200 text-pink-600'
+                  }`}
+                >
+                  <Lock className="w-5 h-5" />
+                </div>
+                <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Secure & Logged</h3>
+                <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Securely processes scan requests and maintains structured scan records for analysis and auditing.</p>
               </div>
-              <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-[#FAFAFA]' : 'text-slate-900'}`}>Secure & Logged</h3>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>Securely processes scan requests and maintains structured scan records for analysis and auditing.</p>
-            </div>
+            </TiltCard3D>
           </div>
         )}
 
@@ -512,7 +600,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 [perspective:1200px]">
               {[
                 { step: '01', title: '1. Enter URL', desc: 'Enter a website URL to begin the security analysis.', icon: Search, color: 'text-[#8B5CF6]', bg: 'bg-purple-50' },
                 { step: '02', title: '2. Feature Extraction', desc: 'Extract structural and lexical features from the URL for analysis.', icon: Layers, color: 'text-[#EC4899]', bg: 'bg-pink-50' },
@@ -521,20 +609,26 @@ export default function Home() {
               ].map((item, idx) => {
                 const IconComponent = item.icon;
                 return (
-                  <div key={idx} className={`border p-6 rounded-2xl relative transition-all duration-300 hover:scale-[1.02] ${
-                    isDark ? 'bg-[#0A0A0F] border-[#231E33]' : 'bg-slate-50 border-slate-200 shadow-sm'
-                  }`}>
-                    <div className={`absolute top-4 right-4 text-xs font-mono font-bold ${isDark ? 'text-neutral-600' : 'text-slate-400'}`}>{item.step}</div>
-                    <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 ${
-                      isDark ? 'bg-[#13111C] border-[#231E33]' : `${item.bg} border-slate-200`
-                    } ${item.color}`}>
-                      <IconComponent className="w-5 h-5" />
+                  <TiltCard3D key={idx} maxTilt={9} depth={20} className="w-full h-full">
+                    <div className={`h-full border p-6 rounded-2xl relative transition-all duration-300 shadow-sm ${
+                      isDark ? 'bg-[#0A0A0F] border-[#231E33]' : 'bg-slate-50 border-slate-200'
+                    }`}>
+                      <div 
+                        className={`absolute top-4 right-4 text-xs font-mono font-bold [transform:translateZ(20px)] ${isDark ? 'text-neutral-600' : 'text-slate-400'}`}
+                      >
+                        {item.step}
+                      </div>
+                      <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 [transform:translateZ(22px)] ${
+                        isDark ? 'bg-[#13111C] border-[#231E33]' : `${item.bg} border-slate-200`
+                      } ${item.color}`}>
+                        <IconComponent className="w-5 h-5" />
+                      </div>
+                      <h3 className={`text-sm font-semibold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.title}</h3>
+                      <p className={`text-xs leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>
+                        {item.desc}
+                      </p>
                     </div>
-                    <h3 className={`text-sm font-semibold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.title}</h3>
-                    <p className={`text-xs leading-relaxed ${isDark ? 'text-neutral-400' : 'text-slate-600'}`}>
-                      {item.desc}
-                    </p>
-                  </div>
+                  </TiltCard3D>
                 );
               })}
             </div>
