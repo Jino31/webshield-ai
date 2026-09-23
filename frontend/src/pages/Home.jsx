@@ -444,7 +444,7 @@ export default function Home() {
           <div className={`p-3.5 rounded-xl border flex items-center gap-2.5 ${
             isDark ? 'bg-[#13111C] border-neutral-800 text-neutral-300' : 'bg-white border-slate-200 text-slate-700 shadow-sm'
           }`}>
-            <span>🛡️ Your security matters — WebShield AI helps identify dangerous websites using machine-learning.</span>
+           
           </div>
         </div>
 
