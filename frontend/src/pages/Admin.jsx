@@ -4,6 +4,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { adminService } from '../services/adminService';
 import { useTheme } from '../context/ThemeContext';
+import ShieldSenseAI from '../components/ShieldAIBot'; // Ensure component is imported if used
 
 import {
   LayoutDashboard,
@@ -120,12 +121,10 @@ export default function Admin() {
     setErrorData(null);
 
     try {
-      // 1. Fetch critical stats first so the page renders instantly
       const sData = await adminService.getAdminStats().catch(() => null);
       setStats(sData);
       setLoadingData(false);
 
-      // 2. Fetch secondary lists lazily in the background
       const [uData, hData, cData, adData] = await Promise.all([
         adminService.getUsers().catch(() => []),
         adminService.getSystemHealth().catch(() => []),
@@ -473,6 +472,9 @@ export default function Admin() {
           )}
         </main>
       </div>
+
+      {/* ShieldSense Assistant is completely hidden during login/animations and only rendered when fully unlocked */}
+      {adminUnlocked && !showWelcomeAnimation && <ShieldSenseAI />}
     </div>
   );
 }
