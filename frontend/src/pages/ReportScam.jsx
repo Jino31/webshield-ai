@@ -55,31 +55,31 @@ export default function ReportScam() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center px-4 sm:px-8 lg:px-12 py-10 bg-[#0B0F17] text-[#F3F4F6] font-sans">
+    <div className="relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center px-4 sm:px-8 lg:px-12 py-10 bg-[#0A0A0F] text-[#FAFAFA] font-sans">
       {/* Background Glow Orb */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-rose-600/5 rounded-full blur-[180px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#EC4899]/10 rounded-full blur-[180px] pointer-events-none" />
 
       {/* Navigation Header */}
       <div className="relative z-10 w-full max-w-4xl flex items-center justify-between mb-8">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-xs font-medium text-neutral-300 hover:text-white bg-[#111827] border border-neutral-800 px-4 py-2.5 rounded-xl transition shadow-sm cursor-pointer"
+          className="inline-flex items-center gap-2 text-xs font-medium text-neutral-300 hover:text-white bg-[#13111C] border border-[#231E33] px-4 py-2.5 rounded-xl transition shadow-sm cursor-pointer"
         >
-          <ArrowLeft className="w-4 h-4 text-rose-400" /> Return Back
+          <ArrowLeft className="w-4 h-4 text-[#EC4899]" /> Return Back
         </button>
-        <div className="flex items-center gap-2 text-neutral-400 text-xs font-mono uppercase tracking-widest bg-[#111827] px-3.5 py-1.5 rounded-lg border border-neutral-800">
-          <ShieldAlert className="w-3.5 h-3.5 text-rose-400" /> Security Operations Center
+        <div className="flex items-center gap-2 text-neutral-400 text-xs font-mono uppercase tracking-widest bg-[#13111C] px-3.5 py-1.5 rounded-lg border border-[#231E33]">
+          <ShieldAlert className="w-3.5 h-3.5 text-[#EC4899]" /> Security Operations Center
         </div>
       </div>
 
       {/* Main Container */}
-      <div className="relative z-10 w-full max-w-4xl bg-[#111827] border border-neutral-800 rounded-2xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl">
-        <div className="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-800">
+      <div className="relative z-10 w-full max-w-4xl bg-[#13111C] border border-[#231E33] rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl">
+        <div className="flex items-center gap-4 mb-8 pb-6 border-b border-[#231E33]">
           <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
             <AlertOctagon className="w-7 h-7" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">Threat Intelligence Intake Portal</h1>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-[#FAFAFA] tracking-tight">Threat Intelligence Intake Portal</h1>
             <p className="text-xs text-neutral-400 mt-1">Submit fraudulent URLs or phishing attack surfaces for automated threat analysis and database synchronization.</p>
           </div>
         </div>
@@ -90,8 +90,8 @@ export default function ReportScam() {
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <div className="space-y-1">
-              <h2 className="text-lg font-bold text-white">Threat Report Logged Successfully</h2>
-              <p className="text-xs font-mono text-purple-400 uppercase tracking-wider">Incident Reference: {reportId}</p>
+              <h2 className="text-lg font-bold text-[#FAFAFA]">Threat Report Logged Successfully</h2>
+              <p className="text-xs font-mono text-[#8B5CF6] uppercase tracking-wider">Incident Reference: {reportId}</p>
             </div>
             <p className="text-xs text-neutral-400 max-w-lg mx-auto leading-relaxed">
               {verified
@@ -106,7 +106,7 @@ export default function ReportScam() {
                   setDescription('');
                   setProofUrl('');
                 }}
-                className="px-6 py-3 bg-[#0B0F17] hover:bg-neutral-800 border border-neutral-800 text-xs font-bold text-white rounded-xl transition cursor-pointer shadow-md"
+                className="px-6 py-3 bg-[#0A0A0F] hover:bg-[#1A1528] border border-[#231E33] text-xs font-bold text-[#FAFAFA] rounded-xl transition cursor-pointer shadow-md"
               >
                 Submit Another Threat Report
               </button>
@@ -134,7 +134,7 @@ export default function ReportScam() {
                     placeholder="https://malicious-login-portal.com"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
-                    className="w-full bg-[#0B0F17] border border-neutral-800 focus:border-rose-500 rounded-xl pl-10 pr-4 py-3 text-white placeholder-neutral-600 focus:outline-none transition text-xs font-mono"
+                    className="w-full bg-[#0A0A0F] border border-[#231E33] focus:border-[#EC4899] rounded-xl pl-10 pr-4 py-3 text-[#FAFAFA] placeholder-neutral-600 focus:outline-none transition text-xs font-mono"
                   />
                 </div>
               </div>
@@ -147,13 +147,13 @@ export default function ReportScam() {
                   id="scam-category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-[#0B0F17] border border-neutral-800 focus:border-rose-500 rounded-xl px-4 py-3 text-white focus:outline-none transition text-xs cursor-pointer font-sans"
+                  className="w-full bg-[#0A0A0F] border border-[#231E33] focus:border-[#EC4899] rounded-xl px-4 py-3 text-[#FAFAFA] focus:outline-none transition text-xs cursor-pointer font-sans"
                 >
-                  <option value="phishing">Credential Phishing / Fake Authentication</option>
-                  <option value="malware">Malware / Drive-by Payload Delivery</option>
-                  <option value="financial">Imitation E-Commerce / Financial Fraud</option>
-                  <option value="crypto">Web3 / Cryptocurrency Drainer Contract</option>
-                  <option value="other">General Suspicious Activity</option>
+                  <option value="phishing" className="bg-[#13111C]">Credential Phishing / Fake Authentication</option>
+                  <option value="malware" className="bg-[#13111C]">Malware / Drive-by Payload Delivery</option>
+                  <option value="financial" className="bg-[#13111C]">Imitation E-Commerce / Financial Fraud</option>
+                  <option value="crypto" className="bg-[#13111C]">Web3 / Cryptocurrency Drainer Contract</option>
+                  <option value="other" className="bg-[#13111C]">General Suspicious Activity</option>
                 </select>
               </div>
             </div>
@@ -168,7 +168,7 @@ export default function ReportScam() {
                 placeholder="Describe how the attack vector was delivered (e.g. SMS phishing vector, malicious ad link)..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-[#0B0F17] border border-neutral-800 focus:border-rose-500 rounded-xl p-4 text-white placeholder-neutral-600 focus:outline-none transition text-xs resize-none"
+                className="w-full bg-[#0A0A0F] border border-[#231E33] focus:border-[#EC4899] rounded-xl p-4 text-[#FAFAFA] placeholder-neutral-600 focus:outline-none transition text-xs resize-none"
               />
             </div>
 
@@ -184,7 +184,7 @@ export default function ReportScam() {
                   placeholder="https://imgur.com/... or cloud storage evidence link"
                   value={proofUrl}
                   onChange={(e) => setProofUrl(e.target.value)}
-                  className="w-full bg-[#0B0F17] border border-neutral-800 focus:border-rose-500 rounded-xl pl-10 pr-4 py-3 text-white placeholder-neutral-600 focus:outline-none transition text-xs font-mono"
+                  className="w-full bg-[#0A0A0F] border border-[#231E33] focus:border-[#EC4899] rounded-xl pl-10 pr-4 py-3 text-[#FAFAFA] placeholder-neutral-600 focus:outline-none transition text-xs font-mono"
                 />
               </div>
               <p className="text-[11px] text-neutral-500 mt-2 font-mono">
@@ -195,7 +195,7 @@ export default function ReportScam() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-rose-600 to-pink-600 hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 text-xs uppercase tracking-wider shadow-lg shadow-rose-950/50 cursor-pointer disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] hover:opacity-95 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 text-xs uppercase tracking-wider shadow-lg shadow-purple-950/50 cursor-pointer disabled:opacity-50"
             >
               {isLoading ? (
                 <>
