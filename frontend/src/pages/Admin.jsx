@@ -110,7 +110,7 @@ export default function Admin() {
     }
   };
 
-  // Optimized Non-Blocking Data Fetcher
+  // Instant Non-Blocking Telemetry Loader (Loads stats first, secondary data in background)
   const fetchRealtimeData = useCallback(async () => {
     if (!adminUnlocked) return;
     
@@ -120,25 +120,23 @@ export default function Admin() {
     setErrorData(null);
 
     try {
+      // 1. Fetch lightweight stats immediately so the dashboard shell pops open instantly
       const sData = await adminService.getAdminStats().catch(() => null);
       setStats(sData);
-      setLoadingData(false);
+      setLoadingData(false); // UI renders right away!
 
-      const [uData, hData, cData, adData] = await Promise.all([
-        adminService.getUsers().catch(() => []),
-        adminService.getSystemHealth().catch(() => []),
-        adminService.getComments().catch(() => []),
-        adminService.getAdConfig().catch(() => null)
-      ]);
+      // 2. Fetch secondary lists asynchronously in the background
+      adminService.getUsers().then(u => setUsersList(u || [])).catch(() => {});
+      adminService.getSystemHealth().then(h => setHealth(h || [])).catch(() => {});
+      adminService.getComments().then(c => setCommentsList(c || [])).catch(() => {});
+      adminService.getAdConfig().then(adData => {
+        if (adData) {
+          setAdLabel(adData.label || '');
+          setAdUrl(adData.url || '');
+          setAdEnabled(adData.enabled ?? true);
+        }
+      }).catch(() => {});
 
-      setUsersList(uData);
-      setHealth(hData);
-      setCommentsList(cData);
-      if (adData) {
-        setAdLabel(adData.label || '');
-        setAdUrl(adData.url || '');
-        setAdEnabled(adData.enabled ?? true);
-      }
     } catch (err) {
       setErrorData('Failed to connect to backend server.');
       setLoadingData(false);
@@ -363,13 +361,15 @@ export default function Admin() {
                         </tr>
                       </thead>
                       <tbody className={`divide-y font-medium ${theme === 'light' ? 'divide-slate-200 text-slate-900' : 'divide-neutral-700/30'}`}>
-                        {usersList.map(u => (
+                        {usersList.length > 0 ? usersList.map(u => (
                           <tr key={u.id} className="py-3">
                             <td className="py-3"><p className={`font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{u.name}</p><p className={`text-[10px] font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>{u.email}</p></td>
                             <td className="py-3">{u.role}</td>
                             <td className="py-3"><span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">{u.status}</span></td>
                           </tr>
-                        ))}
+                        )) : (
+                          <tr><td colSpan="3" className="py-6 text-center opacity-70">Loading users...</td></tr>
+                        )}
                       </tbody>
                     </table>
                   </div>
@@ -423,12 +423,12 @@ export default function Admin() {
                 <div className="space-y-6">
                   <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>System Monitor</h1>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {health.map((h, i) => (
+                    {health.length > 0 ? health.map((h, i) => (
                       <div key={i} className={`border rounded-2xl p-5 flex items-center justify-between ${cardTheme[theme]}`}>
                         <div><p className={`text-xs font-bold ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>{h.service}</p><p className={`text-[10px] font-semibold mt-0.5 ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Latency: {h.latency}</p></div>
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">{h.status}</span>
                       </div>
-                    ))}
+                    )) : <p className={`text-xs font-semibold ${theme === 'light' ? 'text-slate-600' : 'opacity-70'}`}>Checking system health...</p>}
                   </div>
                 </div>
               )}
