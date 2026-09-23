@@ -17,7 +17,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 app.use(cors());
 app.use(express.json());
 
-// Load custom WebShield AI Domain Knowledge Dataset from root dataset folder
+// Load custom WebShield AI Domain Knowledge Dataset
 const knowledgeBasePath = path.join(__dirname, '..', 'dataset', 'webshield_knowledge.json');
 let knowledgeBase = [];
 try {
@@ -36,9 +36,11 @@ try {
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/fake-website-detector";
 mongoose.connect(MONGO_URI)
   .then(() => console.log("Connected to MongoDB successfully"))
-  .catch((err) => console.log("MongoDB connection warning:", err.message));
+  .catch((err) => console.log("MongoDB connection error:", err.message));
 
-// Scan History Schema
+// ==========================================
+// SCHEMAS & MODELS
+// ==========================================
 const scanSchema = new mongoose.Schema({
   url: String,
   status: String,
@@ -48,7 +50,6 @@ const scanSchema = new mongoose.Schema({
 });
 const ScanLog = mongoose.models.ScanLog || mongoose.model('ScanLog', scanSchema);
 
-// User Schema for Admin Management
 const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -58,7 +59,6 @@ const userSchema = new mongoose.Schema({
 });
 const UserLog = mongoose.models.UserLog || mongoose.model('UserLog', userSchema);
 
-// Feedback Schema & Public Submission Route
 const feedbackSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   email: { type: String, required: true, trim: true, lowercase: true },
@@ -71,7 +71,26 @@ const feedbackSchema = new mongoose.Schema({
 });
 const FeedbackLog = mongoose.models.FeedbackLog || mongoose.model('FeedbackLog', feedbackSchema);
 
-// User Sync Endpoint (Called on Login/Signup)
+const announcementSchema = new mongoose.Schema({
+  title: String,
+  message: String,
+  createdAt: { type: Date, default: Date.now }
+});
+const Announcement = mongoose.models.Announcement || mongoose.model('Announcement', announcementSchema);
+
+const adConfigSchema = new mongoose.Schema({
+  label: String,
+  url: String,
+  enabled: { type: Boolean, default: true }
+});
+const AdConfig = mongoose.models.AdConfig || mongoose.model('AdConfig', adConfigSchema);
+
+
+// ==========================================
+// API ROUTES
+// ==========================================
+
+// User Sync Endpoint
 app.post('/api/users/sync', async (req, res) => {
   try {
     const { name, email, role, status } = req.body;
@@ -99,6 +118,7 @@ app.post('/api/users/sync', async (req, res) => {
   }
 });
 
+// Feedback Endpoint
 app.post('/api/feedback', async (req, res) => {
   try {
     const { name, email, category, message, websiteUrl, userId } = req.body;
@@ -133,7 +153,7 @@ app.post('/api/feedback', async (req, res) => {
   }
 });
 
-// Main Scan Route: Forwards URL to Python FastAPI Microservice
+// Scan Route
 app.post('/api/scan', async (req, res) => {
   const { url } = req.body;
   if (!url) {
@@ -155,10 +175,7 @@ app.post('/api/scan', async (req, res) => {
       console.log("Could not save to DB, skipping log.");
     }
 
-    res.json({
-      success: true,
-      data: result
-    });
+    res.json({ success: true, data: result });
   } catch (error) {
     console.error("Error communicating with ML service:", error.message);
     res.status(500).json({ 
@@ -177,9 +194,7 @@ app.get('/api/history', async (req, res) => {
   }
 });
 
-// ==========================================
-// SHIELDSENSE REAL-TIME CUSTOM AI ASSISTANT
-// ==========================================
+// AI Assistant Route
 app.post('/api/assistant', async (req, res) => {
   try {
     const { message, scanContext } = req.body;
@@ -223,9 +238,7 @@ app.post('/api/assistant', async (req, res) => {
   }
 });
 
-// ==========================================
-// REAL-TIME ADMIN ENDPOINTS
-// ==========================================
+// Admin Endpoints
 app.post('/api/admin/unlock', async (req, res) => {
   try {
     const { password } = req.body;
@@ -280,7 +293,7 @@ app.get('/api/admin/health', async (req, res) => {
     success: true,
     health: [
       { service: 'Node.js Express Backend', latency, uptime: '99.99%', status: 'Operational' },
-      { service: 'MongoDB Database Cluster', latency, uptime: '100%', status: dbStatus },
+      { service: 'MongoDB Atlas Cluster', latency, uptime: '100%', status: dbStatus },
       { service: 'Firebase Auth Service', latency: '24ms', uptime: '100%', status: 'Operational' },
       { service: 'Python FastAPI ML Engine', latency: '88ms', uptime: '99.90%', status: 'Operational' }
     ]
@@ -305,13 +318,6 @@ app.patch('/api/admin/comments/:id/review', async (req, res) => {
   }
 });
 
-const announcementSchema = mongoose.models.Announcement || new mongoose.Schema({
-  title: String,
-  message: String,
-  createdAt: { type: Date, default: Date.now }
-});
-const Announcement = mongoose.models.Announcement || mongoose.model('Announcement', announcementSchema);
-
 app.post('/api/admin/announcements', async (req, res) => {
   try {
     const { title, message } = req.body;
@@ -323,16 +329,12 @@ app.post('/api/admin/announcements', async (req, res) => {
   }
 });
 
-const adConfigSchema = mongoose.models.AdConfig || new mongoose.Schema({
-  label: String,
-  url: String,
-  enabled: { type: Boolean, default: true }
-});
-const AdConfig = mongoose.models.AdConfig || mongoose.model('AdConfig', adConfigSchema);
-
 app.get('/api/admin/ad-config', async (req, res) => {
   try {
-    const config = await AdConfig.findOne() || { label: "Upgrade to Pro", url: "https://webshield.ai/pro", enabled: true };
+    let config = await AdConfig.findOne();
+    if (!config) {
+      config = await AdConfig.create({ label: "Upgrade to Pro", url: "https://webshield.ai/pro", enabled: true });
+    }
     res.json({ success: true, config });
   } catch (e) {
     res.json({ success: true, config: { label: "Upgrade to Pro", url: "https://webshield.ai/pro", enabled: true } });
@@ -358,5 +360,5 @@ app.put('/api/admin/ad-config', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`WebShield Backend running on port ${PORT}`);
+  console.log(`WebShield Backend running on port ${PORT} connected to MongoDB.`);
 });
