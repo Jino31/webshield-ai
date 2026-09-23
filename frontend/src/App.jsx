@@ -12,8 +12,8 @@ import ScanTrends from './pages/ScanTrends';
 import Admin from './pages/Admin';
 import About from './pages/About';
 import Feedback from './pages/Feedback';
-// Import your existing ShieldSense AI floating assistant component:
-import ShieldSenseAI from './components/ShieldSenseAI'; // Adjust path if located elsewhere (e.g. ./components/ShieldAI or similar)
+// Corrected import path pointing to ShieldAIBot.jsx
+import ShieldSenseAI from './components/ShieldAIBot';
 
 function AppContent() {
   const { isDark } = useTheme();
