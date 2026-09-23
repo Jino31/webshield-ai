@@ -13,15 +13,24 @@ export default function Home() {
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState('');
   
-  // 3-second Intro Animation State
-  const [showSplash, setShowSplash] = useState(true);
+  // 3-second Intro Animation State (Only triggers once per session entry)
+  const [showSplash, setShowSplash] = useState(() => {
+    const hasVisited = sessionStorage.getItem('webshield_visited');
+    if (!hasVisited) {
+      sessionStorage.setItem('webshield_visited', 'true');
+      return true;
+    }
+    return false;
+  });
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (showSplash) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash]);
 
   // Strict URL validation helper
   const isValidUrl = (string) => {
@@ -118,7 +127,7 @@ export default function Home() {
     }
   };
 
-  // 3-Second Welcome Splash Screen Overlay
+  // 3-Second Welcome Splash Screen Overlay (Only shown on initial app entry, without ShieldSense mentions)
   if (showSplash) {
     return (
       <div className={`fixed inset-0 z-50 flex flex-col items-center justify-center transition-opacity duration-1000 ${
@@ -126,7 +135,7 @@ export default function Home() {
       }`}>
         <div className="absolute top-1/3 w-[400px] h-[400px] rounded-full bg-[#8B5CF6]/20 blur-[120px] pointer-events-none" />
         <div className="relative z-10 flex flex-col items-center animate-pulse">
-          <div className="w-24 h-24 rounded-2xl flex items-center justify-center overflow-hidden mb-6 shadow-2xl shadow-purple-900/50 border border-[#8B5CF6]/30">
+          <div className="w-24 h-24 rounded-2xl flex items-center justify-center overflow-hidden mb-6 shadow-2xl shadow-purple-900/50">
             <img src="/logo.png" alt="WebShield AI Logo" className="w-full h-full object-cover scale-150" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">
