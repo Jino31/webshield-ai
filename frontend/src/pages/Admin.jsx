@@ -20,13 +20,8 @@ import {
   RefreshCw,
   CheckCircle2,
   ArrowLeft,
-  Sun,
-  Moon,
-  Sparkles,
   Lock,
   LogOut,
-  Palette,
-  ChevronDown,
   Send
 } from 'lucide-react';
 
@@ -44,10 +39,9 @@ export default function Admin() {
   const [unlocking, setUnlocking] = useState(false);
   const [showWelcomeAnimation, setShowWelcomeAnimation] = useState(false);
 
-  // UI States (6 Tabs & Theme Dropdown)
+  // UI States (6 Tabs)
   const [activeTab, setActiveTab] = useState('dashboard');
-  const { theme, setTheme } = useTheme();
-  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+  const { theme } = useTheme();
 
   // Telemetry Data
   const [stats, setStats] = useState(null);
@@ -88,7 +82,7 @@ export default function Admin() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Unlock handler with 3-second Welcome Animation
+  // Unlock handler with Luxury Welcome Animation
   const handleUnlock = async (e) => {
     e.preventDefault();
     setPasswordError('');
@@ -168,24 +162,29 @@ export default function Admin() {
     );
   }
 
-  // 3-Second Welcome Animation Screen
+  // Upgraded Luxury Welcome Animation Screen
   if (showWelcomeAnimation) {
     return (
-      <div className="fixed inset-0 w-screen h-screen bg-[#05070A] text-white flex flex-col items-center justify-center z-50 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#8B5CF6]/10 via-transparent to-[#EC4899]/10 animate-pulse pointer-events-none" />
-        <div className="flex flex-col items-center space-y-6 text-center relative z-10 animate-fadeIn">
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-[#8B5CF6] to-[#EC4899] p-0.5 shadow-2xl shadow-purple-900/50 flex items-center justify-center">
-            <div className="w-full h-full bg-[#0D1117] rounded-[22px] flex items-center justify-center text-[#8B5CF6]">
-              <ShieldCheck className="w-10 h-10 animate-bounce" />
+      <div className="fixed inset-0 w-screen h-screen bg-[#07070B] text-white flex flex-col items-center justify-center z-50 overflow-hidden">
+        {/* Ambient Luxury Gradient Orbs */}
+        <div className="absolute w-[600px] h-[600px] bg-gradient-to-tr from-[#8B5CF6]/20 via-[#EC4899]/15 to-transparent rounded-full blur-[160px] animate-pulse pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.08)_0,transparent_75%)] pointer-events-none" />
+
+        {/* Luxury Glassmorphic Card Container */}
+        <div className="relative z-10 flex flex-col items-center p-12 rounded-[32px] bg-[#12111A]/60 border border-white/10 backdrop-blur-2xl shadow-[0_0_100px_rgba(139,92,246,0.25)] animate-fadeIn">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] blur-2xl rounded-full opacity-70 animate-pulse" />
+            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#1A1829] to-[#0A0A0F] flex items-center justify-center p-3 shadow-2xl relative z-10 border border-purple-400/30 text-[#8B5CF6]">
+              <ShieldCheck className="w-12 h-12 animate-bounce" />
             </div>
           </div>
-          <div className="space-y-2">
-            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-purple-200 to-[#C4B5FD] bg-clip-text text-transparent">
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-purple-200 to-[#C4B5FD] bg-clip-text text-transparent drop-shadow-md">
               Welcome You Admin
             </h1>
-            <p className="text-xs text-neutral-400 tracking-widest uppercase">Initializing WebShield Security Center...</p>
+            <p className="text-neutral-400 text-xs font-mono uppercase tracking-[0.25em]">Initializing WebShield Security Center...</p>
           </div>
-          <div className="w-48 h-1.5 bg-neutral-800 rounded-full overflow-hidden mt-4">
+          <div className="w-48 h-1.5 bg-neutral-800 rounded-full overflow-hidden mt-6">
             <div className="w-full h-full bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] animate-[shimmer_1.5s_infinite]" />
           </div>
         </div>
@@ -266,7 +265,7 @@ export default function Admin() {
         </div>
       )}
 
-      {/* Header with Top-Left Back Button & Top-Right Theme Dropdown & Sign Out */}
+      {/* Header with Top-Left Back Button & Top-Right Sign Out (Theme dropdown buttons completely removed) */}
       <header className={`w-full h-16 border-b px-4 sm:px-6 flex items-center justify-between z-30 sticky top-0 backdrop-blur-xl ${theme === 'light' ? 'bg-white border-slate-300 text-slate-900 shadow-sm' : theme === 'unique' ? 'bg-[#120224]/95 border-fuchsia-500/40 shadow-lg shadow-fuchsia-950/50' : 'bg-[#0D1117]/90 border-neutral-800'}`}>
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/')} className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer ${theme === 'light' ? 'border-slate-300 bg-slate-100 text-slate-900 hover:bg-slate-200' : 'border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/30'}`}>
@@ -275,49 +274,7 @@ export default function Admin() {
           <span className={`font-bold text-sm tracking-tight ml-2 ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>WebShield Admin</span>
         </div>
 
-        {/* Right Corner Controls: Theme Dropdown & Sign Out */}
-        <div className="flex items-center gap-3 relative">
-          {/* Theme Dropdown Button */}
-          <div className="relative">
-            <button
-              onClick={() => setThemeDropdownOpen(v => !v)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer border ${
-                theme === 'unique'
-                  ? 'bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white border-fuchsia-400 shadow-lg shadow-fuchsia-500/40 animate-pulse'
-                  : theme === 'light'
-                  ? 'bg-slate-200 border-slate-300 text-slate-900 hover:bg-slate-300'
-                  : 'bg-black/20 border-neutral-700/50 text-neutral-200 hover:bg-neutral-800/40'
-              }`}
-            >
-              <Palette className="w-3.5 h-3.5" />
-              <span>Theme: <span className="capitalize">{theme}</span></span>
-              <ChevronDown className="w-3.5 h-3.5 opacity-70" />
-            </button>
-
-            {themeDropdownOpen && (
-              <div className={`absolute right-0 top-12 w-44 border rounded-2xl shadow-2xl p-2 z-50 space-y-1 ${cardTheme[theme]}`}>
-                <button
-                  onClick={() => { setTheme('light'); setThemeDropdownOpen(false); }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${theme === 'light' ? 'bg-purple-500/20 text-purple-700 font-bold' : 'hover:bg-neutral-800/20'}`}
-                >
-                  <Sun className="w-3.5 h-3.5" /> Light
-                </button>
-                <button
-                  onClick={() => { setTheme('dark'); setThemeDropdownOpen(false); }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${theme === 'dark' ? 'bg-[#8B5CF6]/30 text-[#C4B5FD] font-bold' : 'hover:bg-neutral-800/20'}`}
-                >
-                  <Moon className="w-3.5 h-3.5" /> Dark
-                </button>
-                <button
-                  onClick={() => { setTheme('unique'); setThemeDropdownOpen(false); }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${theme === 'unique' ? 'bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white shadow-md' : 'text-fuchsia-300 hover:bg-fuchsia-950/40'}`}
-                >
-                  <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '4s' }} /> Unique (Neon Glow)
-                </button>
-              </div>
-            )}
-          </div>
-
+        <div className="flex items-center gap-3">
           <button onClick={() => signOut(auth).then(() => navigate('/'))} className={`flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border transition cursor-pointer ${theme === 'light' ? 'border-rose-300 text-rose-700 bg-rose-50 hover:bg-rose-100' : 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10'}`}>
             <LogOut className="w-3.5 h-3.5" /> Sign Out
           </button>
@@ -326,7 +283,7 @@ export default function Admin() {
 
       {/* Main Layout Area */}
       <div className="flex-1 flex flex-col md:flex-row">
-        {/* Sidebar - 6 Requested Buttons */}
+        {/* Sidebar - 6 Navigation Tabs */}
         <aside className={`w-64 border-r p-4 flex flex-col gap-1.5 ${theme === 'light' ? 'bg-slate-50 border-slate-300' : theme === 'unique' ? 'bg-[#0E021A] border-fuchsia-500/30' : 'bg-[#0D1117] border-neutral-800'}`}>
           <div className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Navigation Console</div>
           {[
@@ -479,7 +436,6 @@ export default function Admin() {
                       <h1 className={`text-2xl font-extrabold tracking-tight ${theme === 'light' ? 'text-slate-950' : 'text-white'}`}>User Comment Receiver</h1>
                       <p className={`text-xs font-medium mt-1 ${theme === 'light' ? 'text-slate-600' : 'text-neutral-400'}`}>Review and manage incoming user feedback messages.</p>
                     </div>
-                    {/* New Feedback Action Button */}
                     <button onClick={() => showToast('Feedback inbox is synchronized in real-time.')} className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-xs font-bold rounded-xl shadow-lg hover:opacity-90 transition cursor-pointer">
                       <Send className="w-3.5 h-3.5" /> Feedback Inbox ({commentsList.length})
                     </button>
