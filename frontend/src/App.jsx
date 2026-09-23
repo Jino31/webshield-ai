@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import Navbar from './components/Navbar';
@@ -12,13 +12,24 @@ import ScanTrends from './pages/ScanTrends';
 import Admin from './pages/Admin';
 import About from './pages/About';
 import Feedback from './pages/Feedback';
-// Corrected import path pointing to ShieldAIBot.jsx
 import ShieldSenseAI from './components/ShieldAIBot';
-// Import Entry Animation component (if needed globally, or handled directly inside Home.jsx)
-import EntryAnimation from './components/EntryAnimation';
 
 function AppContent() {
   const { isDark } = useTheme();
+  
+  // Track introductory animation state globally in App so the bot respects it
+  const [showIntro, setShowIntro] = useState(() => {
+    return !sessionStorage.getItem('webshield_intro_played');
+  });
+
+  useEffect(() => {
+    if (showIntro) {
+      const timer = setTimeout(() => {
+        setShowIntro(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showIntro]);
 
   return (
     <div 
@@ -44,8 +55,8 @@ function AppContent() {
         </Routes>
       </main>
 
-      {/* Global Floating ShieldSense AI Assistant available across all pages */}
-      <ShieldSenseAI />
+      {/* Global Floating ShieldSense AI Assistant - hidden while intro animation runs */}
+      {!showIntro && <ShieldSenseAI />}
     </div>
   );
 }
@@ -60,4 +71,4 @@ function App() {
   );
 }
 
-export default App;
+default export App;
