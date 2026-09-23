@@ -127,13 +127,14 @@ export default function Hero3DShield() {
             <div className="absolute inset-1.5 bg-gradient-to-b from-[#1A1528] to-[#0A0A0F] rounded-[36px] flex items-center justify-center [clip-path:polygon(50%_0%,100%_15%,100%_75%,50%_100%,0%_75%,0%_15%)] border border-purple-500/40">
               
               {/* Deep Inner Core Dark Plate */}
-              <div className="absolute w-[82%] h-[82%] bg-[#0A0A0F] rounded-[28px] border border-purple-400/30 flex items-center justify-center [clip-path:polygon(50%_0%,100%_15%,100%_75%,50%_100%,0%_75%,0%_15%)] shadow-inner">
+              <div className="absolute w-[84%] h-[84%] bg-[#0A0A0F] rounded-[28px] border border-purple-400/30 flex items-center justify-center p-3 [clip-path:polygon(50%_0%,100%_15%,100%_75%,50%_100%,0%_75%,0%_15%)] shadow-inner">
                 
-                {/* WS Typography with Precision Gradient */}
-                <div className="flex items-center font-black text-5xl sm:text-6xl tracking-tighter drop-shadow-[0_0_25px_rgba(139,92,246,0.95)]">
-                  <span className="text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.5)]">W</span>
-                  <span className="bg-gradient-to-r from-purple-400 via-purple-300 to-pink-500 bg-clip-text text-transparent ml-0.5">S</span>
-                </div>
+                {/* Replaced Text with Current Logo Image Asset */}
+                <img 
+                  src="/logo.png" 
+                  alt="WebShield AI Logo" 
+                  className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(139,92,246,0.85)] filter brightness-110" 
+                />
               </div>
             </div>
 
