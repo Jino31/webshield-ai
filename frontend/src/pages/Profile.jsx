@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { onAuthStateChanged, signOut, updateProfile, updateEmail } from 'firebase/auth';
+import {
+  onAuthStateChanged,
+  signOut,
+  updateProfile,
+  verifyBeforeUpdateEmail,
+} from 'firebase/auth';
 import { auth } from '../firebase';
-import { 
-  ArrowLeft, 
-  ShieldCheck, 
-  Mail, 
-  LogOut, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Loader2, 
+import {
+  ArrowLeft,
+  ShieldCheck,
+  Mail,
+  LogOut,
+  CheckCircle2,
+  AlertTriangle,
+  Loader2,
   Activity,
   Edit3,
   Calendar,
@@ -17,14 +22,30 @@ import {
   User,
   Image as ImageIcon,
   Save,
-  X
+  X,
+  Copy,
+  Check,
+  ScanSearch,
+  ShieldAlert,
+  ShieldX,
 } from 'lucide-react';
+
+// If you track scan history in Firestore/your backend, wire this up to a real
+// fetch (e.g. getUserStats(user.uid)) and replace the placeholder below.
+async function fetchUserSecurityStats(/* uid */) {
+  return {
+    totalScans: 0,
+    threatsFlagged: 0,
+    safeSites: 0,
+  };
+}
 
 export default function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [copiedUid, setCopiedUid] = useState(false);
 
   // Edit Mode States
   const [isEditing, setIsEditing] = useState(false);
@@ -32,6 +53,11 @@ export default function Profile() {
   const [editEmail, setEditEmail] = useState('');
   const [editPhotoUrl, setEditPhotoUrl] = useState('');
   const [saveStatus, setSaveStatus] = useState({ loading: false, error: '', success: '' });
+  const [pendingEmail, setPendingEmail] = useState('');
+
+  // Product stats
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   // Real-time synchronization of Firebase Auth state
   useEffect(() => {
@@ -45,6 +71,25 @@ export default function Profile() {
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    setStatsLoading(true);
+    fetchUserSecurityStats(user.uid)
+      .then((data) => {
+        if (!cancelled) setStats(data);
+      })
+      .catch(() => {
+        if (!cancelled) setStats({ totalScans: 0, threatsFlagged: 0, safeSites: 0 });
+      })
+      .finally(() => {
+        if (!cancelled) setStatsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const handleSignOut = async () => {
     if (isSigningOut) return;
@@ -63,58 +108,84 @@ export default function Profile() {
     setEditEmail(user.email || '');
     setEditPhotoUrl(user.photoURL || '');
     setSaveStatus({ loading: false, error: '', success: '' });
+    setPendingEmail('');
     setIsEditing(true);
+  };
+
+  const mapAuthError = (err) => {
+    switch (err.code) {
+      case 'auth/requires-recent-login':
+        return 'For security, please log out and log back in, then try again.';
+      case 'auth/invalid-email':
+        return 'The email address is improperly formatted.';
+      case 'auth/email-already-in-use':
+        return 'This email is already in use by another account.';
+      case 'auth/operation-not-allowed':
+        return 'Email changes are currently disabled for this project.';
+      case 'auth/invalid-profile-attribute':
+        return 'The avatar URL or name entered is invalid.';
+      default:
+        return 'Failed to update profile. Please try again.';
+    }
   };
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSaveStatus({ loading: true, error: '', success: '' });
 
+    const nameOrPhotoChanged =
+      editName !== (user.displayName || '') || editPhotoUrl !== (user.photoURL || '');
+    const emailChanged = editEmail !== (user.email || '');
+
     try {
-      const promises = [];
-      let profileNeedsUpdate = false;
-
-      // Check if Name or Avatar changed
-      if (editName !== user.displayName || editPhotoUrl !== user.photoURL) {
-        promises.push(updateProfile(auth.currentUser, { 
-          displayName: editName, 
-          photoURL: editPhotoUrl 
-        }));
-        profileNeedsUpdate = true;
-      }
-
-      // Check if Email changed
-      if (editEmail !== user.email) {
-        promises.push(updateEmail(auth.currentUser, editEmail));
-      }
-
-      await Promise.all(promises);
-
-      if (profileNeedsUpdate) {
-        // Force refresh local user object to show updated avatar/name immediately
+      // 1. Name / avatar — safe to update directly, no re-auth needed.
+      if (nameOrPhotoChanged) {
+        await updateProfile(auth.currentUser, {
+          displayName: editName,
+          photoURL: editPhotoUrl,
+        });
         await auth.currentUser.reload();
         setUser({ ...auth.currentUser });
       }
 
-      setSaveStatus({ loading: false, error: '', success: 'Profile updated successfully!' });
-      
-      // Close edit mode after 1.5 seconds on success
-      setTimeout(() => {
-        setIsEditing(false);
-        setSaveStatus({ loading: false, error: '', success: '' });
-      }, 1500);
+      // 2. Email — modern Firebase requires verifying the NEW address before
+      //    it takes effect. This does not change user.email immediately;
+      //    it sends a confirmation link to editEmail.
+      if (emailChanged) {
+        await verifyBeforeUpdateEmail(auth.currentUser, editEmail);
+        setPendingEmail(editEmail);
+      }
 
+      const successMsg = emailChanged
+        ? nameOrPhotoChanged
+          ? 'Profile updated. Check your new inbox to confirm the email change.'
+          : `Verification link sent to ${editEmail}. Your email updates once confirmed.`
+        : 'Profile updated successfully!';
+
+      setSaveStatus({ loading: false, error: '', success: successMsg });
+
+      // Keep the form open longer when an email confirmation is pending,
+      // since the user needs to read that message.
+      setTimeout(
+        () => {
+          setIsEditing(false);
+          setSaveStatus({ loading: false, error: '', success: '' });
+        },
+        emailChanged ? 3500 : 1500
+      );
     } catch (err) {
       console.error(err);
-      let errorMsg = 'Failed to update profile. Please try again.';
-      if (err.code === 'auth/requires-recent-login') {
-        errorMsg = 'For security, please log out and log back in to change your email.';
-      } else if (err.code === 'auth/invalid-email') {
-        errorMsg = 'The email address is improperly formatted.';
-      } else if (err.code === 'auth/email-already-in-use') {
-        errorMsg = 'This email is already in use by another account.';
-      }
-      setSaveStatus({ loading: false, error: errorMsg, success: '' });
+      setSaveStatus({ loading: false, error: mapAuthError(err), success: '' });
+    }
+  };
+
+  const handleCopyUid = async () => {
+    try {
+      await navigator.clipboard.writeText(user.uid);
+      setCopiedUid(true);
+      setTimeout(() => setCopiedUid(false), 1500);
+    } catch (err) {
+      console.error('Copy failed:', err);
     }
   };
 
@@ -122,7 +193,7 @@ export default function Profile() {
   const formatLocalDate = (timestamp) => {
     if (!timestamp) return 'Not available';
     try {
-      const date = new Date(Number(timestamp));
+      const date = new Date(timestamp);
       if (isNaN(date.getTime())) return timestamp;
       return date.toLocaleString(undefined, {
         day: 'numeric',
@@ -130,7 +201,7 @@ export default function Profile() {
         year: 'numeric',
         hour: 'numeric',
         minute: '2-digit',
-        hour12: true
+        hour12: true,
       });
     } catch {
       return timestamp;
@@ -159,9 +230,29 @@ export default function Profile() {
   const displayName = user.displayName || 'WebShield User';
   const email = user.email || 'No email provided';
 
+  const statCards = [
+    {
+      label: 'Sites Scanned',
+      value: stats?.totalScans ?? 0,
+      icon: ScanSearch,
+      color: '#8B5CF6',
+    },
+    {
+      label: 'Threats Flagged',
+      value: stats?.threatsFlagged ?? 0,
+      icon: ShieldX,
+      color: '#F43F5E',
+    },
+    {
+      label: 'Confirmed Safe',
+      value: stats?.safeSites ?? 0,
+      icon: ShieldCheck,
+      color: '#10B981',
+    },
+  ];
+
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center px-4 sm:px-8 lg:px-16 py-12 bg-[#05070A] text-[#FAFAFA] overflow-x-hidden">
-      
       {/* Absolute Top-Left Back Button */}
       <div className="absolute top-6 left-6 z-50">
         <button
@@ -178,38 +269,57 @@ export default function Profile() {
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#EC4899]/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-4xl flex flex-col gap-6 mt-8">
-        
         {/* Profile Container */}
         <div className="w-full bg-[#0D1117]/90 backdrop-blur-xl border border-neutral-800 rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8">
-          
           {/* Profile Header & Edit Profile Button */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-8 border-b border-neutral-800">
             <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
               <div className="relative">
-                {user.photoURL ? (
-                  <img 
-                    src={user.photoURL} 
-                    alt={`${displayName}'s avatar`} 
-                    className="w-24 h-24 rounded-2xl object-cover border-2 border-[#8B5CF6]/40 shadow-lg shadow-purple-950/50" 
+                {(isEditing ? editPhotoUrl : user.photoURL) ? (
+                  <img
+                    src={isEditing ? editPhotoUrl : user.photoURL}
+                    alt={`${displayName}'s avatar`}
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                    className="w-24 h-24 rounded-2xl object-cover border-2 border-[#8B5CF6]/40 shadow-lg shadow-purple-950/50"
                   />
                 ) : (
                   <div className="w-24 h-24 rounded-2xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6] font-bold text-2xl shadow-lg shadow-purple-950/50">
                     {getInitials(displayName, email)}
                   </div>
                 )}
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-[#0D1117] flex items-center justify-center" title="Active Account">
+                <div
+                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-[#0D1117] flex items-center justify-center"
+                  title="Active Account"
+                >
                   <span className="w-2 h-2 bg-black rounded-full"></span>
                 </div>
               </div>
 
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{displayName}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                  {displayName}
+                </h1>
                 <p className="text-xs sm:text-sm text-neutral-400 mt-1">{email}</p>
-                
+
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-3">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Account Status: Active ({user.emailVerified ? 'Verified' : 'Unverified'})
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Account Status: Active (
+                    {user.emailVerified ? 'Verified' : 'Unverified'})
                   </span>
+                  <button
+                    onClick={handleCopyUid}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-800/60 border border-neutral-700 text-neutral-400 hover:text-neutral-200 text-xs font-semibold transition cursor-pointer"
+                    title={user.uid}
+                  >
+                    {copiedUid ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                    {copiedUid ? 'Copied' : 'Copy User ID'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -224,9 +334,46 @@ export default function Profile() {
             )}
           </div>
 
+          {/* Security Stats — product-specific, fits a fake-website detector */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-semibold text-[#8B5CF6] uppercase tracking-wider">
+              Detection Activity
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {statCards.map(({ label, value, icon: Icon, color }) => (
+                <div
+                  key={label}
+                  className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl flex items-center gap-3.5"
+                >
+                  <div
+                    className="p-2.5 rounded-xl shrink-0"
+                    style={{ backgroundColor: `${color}1A`, color }}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium">
+                      {label}
+                    </span>
+                    <span className="text-lg font-bold text-white block leading-tight">
+                      {statsLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-neutral-600" />
+                      ) : (
+                        value.toLocaleString()
+                      )}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* EDIT FORM (Visible only when isEditing is true) */}
           {isEditing ? (
-            <form onSubmit={handleSaveProfile} className="space-y-5 bg-[#05070A] p-6 rounded-2xl border border-neutral-800 animate-fadeIn">
+            <form
+              onSubmit={handleSaveProfile}
+              className="space-y-5 bg-[#05070A] p-6 rounded-2xl border border-neutral-800 animate-fadeIn"
+            >
               <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
                 <Edit3 className="w-4 h-4 text-[#8B5CF6]" /> Update Profile Details
               </h3>
@@ -241,14 +388,23 @@ export default function Profile() {
                   <CheckCircle2 className="w-4 h-4 shrink-0" /> {saveStatus.success}
                 </div>
               )}
+              {pendingEmail && !saveStatus.error && (
+                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 shrink-0" /> Your email stays{' '}
+                  <strong className="font-semibold">{user.email}</strong> until you confirm the
+                  link sent to {pendingEmail}.
+                </div>
+              )}
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-400 mb-1.5">Profile Avatar URL (Optional)</label>
+                  <label className="block text-xs font-semibold text-neutral-400 mb-1.5">
+                    Profile Avatar URL (Optional)
+                  </label>
                   <div className="relative">
                     <ImageIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-                    <input 
-                      type="url" 
+                    <input
+                      type="url"
                       value={editPhotoUrl}
                       onChange={(e) => setEditPhotoUrl(e.target.value)}
                       placeholder="https://example.com/your-image.png"
@@ -258,11 +414,13 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-400 mb-1.5">Full Name</label>
+                  <label className="block text-xs font-semibold text-neutral-400 mb-1.5">
+                    Full Name
+                  </label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       required
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
@@ -273,11 +431,13 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-400 mb-1.5">Email Address</label>
+                  <label className="block text-xs font-semibold text-neutral-400 mb-1.5">
+                    Email Address
+                  </label>
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       required
                       value={editEmail}
                       onChange={(e) => setEditEmail(e.target.value)}
@@ -285,6 +445,12 @@ export default function Profile() {
                       className="w-full bg-[#13111C] border border-neutral-800 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-[#8B5CF6] transition-colors"
                     />
                   </div>
+                  {editEmail !== (user.email || '') && (
+                    <p className="text-[11px] text-neutral-500 mt-1.5">
+                      We'll send a verification link to the new address — your login email
+                      won't change until you confirm it.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -302,7 +468,11 @@ export default function Profile() {
                   disabled={saveStatus.loading}
                   className="px-4 py-2.5 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-semibold transition flex items-center gap-2 cursor-pointer shadow-lg disabled:opacity-50"
                 >
-                  {saveStatus.loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  {saveStatus.loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
                   Save Changes
                 </button>
               </div>
@@ -315,13 +485,14 @@ export default function Profile() {
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
                 <div className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl flex items-start gap-3.5">
                   <div className="p-2.5 rounded-xl bg-[#8B5CF6]/10 text-[#8B5CF6] mt-0.5">
                     <Calendar className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium">Member Since</span>
+                    <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium">
+                      Member Since
+                    </span>
                     <span className="text-xs font-semibold text-white mt-0.5 block">
                       {formatLocalDate(user.metadata?.creationTime)}
                     </span>
@@ -333,7 +504,9 @@ export default function Profile() {
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium">Last Logged In</span>
+                    <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium">
+                      Last Logged In
+                    </span>
                     <span className="text-xs font-semibold text-white mt-0.5 block">
                       {formatLocalDate(user.metadata?.lastSignInTime)}
                     </span>
@@ -341,15 +514,28 @@ export default function Profile() {
                 </div>
 
                 <div className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl">
-                  <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium mb-1">Full Name</span>
+                  <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium mb-1">
+                    Full Name
+                  </span>
                   <span className="text-xs font-semibold text-white">{displayName}</span>
                 </div>
 
                 <div className="p-4 bg-[#05070A] border border-neutral-800 rounded-2xl">
-                  <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium mb-1">Email Address</span>
-                  <span className="text-xs font-semibold text-white">{email}</span>
+                  <span className="text-neutral-500 text-[11px] uppercase tracking-wider block font-medium mb-1">
+                    Email Address
+                  </span>
+                  <span className="text-xs font-semibold text-white flex items-center gap-2">
+                    {email}
+                    {!user.emailVerified && (
+                      <span
+                        className="inline-flex items-center gap-1 text-amber-400 text-[10px] font-semibold"
+                        title="Email not verified"
+                      >
+                        <AlertTriangle className="w-3 h-3" /> Unverified
+                      </span>
+                    )}
+                  </span>
                 </div>
-
               </div>
             </div>
           )}
@@ -373,7 +559,6 @@ export default function Profile() {
               )}
             </button>
           </div>
-
         </div>
       </div>
     </div>
