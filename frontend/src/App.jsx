@@ -31,7 +31,7 @@ function AppContent() {
     if (showIntro) {
       const timer = setTimeout(() => {
         setShowIntro(false);
-      }, 2500); // Adjusted total duration to match smoother fade
+      }, 2800); // Perfectly timed for luxury pacing
       return () => clearTimeout(timer);
     }
   }, [showIntro]);
@@ -42,22 +42,40 @@ function AppContent() {
         isDark ? 'bg-[#0A0A0F] text-[#FAFAFA]' : 'bg-[#F8FAFC] text-[#0F172A]'
       }`}
     >
-      {/* 3-Second Global Cinematic Intro Overlay */}
+      {/* 3-Second Luxury Cinematic Intro Overlay */}
       {showIntro && (
-        <div className="fixed inset-0 z-[200] bg-[#0A0A0F] flex flex-col items-center justify-center animate-fadeOut">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.15)_0,transparent_70%)] pointer-events-none" />
-          <div className="relative flex flex-col items-center space-y-4 animate-cinematicReveal">
-            <div className="relative">
-              <div className="absolute inset-0 bg-[#8B5CF6]/50 blur-3xl rounded-full animate-pulse" />
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#EC4899] flex items-center justify-center text-white text-3xl shadow-[0_0_40px_rgba(139,92,246,0.8)] relative z-10 border border-purple-400/40">
-                🛡️
+        <div className="fixed inset-0 z-[200] bg-[#07070B] flex flex-col items-center justify-center animate-luxuryFadeOut overflow-hidden">
+          {/* Ambient Luxury Gradient Orbs */}
+          <div className="absolute w-[600px] h-[600px] bg-gradient-to-tr from-[#8B5CF6]/20 via-[#EC4899]/15 to-transparent rounded-full blur-[160px] animate-pulse pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.08)_0,transparent_75%)] pointer-events-none" />
+
+          {/* Luxury Glassmorphic Card Container */}
+          <div className="relative z-10 flex flex-col items-center p-12 rounded-[32px] bg-[#12111A]/60 border border-white/10 backdrop-blur-2xl shadow-[0_0_100px_rgba(139,92,246,0.25)] animate-luxuryReveal">
+            
+            {/* Glowing Shield Icon with Metallic Border Effect */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] blur-2xl rounded-full opacity-70 animate-pulse" />
+              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#1A1829] to-[#0A0A0F] flex items-center justify-center text-4xl shadow-2xl relative z-10 border border-purple-400/30">
+                <span className="bg-gradient-to-r from-white via-purple-200 to-pink-300 bg-clip-text text-transparent drop-shadow-md">🛡️</span>
               </div>
             </div>
-            <div className="flex items-center font-extrabold text-3xl md:text-5xl tracking-tighter">
-              <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.4)]">WebShield</span>
-              <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent ml-2">AI</span>
+
+            {/* Typography with Luxury Letter Spacing */}
+            <div className="flex items-center font-extrabold text-3xl md:text-5xl tracking-tight">
+              <span className="text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">WebShield</span>
+              <span className="bg-gradient-to-r from-[#8B5CF6] via-purple-400 to-[#EC4899] bg-clip-text text-transparent ml-2.5 drop-shadow-[0_0_30px_rgba(139,92,246,0.6)]">AI</span>
             </div>
-            <p className="text-neutral-400 text-xs font-mono uppercase tracking-widest mt-2 animate-pulse">Initializing Threat Intelligence Core...</p>
+
+            {/* Subtitle / Loader Text */}
+            <div className="mt-4 flex items-center space-x-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] animate-ping" />
+              <p className="text-neutral-400 text-[11px] font-mono uppercase tracking-[0.25em] text-center">
+                Establishing Secure Vault Environment...
+              </p>
+            </div>
+
+            {/* High-End Scanning Beam Line */}
+            <div className="w-48 h-[2px] bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent mt-6 animate-pulse" />
           </div>
         </div>
       )}
@@ -83,26 +101,26 @@ function AppContent() {
       {/* Global Floating ShieldSense AI Assistant - hidden while intro animation runs */}
       {!showIntro && <ShieldSenseAI />}
 
-      {/* Updated Animation Keyframes with smooth fade out */}
+      {/* High-End Luxury Keyframes & Transitions */}
       <style>{`
-        @keyframes fadeOut {
+        @keyframes luxuryFadeOut {
           0% { opacity: 1; pointer-events: auto; }
-          70% { opacity: 1; }
+          75% { opacity: 1; }
           100% { opacity: 0; pointer-events: none; }
         }
-        .animate-fadeOut {
-          animation: fadeOut 0.6s ease-in-out 1.9s forwards;
+        .animate-luxuryFadeOut {
+          animation: luxuryFadeOut 0.7s cubic-bezier(0.16, 1, 0.3, 1) 2.1s forwards;
         }
 
-        @keyframes cinematicReveal {
+        @keyframes luxuryReveal {
           0% {
             opacity: 0;
-            transform: scale(0.7) translateY(20px);
-            filter: blur(10px);
+            transform: scale(0.85) translateY(30px);
+            filter: blur(16px);
           }
-          50% {
+          60% {
             opacity: 1;
-            transform: scale(1.05) translateY(0);
+            transform: scale(1.02) translateY(0);
             filter: blur(0px);
           }
           100% {
@@ -111,8 +129,8 @@ function AppContent() {
             filter: blur(0px);
           }
         }
-        .animate-cinematicReveal {
-          animation: cinematicReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .animate-luxuryReveal {
+          animation: luxuryReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
     </div>
