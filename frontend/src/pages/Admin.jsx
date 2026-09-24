@@ -42,8 +42,7 @@ import {
   AlertCircle,
   Shield,
   Heart,
-  Code,
-  Globe
+  Code
 } from 'lucide-react';
 
 export default function Admin() {
@@ -197,12 +196,17 @@ export default function Admin() {
       setLoadingData(false);
     } catch (err) {
       console.error('Error fetching admin telemetry:', err);
-      setErrorData('Telemetry stream disconnected from cluster nodes.');
+      if (isSilent) {
+        // Don't blow away an already-loaded dashboard on a background poll failure.
+        showToast('Background sync failed — will retry on next heartbeat.');
+      } else {
+        setErrorData('Telemetry stream disconnected from cluster nodes.');
+      }
       setLoadingData(false);
     } finally {
       if (!isSilent) setIsRefreshing(false);
     }
-  }, [adminUnlocked]);
+  }, [adminUnlocked, showToast]);
 
   // Initial load and live 15s polling
   useEffect(() => {
@@ -722,7 +726,7 @@ export default function Admin() {
                       <p className="text-3xl font-extrabold tracking-tight mt-3 text-[#FAFAFA]">{stats?.totalUsers ?? 0}</p>
                       <div className="mt-2 flex items-center justify-between text-[11px] font-mono text-[#A1A1AA]">
                         <span className="text-emerald-400">{stats?.activeUsers ?? 0} Active</span>
-                        <span>{stats?.totalUsers - (stats?.activeUsers ?? 0)} Inactive</span>
+                        <span>{Math.max(0, (stats?.totalUsers ?? 0) - (stats?.activeUsers ?? 0))} Inactive</span>
                       </div>
                     </div>
 
