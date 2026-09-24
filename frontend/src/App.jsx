@@ -14,7 +14,7 @@ import Admin from './pages/Admin';
 import About from './pages/About';
 import Feedback from './pages/Feedback';
 import ShieldSenseAI from './components/ShieldAIBot';
-import CinematicIntroAnimation from './components/IntroAnimation';
+
 
 function AppContent() {
   const { isDark } = useTheme();
