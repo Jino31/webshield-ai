@@ -20,9 +20,11 @@ import {
   Moon,
   Mail,
   Smartphone,
-  Trash2,
+  Globe,
   Key,
-  Globe
+  ShieldAlert,
+  Terminal,
+  Database
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -130,7 +132,7 @@ export default function Settings() {
       localStorage.setItem('ws_userEmail', userEmail);
 
       setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      setTimeout(() => setSaved(false), 2500);
     } catch (err) {
       console.error('Error saving settings:', err);
       setError('Failed to persist settings to browser storage.');
@@ -163,22 +165,40 @@ export default function Settings() {
   };
 
   const navItems = [
-    { id: 'security', label: 'Security', icon: Shield },
+    { id: 'security', label: 'Security', icon: Shield, badge: 'Active' },
     { id: 'scanner', label: 'Scanner', icon: Search },
-    { id: 'appearance', label: 'Appearance & Theme', icon: Palette },
-    { id: 'ai', label: 'AI Detection', icon: Cpu },
+    { id: 'appearance', label: 'Appearance', icon: Palette },
+    { id: 'ai', label: 'AI Detection', icon: Cpu, badge: 'ML' },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'privacy', label: 'Privacy', icon: Lock },
-    { id: 'system', label: 'System', icon: SettingsIcon },
+    { id: 'system', label: 'System', icon: Server },
     { id: 'account', label: 'Account', icon: User },
   ];
 
+  // Reusable Switch Component for professional UX
+  const ToggleSwitch = ({ checked, onChange }) => (
+    <button
+      type="button"
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+        checked ? 'bg-[#22D3EE]' : 'bg-neutral-800'
+      }`}
+    >
+      <span
+        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-black shadow-lg ring-0 transition duration-200 ease-in-out ${
+          checked ? 'translate-x-5' : 'translate-x-0'
+        }`}
+      />
+    </button>
+  );
+
   return (
     <div className="relative min-h-[calc(100vh-73px)] w-full flex flex-col items-center px-4 sm:px-8 lg:px-12 py-10 bg-[#05070A] text-[#FAFAFA]">
-      {/* Background Subtle Cyber Glow */}
-      <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-[#22D3EE]/5 rounded-full blur-[160px] pointer-events-none" />
+      {/* Background Cyber Glows */}
+      <div className="absolute top-1/4 left-1/3 w-[600px] h-[600px] bg-[#22D3EE]/5 rounded-full blur-[180px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[140px] pointer-events-none" />
 
-      {/* Top Header Section */}
+      {/* Top Header Navigation Bar */}
       <div className="relative z-10 w-full max-w-5xl flex items-center justify-between mb-8">
         <button
           onClick={() => navigate(-1)}
@@ -186,19 +206,26 @@ export default function Settings() {
         >
           <ArrowLeft className="w-4 h-4 text-[#22D3EE]" /> Back
         </button>
-        <div className="flex items-center gap-2 text-neutral-400 text-xs font-mono">
-          <Activity className="w-4 h-4 text-[#22D3EE]" /> SecOps Console v2.6
+        <div className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#22D3EE]/10 border border-[#22D3EE]/20 text-[#22D3EE] text-[11px] font-mono">
+            <span className="w-2 h-2 rounded-full bg-[#22D3EE] animate-pulse" />
+            SecOps Node Online
+          </span>
         </div>
       </div>
 
       {/* Main Title & Subtitle */}
       <div className="relative z-10 w-full max-w-5xl mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-white mb-2">SETTINGS</h1>
-        <p className="text-neutral-400 text-sm">Configure your security, detection algorithms, and scanning preferences.</p>
+        <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2 flex items-center gap-3">
+          <SettingsIcon className="w-7 h-7 text-[#22D3EE]" />
+          SETTINGS & TELEMETRY
+        </h1>
+        <p className="text-neutral-400 text-sm">Fine-tune system security, neural inference parameters, and interface preferences.</p>
       </div>
 
       {error && (
-        <div className="w-full max-w-5xl mb-6 p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs font-mono">
+        <div className="w-full max-w-5xl mb-6 p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs font-mono flex items-center gap-2">
+          <ShieldAlert className="w-4 h-4 shrink-0" />
           {error}
         </div>
       )}
@@ -207,9 +234,9 @@ export default function Settings() {
       <div className="relative z-10 w-full max-w-5xl grid grid-cols-1 md:grid-cols-4 gap-6">
         
         {/* Left Navigation Sidebar */}
-        <div className="md:col-span-1 bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-3 h-fit backdrop-blur-xl shadow-xl">
+        <div className="md:col-span-1 bg-[#0D1117]/90 border border-neutral-800/80 rounded-2xl p-3 h-fit backdrop-blur-xl shadow-2xl">
           <div className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 px-3 py-2">
-            Settings Menu
+            Navigation Hub
           </div>
           <nav className="space-y-1">
             {navItems.map((item) => {
@@ -221,15 +248,22 @@ export default function Settings() {
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition cursor-pointer ${
                     isActive 
-                      ? 'bg-[#22D3EE]/10 text-[#22D3EE] border border-[#22D3EE]/20' 
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-900/60'
+                      ? 'bg-[#22D3EE]/10 text-[#22D3EE] border border-[#22D3EE]/25 shadow-sm' 
+                      : 'text-neutral-400 hover:text-white hover:bg-neutral-900/60 border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <IconComponent className={`w-4 h-4 ${isActive ? 'text-[#22D3EE]' : 'text-neutral-500'}`} />
-                    {item.label}
+                    <span>{item.label}</span>
                   </div>
-                  <ChevronRight className={`w-3.5 h-3.5 ${isActive ? 'text-[#22D3EE]' : 'text-neutral-700'}`} />
+                  <div className="flex items-center gap-1.5">
+                    {item.badge && (
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-400">
+                        {item.badge}
+                      </span>
+                    )}
+                    <ChevronRight className={`w-3.5 h-3.5 ${isActive ? 'text-[#22D3EE]' : 'text-neutral-700'}`} />
+                  </div>
                 </button>
               );
             })}
@@ -237,42 +271,34 @@ export default function Settings() {
         </div>
 
         {/* Right Content Panel */}
-        <div className="md:col-span-3 bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-xl">
+        <div className="md:col-span-3 bg-[#0D1117]/90 border border-neutral-800/80 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
           <form onSubmit={handleSave} className="space-y-8">
 
             {/* 1. SECURITY TAB VIEW */}
             {activeTab === 'security' && (
-              <div>
-                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                  <Shield className="w-4 h-4" /> Security & Protection
-                </h2>
-                <p className="text-xs text-neutral-400 mb-6">
-                  Manage active network interception, machine learning phishing models, and SSL certificate verification.
-                </p>
+              <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-1 flex items-center gap-2 font-mono">
+                    <Shield className="w-4 h-4" /> Security & Protection Protocols
+                  </h2>
+                  <p className="text-xs text-neutral-400">
+                    Manage real-time network interception, heuristic phishing filters, and TLS handshake checks.
+                  </p>
+                </div>
 
                 <div className="space-y-3">
                   {[
-                    { title: 'Real-time URL Protection', desc: 'Actively intercept and inspect links prior to navigation', state: realTimeProtection, setter: setRealTimeProtection },
-                    { title: 'Phishing Detection', desc: 'Machine learning heuristic evaluation for known spoof patterns', state: phishingDetection, setter: setPhishingDetection },
-                    { title: 'SSL Verification', desc: 'Inspect certificate authority validity and TLS handshake security', state: sslVerification, setter: setSslVerification },
-                    { title: 'Redirect Detection', desc: 'Monitor multi-hop redirects and chain obfuscation tactics', state: redirectDetection, setter: setRedirectDetection },
+                    { title: 'Real-time URL Protection', desc: 'Actively intercept and inspect links prior to browser navigation', state: realTimeProtection, setter: setRealTimeProtection },
+                    { title: 'Phishing Detection', desc: 'Machine learning heuristic evaluation for known zero-day spoof patterns', state: phishingDetection, setter: setPhishingDetection },
+                    { title: 'SSL Verification', desc: 'Inspect certificate authority validity and encrypted tunnel integrity', state: sslVerification, setter: setSslVerification },
+                    { title: 'Redirect Chain Detection', desc: 'Monitor multi-hop redirects and malicious URL obfuscation tactics', state: redirectDetection, setter: setRedirectDetection },
                   ].map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                      <div>
+                    <div key={idx} className="flex items-center justify-between p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl hover:border-neutral-700/80 transition">
+                      <div className="pr-4">
                         <h3 className="text-xs font-medium text-white">{item.title}</h3>
                         <p className="text-[11px] text-neutral-400 mt-0.5">{item.desc}</p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => item.setter(!item.state)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                          item.state 
-                            ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30 shadow-sm shadow-cyan-950/50' 
-                            : 'bg-neutral-900 text-neutral-500 border-neutral-800'
-                        }`}
-                      >
-                        {item.state ? 'ON' : 'OFF'}
-                      </button>
+                      <ToggleSwitch checked={item.state} onChange={item.setter} />
                     </div>
                   ))}
                 </div>
@@ -281,20 +307,26 @@ export default function Settings() {
 
             {/* 2. SCANNER TAB VIEW */}
             {activeTab === 'scanner' && (
-              <div>
-                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                  <Sliders className="w-4 h-4" /> Scanner Configuration
-                </h2>
-                <p className="text-xs text-neutral-400 mb-6">
-                  Fine-tune URL scanning parameters, sensitivity thresholds, and lexical heuristic analysis.
-                </p>
+              <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-1 flex items-center gap-2 font-mono">
+                    <Sliders className="w-4 h-4" /> Scanner Configuration & Heuristics
+                  </h2>
+                  <p className="text-xs text-neutral-400">
+                    Calibrate sensitivity thresholds and lexical analysis engines for vulnerability scans.
+                  </p>
+                </div>
 
                 <div className="space-y-4">
-                  {/* Threshold Slider */}
+                  {/* Threshold Slider Card */}
                   <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                    <div className="flex justify-between items-center mb-2">
-                      <label className="text-xs font-medium text-white">Detection Threshold</label>
-                      <span className="text-xs font-mono text-[#22D3EE] font-semibold">{detectionThreshold}%</span>
+                    <div className="flex justify-between items-center mb-3">
+                      <label className="text-xs font-medium text-white flex items-center gap-2">
+                        <Terminal className="w-3.5 h-3.5 text-[#22D3EE]" /> Detection Threshold Confidence
+                      </label>
+                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#22D3EE]/10 border border-[#22D3EE]/30 text-[#22D3EE] font-semibold">
+                        {detectionThreshold}%
+                      </span>
                     </div>
                     <input
                       type="range"
@@ -302,49 +334,43 @@ export default function Settings() {
                       max="100"
                       value={detectionThreshold}
                       onChange={(e) => setDetectionThreshold(Number(e.target.value))}
-                      className="w-full accent-[#22D3EE] bg-neutral-900 cursor-pointer"
+                      className="w-full accent-[#22D3EE] bg-neutral-900 cursor-pointer h-2 rounded-lg"
                     />
-                    <p className="text-[11px] text-neutral-500 mt-1">Minimum model confidence required to trigger a high-risk flag.</p>
+                    <div className="flex justify-between text-[10px] font-mono text-neutral-500 mt-2">
+                      <span>50% (Permissive)</span>
+                      <span>75% (Standard)</span>
+                      <span>100% (Strict)</span>
+                    </div>
                   </div>
 
                   {/* Scan Depth Selector */}
                   <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between">
                     <div>
-                      <h3 className="text-xs font-medium text-white">Scan Depth</h3>
-                      <p className="text-[11px] text-neutral-400 mt-0.5">Determines lexical heuristics vs. deep inspection depth.</p>
+                      <h3 className="text-xs font-medium text-white">Inspection Scan Depth</h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Determines speed versus deep lexical DOM parsing depth.</p>
                     </div>
                     <select
                       value={scanDepth}
                       onChange={(e) => setScanDepth(e.target.value)}
-                      className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-lg px-3 py-2 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
+                      className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-xl px-3.5 py-2.5 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
                     >
-                      <option value="Fast">Fast</option>
-                      <option value="Standard">Standard</option>
-                      <option value="Deep">Deep</option>
+                      <option value="Fast">Fast (Lexical Only)</option>
+                      <option value="Standard">Standard (Balanced)</option>
+                      <option value="Deep">Deep (Full Sandbox)</option>
                     </select>
                   </div>
 
                   {/* Additional Toggles */}
                   {[
-                    { title: 'URL Feature Analysis', desc: 'Extract lexical attributes (length, entropy, symbols)', state: urlFeatureAnalysis, setter: setUrlFeatureAnalysis },
-                    { title: 'Domain Reputation', desc: 'Cross-reference WHOIS age and threat intelligence feeds', state: domainReputation, setter: setDomainReputation },
+                    { title: 'URL Feature Analysis', desc: 'Extract lexical string attributes (length, entropy, special characters)', state: urlFeatureAnalysis, setter: setUrlFeatureAnalysis },
+                    { title: 'Domain Reputation Lookup', desc: 'Cross-reference WHOIS age, registrar blacklists, and threat feeds', state: domainReputation, setter: setDomainReputation },
                   ].map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                      <div>
+                    <div key={idx} className="flex items-center justify-between p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                      <div className="pr-4">
                         <h3 className="text-xs font-medium text-white">{item.title}</h3>
                         <p className="text-[11px] text-neutral-400 mt-0.5">{item.desc}</p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => item.setter(!item.state)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                          item.state 
-                            ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30 shadow-sm shadow-cyan-950/50' 
-                            : 'bg-neutral-900 text-neutral-500 border-neutral-800'
-                        }`}
-                      >
-                        {item.state ? 'ON' : 'OFF'}
-                      </button>
+                      <ToggleSwitch checked={item.state} onChange={item.setter} />
                     </div>
                   ))}
                 </div>
@@ -353,28 +379,28 @@ export default function Settings() {
 
             {/* 3. APPEARANCE & THEME TAB VIEW */}
             {activeTab === 'appearance' && (
-              <div>
-                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                  <Palette className="w-4 h-4" /> Appearance & Theme Preferences
-                </h2>
-                
-                <p className="text-xs text-neutral-400 mb-6">
-                  Select your preferred UI color scheme. WebShield AI includes instant theme toggling across the entire platform.
-                </p>
+              <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-1 flex items-center gap-2 font-mono">
+                    <Palette className="w-4 h-4" /> Appearance & Theme Selection
+                  </h2>
+                  <p className="text-xs text-neutral-400">
+                    Customize your visual workspace interface with instant toggle capabilities.
+                  </p>
+                </div>
 
                 {/* Theme Selection Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                  {/* Dark Mode Option */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div 
                     onClick={() => setTheme('dark')}
                     className={`p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
                       isDark 
-                        ? 'bg-[#0C1220] border-cyan-500 shadow-lg shadow-cyan-950/40 ring-1 ring-cyan-500' 
+                        ? 'bg-[#0C1220] border-cyan-500 shadow-xl shadow-cyan-950/40 ring-1 ring-cyan-500' 
                         : 'bg-[#05070A] border-neutral-800/80 hover:border-neutral-700 opacity-80'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#101828] border border-[#1D2939] flex items-center justify-center text-cyan-400">
+                      <div className="w-10 h-10 rounded-xl bg-[#101828] border border-[#1D2939] flex items-center justify-center">
                         <Sun className="w-5 h-5 text-amber-400" />
                       </div>
                       {isDark && (
@@ -384,20 +410,19 @@ export default function Settings() {
                       )}
                     </div>
                     <h3 className="text-sm font-bold text-white mb-1">Cyber SecOps Dark</h3>
-                    <p className="text-xs text-neutral-400">Deep obsidian background with glowing electric cyan telemetry.</p>
+                    <p className="text-xs text-neutral-400">Deep obsidian obsidian background with glowing electric cyan telemetry highlights.</p>
                   </div>
 
-                  {/* Light Mode Option */}
                   <div 
                     onClick={() => setTheme('light')}
                     className={`p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
                       !isDark 
-                        ? 'bg-white border-cyan-500 shadow-lg shadow-cyan-950/20 ring-1 ring-cyan-500' 
+                        ? 'bg-white border-cyan-500 shadow-xl shadow-cyan-950/20 ring-1 ring-cyan-500' 
                         : 'bg-[#05070A] border-neutral-800/80 hover:border-neutral-700 opacity-80'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-800">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center">
                         <Moon className="w-5 h-5 text-slate-700" />
                       </div>
                       {!isDark && (
@@ -406,21 +431,21 @@ export default function Settings() {
                         </span>
                       )}
                     </div>
-                    <h3 className="text-sm font-bold text-white mb-1">Daylight Clarity Light</h3>
-                    <p className="text-xs text-neutral-400">Clean slate canvas with elevated cards and high-contrast typography.</p>
+                    <h3 className="text-sm font-bold text-slate-900 mb-1">Daylight Clarity Light</h3>
+                    <p className="text-xs text-slate-600">Clean slate canvas with high-contrast typography and clear layout cards.</p>
                   </div>
                 </div>
 
-                {/* Quick Toggle Button Row */}
+                {/* Quick Toggle Action Box */}
                 <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <h4 className="text-xs font-semibold text-white">Instant Switcher</h4>
-                    <p className="text-[11px] text-neutral-400 mt-0.5">Quick toggle between light and dark workspace states.</p>
+                    <h4 className="text-xs font-semibold text-white">Global Workspace Toggle</h4>
+                    <p className="text-[11px] text-neutral-400 mt-0.5">Instantly flip themes across the entire web application.</p>
                   </div>
                   <button
                     type="button"
                     onClick={toggleTheme}
-                    className="flex items-center gap-2.5 px-4 py-2 rounded-xl border border-neutral-800 bg-[#0C1220] hover:bg-[#101828] text-xs font-semibold text-white transition cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-800 bg-[#0C1220] hover:bg-[#101828] text-xs font-semibold text-white transition cursor-pointer"
                   >
                     {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-cyan-400" />}
                     <span>Switch to {isDark ? 'Light' : 'Dark'} Mode</span>
@@ -431,25 +456,26 @@ export default function Settings() {
 
             {/* 4. AI DETECTION TAB VIEW */}
             {activeTab === 'ai' && (
-              <div>
-                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                  <Cpu className="w-4 h-4" /> AI Model & Transformer Parameters
-                </h2>
-                <p className="text-xs text-neutral-400 mb-6">
-                  Configure deep learning models and neural classification parameters for URL threat evaluation.
-                </p>
+              <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-1 flex items-center gap-2 font-mono">
+                    <Cpu className="w-4 h-4" /> AI Model & Transformer Weights
+                  </h2>
+                  <p className="text-xs text-neutral-400">
+                    Configure machine learning model architectures and deep classification weights.
+                  </p>
+                </div>
 
                 <div className="space-y-4">
-                  {/* Transformer Model Selection */}
                   <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between">
                     <div>
-                      <h3 className="text-xs font-medium text-white">Active Transformer Architecture</h3>
-                      <p className="text-[11px] text-neutral-400 mt-0.5">Select underlying Hugging Face / custom fine-tuned weights.</p>
+                      <h3 className="text-xs font-medium text-white">Transformer Architecture</h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Primary neural network backend model for text vectorization.</p>
                     </div>
                     <select
                       value={transformerModel}
                       onChange={(e) => setTransformerModel(e.target.value)}
-                      className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-lg px-3 py-2 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
+                      className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-xl px-3.5 py-2.5 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
                     >
                       <option value="BERT-Phish-v4">BERT-Phish-v4 (Recommended)</option>
                       <option value="RoBERTa-Sec-Base">RoBERTa-Sec-Base</option>
@@ -457,16 +483,15 @@ export default function Settings() {
                     </select>
                   </div>
 
-                  {/* Heuristic Sensitivity */}
                   <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between">
                     <div>
                       <h3 className="text-xs font-medium text-white">Heuristic Sensitivity Profile</h3>
-                      <p className="text-[11px] text-neutral-400 mt-0.5">Balance false positives against aggressive zero-day catching.</p>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Control aggression levels against zero-day URL phishing campaigns.</p>
                     </div>
                     <select
                       value={heuristicSensitivity}
                       onChange={(e) => setHeuristicSensitivity(e.target.value)}
-                      className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-lg px-3 py-2 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
+                      className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-xl px-3.5 py-2.5 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
                     >
                       <option value="Conservative">Conservative</option>
                       <option value="Balanced">Balanced</option>
@@ -474,21 +499,12 @@ export default function Settings() {
                     </select>
                   </div>
 
-                  {/* Ensemble Scoring Toggle */}
-                  <div className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                    <div>
+                  <div className="flex items-center justify-between p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                    <div className="pr-4">
                       <h3 className="text-xs font-medium text-white">Ensemble Model Aggregation</h3>
-                      <p className="text-[11px] text-neutral-400 mt-0.5">Combine Random Forest lexical outputs with Transformer predictions.</p>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Merge Random Forest lexical calculations with deep Transformer confidence scores.</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setEnsembleScoring(!ensembleScoring)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                        ensembleScoring ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
-                      }`}
-                    >
-                      {ensembleScoring ? 'ON' : 'OFF'}
-                    </button>
+                    <ToggleSwitch checked={ensembleScoring} onChange={setEnsembleScoring} />
                   </div>
                 </div>
               </div>
@@ -496,25 +512,27 @@ export default function Settings() {
 
             {/* 5. NOTIFICATIONS TAB VIEW */}
             {activeTab === 'notifications' && (
-              <div>
-                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                  <Bell className="w-4 h-4" /> Notification Channels & Alerts
-                </h2>
-                <p className="text-xs text-neutral-400 mb-6">
-                  Manage how and when WebShield AI alerts you about critical phishing intercepts or telemetry events.
-                </p>
+              <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-1 flex items-center gap-2 font-mono">
+                    <Bell className="w-4 h-4" /> Notification Channels & Alerting
+                  </h2>
+                  <p className="text-xs text-neutral-400">
+                    Specify delivery channels for security warnings and weekly threat intelligence summaries.
+                  </p>
+                </div>
 
                 <div className="space-y-3">
                   {[
-                    { title: 'Email Incident Alerts', desc: 'Receive immediate email reports upon critical zero-day threat interception', state: emailAlerts, setter: setEmailAlerts, icon: Mail },
-                    { title: 'Browser Push Notifications', desc: 'Instant browser popup alerts during active link navigation scans', state: pushNotifications, setter: setPushNotifications, icon: Smartphone },
-                    { title: 'Weekly Threat Intelligence Digest', desc: 'Summary of blocked domains and regional cyber trends every Monday', state: weeklyDigest, setter: setWeeklyDigest, icon: Globe },
+                    { title: 'Email Incident Alerts', desc: 'Dispatch immediate email reports upon critical zero-day threat interception', state: emailAlerts, setter: setEmailAlerts, icon: Mail },
+                    { title: 'Browser Push Notifications', desc: 'Trigger instant desktop notifications during active URL navigation scans', state: pushNotifications, setter: setPushNotifications, icon: Smartphone },
+                    { title: 'Weekly Threat Digest', desc: 'Consolidated report of blocked domains and security statistics every Monday', state: weeklyDigest, setter: setWeeklyDigest, icon: Globe },
                   ].map((item, idx) => {
                     const ItemIcon = item.icon;
                     return (
-                      <div key={idx} className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[#22D3EE]">
+                      <div key={idx} className="flex items-center justify-between p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                        <div className="flex items-center gap-3.5 pr-4">
+                          <div className="w-9 h-9 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[#22D3EE] shrink-0">
                             <ItemIcon className="w-4 h-4" />
                           </div>
                           <div>
@@ -522,15 +540,7 @@ export default function Settings() {
                             <p className="text-[11px] text-neutral-400 mt-0.5">{item.desc}</p>
                           </div>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => item.setter(!item.state)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                            item.state ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
-                          }`}
-                        >
-                          {item.state ? 'ON' : 'OFF'}
-                        </button>
+                        <ToggleSwitch checked={item.state} onChange={item.setter} />
                       </div>
                     );
                   })}
@@ -540,45 +550,31 @@ export default function Settings() {
 
             {/* 6. PRIVACY TAB VIEW */}
             {activeTab === 'privacy' && (
-              <div>
-                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                  <Lock className="w-4 h-4" /> Data Privacy & Telemetry
-                </h2>
-                <p className="text-xs text-neutral-400 mb-6">
-                  Control data sharing policies, scan history retention, and anonymous threat telemetry contributions.
-                </p>
+              <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-1 flex items-center gap-2 font-mono">
+                    <Lock className="w-4 h-4" /> Data Privacy & Telemetry
+                  </h2>
+                  <p className="text-xs text-neutral-400">
+                    Manage database scan history retention and anonymous community threat sharing.
+                  </p>
+                </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                    <div>
+                  <div className="flex items-center justify-between p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                    <div className="pr-4">
                       <h3 className="text-xs font-medium text-white">Store Scan History in Database</h3>
-                      <p className="text-[11px] text-neutral-400 mt-0.5">Keep a secure local record of past URL analyses for your dashboard timeline.</p>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Maintain a secure local record of past URL analyses for dashboard auditing.</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setStoreScanHistory(!storeScanHistory)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                        storeScanHistory ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
-                      }`}
-                    >
-                      {storeScanHistory ? 'ON' : 'OFF'}
-                    </button>
+                    <ToggleSwitch checked={storeScanHistory} onChange={setStoreScanHistory} />
                   </div>
 
-                  <div className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                    <div>
-                      <h3 className="text-xs font-medium text-white">Anonymous Telemetry Sharing</h3>
-                      <p className="text-[11px] text-neutral-400 mt-0.5">Contribute anonymized malicious URL patterns to help train global AI models.</p>
+                  <div className="flex items-center justify-between p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                    <div className="pr-4">
+                      <h3 className="text-xs font-medium text-white">Anonymous Threat Telemetry Sharing</h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Contribute anonymized malicious URL patterns to help improve global detection models.</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setTelemetrySharing(!telemetrySharing)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                        telemetrySharing ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
-                      }`}
-                    >
-                      {telemetrySharing ? 'ON' : 'OFF'}
-                    </button>
+                    <ToggleSwitch checked={telemetrySharing} onChange={setTelemetrySharing} />
                   </div>
                 </div>
               </div>
@@ -586,42 +582,38 @@ export default function Settings() {
 
             {/* 7. SYSTEM TAB VIEW */}
             {activeTab === 'system' && (
-              <div>
-                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                  <Server className="w-4 h-4" /> System & Backend Connectivity
-                </h2>
-                <p className="text-xs text-neutral-400 mb-6">
-                  Configure backend server endpoints and database audit logging parameters.
-                </p>
+              <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-1 flex items-center gap-2 font-mono">
+                    <Server className="w-4 h-4" /> System & Backend Connectivity
+                  </h2>
+                  <p className="text-xs text-neutral-400">
+                    Configure Node.js/Express backend API routing and automatic database auditing.
+                  </p>
+                </div>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-white mb-2">Backend Express & ML API Endpoint</label>
+                    <label className="block text-xs font-medium text-white mb-2 flex items-center gap-2">
+                      <Database className="w-3.5 h-3.5 text-[#22D3EE]" /> Backend Express & ML API Endpoint
+                    </label>
                     <div className="relative">
-                      <Server className="absolute left-3.5 top-3 w-4 h-4 text-neutral-500" />
+                      <Server className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-500" />
                       <input
                         type="text"
                         value={apiEndpoint}
                         onChange={(e) => setApiEndpoint(e.target.value)}
-                        className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl pl-10 pr-4 py-2.5 text-white text-xs font-mono outline-none transition"
+                        className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl pl-10 pr-4 py-3 text-white text-xs font-mono outline-none transition"
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
-                    <div>
+                  <div className="flex items-center justify-between p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                    <div className="pr-4">
                       <h3 className="text-xs font-medium text-white">Automatic Scan Auditing</h3>
-                      <p className="text-[11px] text-neutral-400 mt-0.5">Log scan history automatically into database collections.</p>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Log scan results automatically into MongoDB database collections.</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setAutoLog(!autoLog)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                        autoLog ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
-                      }`}
-                    >
-                      {autoLog ? 'ON' : 'OFF'}
-                    </button>
+                    <ToggleSwitch checked={autoLog} onChange={setAutoLog} />
                   </div>
                 </div>
               </div>
@@ -629,13 +621,15 @@ export default function Settings() {
 
             {/* 8. ACCOUNT TAB VIEW */}
             {activeTab === 'account' && (
-              <div>
-                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
-                  <User className="w-4 h-4" /> Account & Operator Credentials
-                </h2>
-                <p className="text-xs text-neutral-400 mb-6">
-                  Manage your SecOps operator profile information and authentication credentials.
-                </p>
+              <div className="space-y-6 animate-fadeIn">
+                <div>
+                  <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-1 flex items-center gap-2 font-mono">
+                    <User className="w-4 h-4" /> Operator Account & Credentials
+                  </h2>
+                  <p className="text-xs text-neutral-400">
+                    Manage your SecOps profile credentials and session tokens.
+                  </p>
+                </div>
 
                 <div className="space-y-4">
                   <div>
@@ -644,7 +638,7 @@ export default function Settings() {
                       type="text"
                       value={userName}
                       onChange={(e) => setUserName(e.target.value)}
-                      className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl px-4 py-2.5 text-white text-xs outline-none transition"
+                      className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl px-4 py-3 text-white text-xs outline-none transition"
                     />
                   </div>
 
@@ -654,19 +648,22 @@ export default function Settings() {
                       type="email"
                       value={userEmail}
                       onChange={(e) => setUserEmail(e.target.value)}
-                      className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl px-4 py-2.5 text-white text-xs outline-none transition font-mono"
+                      className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl px-4 py-3 text-white text-xs outline-none transition font-mono"
                     />
                   </div>
 
-                  <div className="pt-4 border-t border-neutral-800/80 flex items-center justify-between">
+                  {/* Danger Zone Section */}
+                  <div className="pt-6 border-t border-neutral-800/80 flex items-center justify-between flex-wrap gap-4 p-4 bg-rose-500/5 border border-rose-500/20 rounded-xl">
                     <div>
-                      <h3 className="text-xs font-medium text-rose-400">Revoke Session Credentials</h3>
-                      <p className="text-[11px] text-neutral-500 mt-0.5">Invalidate all active API bearer tokens and log out.</p>
+                      <h3 className="text-xs font-semibold text-rose-400 flex items-center gap-1.5">
+                        <ShieldAlert className="w-4 h-4" /> Revoke Session Credentials
+                      </h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Invalidate all active API bearer tokens and terminate current session.</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => navigate('/login')}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 text-xs font-mono transition cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 text-xs font-mono transition cursor-pointer"
                     >
                       <Key className="w-3.5 h-3.5" /> Revoke Tokens
                     </button>
@@ -680,20 +677,20 @@ export default function Settings() {
               <button
                 type="button"
                 onClick={handleReset}
-                className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white bg-[#05070A] border border-neutral-800 px-4 py-2.5 rounded-xl transition cursor-pointer font-mono"
+                className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white bg-[#05070A] border border-neutral-800 px-4 py-3 rounded-xl transition cursor-pointer font-mono"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-[#22D3EE]" /> Reset Defaults
               </button>
 
               <div className="flex items-center gap-3">
                 {saved && (
-                  <span className="text-xs font-mono text-emerald-400 flex items-center gap-1">
+                  <span className="text-xs font-mono text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-2 rounded-xl">
                     <Check className="w-3.5 h-3.5" /> Saved successfully
                   </span>
                 )}
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-[#22D3EE] to-blue-600 hover:opacity-90 text-black font-semibold px-6 py-2.5 rounded-xl transition text-xs shadow-lg shadow-cyan-950/40 cursor-pointer"
+                  className="bg-gradient-to-r from-[#22D3EE] to-blue-600 hover:opacity-90 text-black font-semibold px-6 py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-950/40 cursor-pointer"
                 >
                   Save Changes
                 </button>
