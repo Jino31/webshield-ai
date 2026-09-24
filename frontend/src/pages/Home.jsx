@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare } from 'lucide-react';
+import { Cpu, Lock, ArrowRight, CheckCircle2, Search, ShieldAlert, AlertTriangle, RefreshCw, Globe, Shield, Layers, Zap, Info, MessageSquare, ShieldCheck } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import ShieldAIBot from '../components/ShieldAIBot';
 import TiltCard3D from '../components/TiltCard3D';
@@ -184,8 +184,8 @@ export default function Home() {
           <div className="relative flex flex-col items-center space-y-4 animate-cinematicReveal">
             <div className="relative">
               <div className="absolute inset-0 bg-[#8B5CF6]/50 blur-3xl rounded-full animate-pulse" />
-              <div className="w-20 h-20 rounded-2xl bg-[#13111C] p-1 flex items-center justify-center text-white shadow-[0_0_40px_rgba(139,92,246,0.4)] relative z-15 border border-[#231E33]">
-                <img src="/logo.png" alt="WebShield AI Logo" className="w-full h-full object-contain rounded-xl" />
+              <div className="w-20 h-20 rounded-2xl bg-[#13111C] p-1 flex items-center justify-center text-purple-400 shadow-[0_0_40px_rgba(139,92,246,0.4)] relative z-15 border border-[#231E33]">
+                <ShieldCheck className="w-10 h-10 animate-bounce" />
               </div>
             </div>
             <div className="flex items-center font-extrabold text-3xl md:text-5xl tracking-tighter">
@@ -225,11 +225,8 @@ export default function Home() {
           Analyze suspicious URLs using advanced lexical feature extraction and machine-learning-based threat classification.
         </p>
 
-        {/* 3D Shield Hero Graphic */}
-        <Hero3DShield />
-
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-10 mt-6 animate-slideDownStagger2">
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-10 animate-slideDownStagger2">
           <button
             type="button"
             onClick={scrollToHowItWorks}
