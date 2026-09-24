@@ -42,8 +42,7 @@ import {
   AlertCircle,
   Shield,
   Heart,
-  Github,
-  Twitter,
+  Code,
   Globe
 } from 'lucide-react';
 
@@ -447,7 +446,7 @@ export default function Admin() {
     );
   }
 
-  // Key-Gated Unlock Screen (Enforced because lock button has been removed)
+  // Key-Gated Unlock Screen
   if (!adminUnlocked) {
     return (
       <div className="fixed inset-0 w-screen h-screen bg-[#0A0A0F] text-[#FAFAFA] flex items-center justify-center p-4 relative z-50 font-sans">
@@ -542,7 +541,7 @@ export default function Admin() {
         </div>
       )}
 
-      {/* Top Command Bar (Lock button removed as requested) */}
+      {/* Top Command Bar */}
       <header className="w-full h-16 border-b border-[#231E33] px-4 sm:px-6 flex items-center justify-between z-35 sticky top-0 bg-[#0A0A0F]/95 backdrop-blur-xl">
         <div className="flex items-center gap-3 sm:gap-4">
           <button
@@ -588,7 +587,7 @@ export default function Admin() {
 
       {/* Main SOC Layout */}
       <div className="flex-1 flex flex-col md:flex-row">
-        {/* Navigation Sidebar with custom customized scrollbar */}
+        {/* Navigation Sidebar with custom scrollbar */}
         <aside className="w-full md:w-64 border-r border-[#231E33] p-4 flex flex-col gap-1.5 shrink-0 bg-[#0A0A0F] max-h-[calc(100vh-4rem)] md:sticky md:top-16 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-[#0A0A0F] [&::-webkit-scrollbar-thumb]:bg-[#231E33] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#8B5CF6]/50">
           <div className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-[#A1A1AA] font-bold flex items-center justify-between sticky top-0 bg-[#0A0A0F] z-10 backdrop-blur-md">
             <span>SOC Consoles</span>
@@ -1655,7 +1654,7 @@ export default function Admin() {
           <div className="flex flex-wrap items-center gap-6 text-xs text-[#A1A1AA] font-mono">
             <button onClick={() => navigate('/')} className="hover:text-[#FAFAFA] transition cursor-pointer">Portal Home</button>
             <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[#FAFAFA] transition flex items-center gap-1">
-              <Github className="w-3.5 h-3.5" /> Repository
+              <Code className="w-3.5 h-3.5" /> Repository
             </a>
             <span className="flex items-center gap-1.5 text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" /> Cluster v2.4 Online
