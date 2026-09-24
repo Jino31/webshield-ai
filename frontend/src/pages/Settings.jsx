@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { 
   Shield, 
   Search, 
@@ -18,7 +17,12 @@ import {
   Activity,
   Palette,
   Sun,
-  Moon
+  Moon,
+  Mail,
+  Smartphone,
+  Trash2,
+  Key,
+  Globe
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -29,19 +33,39 @@ export default function Settings() {
   // Active settings navigation tab
   const [activeTab, setActiveTab] = useState('security');
 
-  // Settings State
+  // 1. Security State
   const [realTimeProtection, setRealTimeProtection] = useState(true);
   const [phishingDetection, setPhishingDetection] = useState(true);
   const [sslVerification, setSslVerification] = useState(true);
   const [redirectDetection, setRedirectDetection] = useState(true);
   
+  // 2. Scanner State
   const [detectionThreshold, setDetectionThreshold] = useState(75);
   const [scanDepth, setScanDepth] = useState('Standard');
   const [urlFeatureAnalysis, setUrlFeatureAnalysis] = useState(true);
   const [domainReputation, setDomainReputation] = useState(true);
 
+  // 3. AI Detection State
+  const [transformerModel, setTransformerModel] = useState('BERT-Phish-v4');
+  const [ensembleScoring, setEnsembleScoring] = useState(true);
+  const [heuristicSensitivity, setHeuristicSensitivity] = useState('Balanced');
+
+  // 4. Notifications State
+  const [emailAlerts, setEmailAlerts] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(true);
+  const [weeklyDigest, setWeeklyDigest] = useState(false);
+
+  // 5. Privacy State
+  const [telemetrySharing, setTelemetrySharing] = useState(true);
+  const [storeScanHistory, setStoreScanHistory] = useState(true);
+
+  // 6. System State
   const [apiEndpoint, setApiEndpoint] = useState('http://localhost:5000/api/scan');
   const [autoLog, setAutoLog] = useState(true);
+
+  // 7. Account State
+  const [userName, setUserName] = useState('S. Jeffrin Jino');
+  const [userEmail, setUserEmail] = useState('jeffrin@webshield.ai');
 
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
@@ -49,36 +73,26 @@ export default function Settings() {
   // Load persisted preferences on mount
   useEffect(() => {
     try {
-      if (localStorage.getItem('ws_realTimeProtection') !== null) {
-        setRealTimeProtection(localStorage.getItem('ws_realTimeProtection') === 'true');
-      }
-      if (localStorage.getItem('ws_phishingDetection') !== null) {
-        setPhishingDetection(localStorage.getItem('ws_phishingDetection') === 'true');
-      }
-      if (localStorage.getItem('ws_sslVerification') !== null) {
-        setSslVerification(localStorage.getItem('ws_sslVerification') === 'true');
-      }
-      if (localStorage.getItem('ws_redirectDetection') !== null) {
-        setRedirectDetection(localStorage.getItem('ws_redirectDetection') === 'true');
-      }
-      if (localStorage.getItem('ws_detectionThreshold') !== null) {
-        setDetectionThreshold(Number(localStorage.getItem('ws_detectionThreshold')));
-      }
-      if (localStorage.getItem('ws_scanDepth') !== null) {
-        setScanDepth(localStorage.getItem('ws_scanDepth'));
-      }
-      if (localStorage.getItem('ws_urlFeatureAnalysis') !== null) {
-        setUrlFeatureAnalysis(localStorage.getItem('ws_urlFeatureAnalysis') === 'true');
-      }
-      if (localStorage.getItem('ws_domainReputation') !== null) {
-        setDomainReputation(localStorage.getItem('ws_domainReputation') === 'true');
-      }
-      if (localStorage.getItem('ws_apiEndpoint') !== null) {
-        setApiEndpoint(localStorage.getItem('ws_apiEndpoint'));
-      }
-      if (localStorage.getItem('ws_autoLog') !== null) {
-        setAutoLog(localStorage.getItem('ws_autoLog') === 'true');
-      }
+      if (localStorage.getItem('ws_realTimeProtection') !== null) setRealTimeProtection(localStorage.getItem('ws_realTimeProtection') === 'true');
+      if (localStorage.getItem('ws_phishingDetection') !== null) setPhishingDetection(localStorage.getItem('ws_phishingDetection') === 'true');
+      if (localStorage.getItem('ws_sslVerification') !== null) setSslVerification(localStorage.getItem('ws_sslVerification') === 'true');
+      if (localStorage.getItem('ws_redirectDetection') !== null) setRedirectDetection(localStorage.getItem('ws_redirectDetection') === 'true');
+      if (localStorage.getItem('ws_detectionThreshold') !== null) setDetectionThreshold(Number(localStorage.getItem('ws_detectionThreshold')));
+      if (localStorage.getItem('ws_scanDepth') !== null) setScanDepth(localStorage.getItem('ws_scanDepth'));
+      if (localStorage.getItem('ws_urlFeatureAnalysis') !== null) setUrlFeatureAnalysis(localStorage.getItem('ws_urlFeatureAnalysis') === 'true');
+      if (localStorage.getItem('ws_domainReputation') !== null) setDomainReputation(localStorage.getItem('ws_domainReputation') === 'true');
+      if (localStorage.getItem('ws_transformerModel') !== null) setTransformerModel(localStorage.getItem('ws_transformerModel'));
+      if (localStorage.getItem('ws_ensembleScoring') !== null) setEnsembleScoring(localStorage.getItem('ws_ensembleScoring') === 'true');
+      if (localStorage.getItem('ws_heuristicSensitivity') !== null) setHeuristicSensitivity(localStorage.getItem('ws_heuristicSensitivity'));
+      if (localStorage.getItem('ws_emailAlerts') !== null) setEmailAlerts(localStorage.getItem('ws_emailAlerts') === 'true');
+      if (localStorage.getItem('ws_pushNotifications') !== null) setPushNotifications(localStorage.getItem('ws_pushNotifications') === 'true');
+      if (localStorage.getItem('ws_weeklyDigest') !== null) setWeeklyDigest(localStorage.getItem('ws_weeklyDigest') === 'true');
+      if (localStorage.getItem('ws_telemetrySharing') !== null) setTelemetrySharing(localStorage.getItem('ws_telemetrySharing') === 'true');
+      if (localStorage.getItem('ws_storeScanHistory') !== null) setStoreScanHistory(localStorage.getItem('ws_storeScanHistory') === 'true');
+      if (localStorage.getItem('ws_apiEndpoint') !== null) setApiEndpoint(localStorage.getItem('ws_apiEndpoint'));
+      if (localStorage.getItem('ws_autoLog') !== null) setAutoLog(localStorage.getItem('ws_autoLog') === 'true');
+      if (localStorage.getItem('ws_userName') !== null) setUserName(localStorage.getItem('ws_userName'));
+      if (localStorage.getItem('ws_userEmail') !== null) setUserEmail(localStorage.getItem('ws_userEmail'));
     } catch (err) {
       console.error('Error loading settings from localStorage:', err);
     }
@@ -102,8 +116,18 @@ export default function Settings() {
       localStorage.setItem('ws_scanDepth', String(scanDepth));
       localStorage.setItem('ws_urlFeatureAnalysis', String(urlFeatureAnalysis));
       localStorage.setItem('ws_domainReputation', String(domainReputation));
+      localStorage.setItem('ws_transformerModel', transformerModel);
+      localStorage.setItem('ws_ensembleScoring', String(ensembleScoring));
+      localStorage.setItem('ws_heuristicSensitivity', heuristicSensitivity);
+      localStorage.setItem('ws_emailAlerts', String(emailAlerts));
+      localStorage.setItem('ws_pushNotifications', String(pushNotifications));
+      localStorage.setItem('ws_weeklyDigest', String(weeklyDigest));
+      localStorage.setItem('ws_telemetrySharing', String(telemetrySharing));
+      localStorage.setItem('ws_storeScanHistory', String(storeScanHistory));
       localStorage.setItem('ws_apiEndpoint', apiEndpoint.trim());
       localStorage.setItem('ws_autoLog', String(autoLog));
+      localStorage.setItem('ws_userName', userName);
+      localStorage.setItem('ws_userEmail', userEmail);
 
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -122,8 +146,18 @@ export default function Settings() {
     setScanDepth('Standard');
     setUrlFeatureAnalysis(true);
     setDomainReputation(true);
+    setTransformerModel('BERT-Phish-v4');
+    setEnsembleScoring(true);
+    setHeuristicSensitivity('Balanced');
+    setEmailAlerts(true);
+    setPushNotifications(true);
+    setWeeklyDigest(false);
+    setTelemetrySharing(true);
+    setStoreScanHistory(true);
     setApiEndpoint('http://localhost:5000/api/scan');
     setAutoLog(true);
+    setUserName('S. Jeffrin Jino');
+    setUserEmail('jeffrin@webshield.ai');
     setError('');
     localStorage.clear();
   };
@@ -160,7 +194,7 @@ export default function Settings() {
       {/* Main Title & Subtitle */}
       <div className="relative z-10 w-full max-w-5xl mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-white mb-2">SETTINGS</h1>
-        <p className="text-neutral-400 text-sm">Configure your security, detection and scanning preferences.</p>
+        <p className="text-neutral-400 text-sm">Configure your security, detection algorithms, and scanning preferences.</p>
       </div>
 
       {error && (
@@ -206,14 +240,14 @@ export default function Settings() {
         <div className="md:col-span-3 bg-[#0D1117] border border-neutral-800/80 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-xl">
           <form onSubmit={handleSave} className="space-y-8">
 
-            {/* SECURITY TAB VIEW */}
+            {/* 1. SECURITY TAB VIEW */}
             {activeTab === 'security' && (
               <div>
                 <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
                   <Shield className="w-4 h-4" /> Security & Protection
                 </h2>
                 <p className="text-xs text-neutral-400 mb-6">
-                  Manage active network interception, machine learning phishing models, and SSL verification.
+                  Manage active network interception, machine learning phishing models, and SSL certificate verification.
                 </p>
 
                 <div className="space-y-3">
@@ -245,7 +279,7 @@ export default function Settings() {
               </div>
             )}
 
-            {/* SCANNER TAB VIEW */}
+            {/* 2. SCANNER TAB VIEW */}
             {activeTab === 'scanner' && (
               <div>
                 <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
@@ -317,7 +351,7 @@ export default function Settings() {
               </div>
             )}
 
-            {/* APPEARANCE & THEME TAB VIEW */}
+            {/* 3. APPEARANCE & THEME TAB VIEW */}
             {activeTab === 'appearance' && (
               <div>
                 <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
@@ -325,12 +359,11 @@ export default function Settings() {
                 </h2>
                 
                 <p className="text-xs text-neutral-400 mb-6">
-                  Select your preferred UI color scheme. WebShield AI includes a fast theme toggle available both here and in the top navigation bar.
+                  Select your preferred UI color scheme. WebShield AI includes instant theme toggling across the entire platform.
                 </p>
 
                 {/* Theme Selection Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                  
                   {/* Dark Mode Option */}
                   <div 
                     onClick={() => setTheme('dark')}
@@ -351,7 +384,7 @@ export default function Settings() {
                       )}
                     </div>
                     <h3 className="text-sm font-bold text-white mb-1">Cyber SecOps Dark</h3>
-                    <p className="text-xs text-neutral-400">Deep obsidian background with glowing electric cyan & quantum indigo telemetry.</p>
+                    <p className="text-xs text-neutral-400">Deep obsidian background with glowing electric cyan telemetry.</p>
                   </div>
 
                   {/* Light Mode Option */}
@@ -374,36 +407,192 @@ export default function Settings() {
                       )}
                     </div>
                     <h3 className="text-sm font-bold text-white mb-1">Daylight Clarity Light</h3>
-                    <p className="text-xs text-neutral-400">Clean slate canvas (#F8FAFC) with elevated white cards and high-contrast typography.</p>
+                    <p className="text-xs text-neutral-400">Clean slate canvas with elevated cards and high-contrast typography.</p>
                   </div>
-
                 </div>
 
-                {/* Quick Toggle Component Preview */}
+                {/* Quick Toggle Button Row */}
                 <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between flex-wrap gap-4">
                   <div>
-                    <h4 className="text-xs font-semibold text-white">Theme Switcher</h4>
-                    <p className="text-[11px] text-neutral-400 mt-0.5">Click to toggle instantaneously across the whole platform.</p>
+                    <h4 className="text-xs font-semibold text-white">Instant Switcher</h4>
+                    <p className="text-[11px] text-neutral-400 mt-0.5">Quick toggle between light and dark workspace states.</p>
                   </div>
                   <button
                     type="button"
                     onClick={toggleTheme}
-                    className="theme-toggle-btn flex items-center gap-2.5 px-4 py-2 rounded-xl border border-neutral-800 bg-[#0C1220] hover:bg-[#101828] text-xs font-semibold text-white transition cursor-pointer"
+                    className="flex items-center gap-2.5 px-4 py-2 rounded-xl border border-neutral-800 bg-[#0C1220] hover:bg-[#101828] text-xs font-semibold text-white transition cursor-pointer"
                   >
                     {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-cyan-400" />}
                     <span>Switch to {isDark ? 'Light' : 'Dark'} Mode</span>
                   </button>
                 </div>
-
               </div>
             )}
 
-            {/* SYSTEM TAB VIEW */}
+            {/* 4. AI DETECTION TAB VIEW */}
+            {activeTab === 'ai' && (
+              <div>
+                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+                  <Cpu className="w-4 h-4" /> AI Model & Transformer Parameters
+                </h2>
+                <p className="text-xs text-neutral-400 mb-6">
+                  Configure deep learning models and neural classification parameters for URL threat evaluation.
+                </p>
+
+                <div className="space-y-4">
+                  {/* Transformer Model Selection */}
+                  <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xs font-medium text-white">Active Transformer Architecture</h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Select underlying Hugging Face / custom fine-tuned weights.</p>
+                    </div>
+                    <select
+                      value={transformerModel}
+                      onChange={(e) => setTransformerModel(e.target.value)}
+                      className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-lg px-3 py-2 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
+                    >
+                      <option value="BERT-Phish-v4">BERT-Phish-v4 (Recommended)</option>
+                      <option value="RoBERTa-Sec-Base">RoBERTa-Sec-Base</option>
+                      <option value="DistilBERT-FastScan">DistilBERT-FastScan</option>
+                    </select>
+                  </div>
+
+                  {/* Heuristic Sensitivity */}
+                  <div className="p-4 bg-[#05070A] border border-neutral-800/60 rounded-xl flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xs font-medium text-white">Heuristic Sensitivity Profile</h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Balance false positives against aggressive zero-day catching.</p>
+                    </div>
+                    <select
+                      value={heuristicSensitivity}
+                      onChange={(e) => setHeuristicSensitivity(e.target.value)}
+                      className="bg-neutral-900 border border-neutral-800 text-xs text-[#22D3EE] rounded-lg px-3 py-2 outline-none font-mono focus:border-[#22D3EE] cursor-pointer"
+                    >
+                      <option value="Conservative">Conservative</option>
+                      <option value="Balanced">Balanced</option>
+                      <option value="Aggressive">Aggressive</option>
+                    </select>
+                  </div>
+
+                  {/* Ensemble Scoring Toggle */}
+                  <div className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                    <div>
+                      <h3 className="text-xs font-medium text-white">Ensemble Model Aggregation</h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Combine Random Forest lexical outputs with Transformer predictions.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setEnsembleScoring(!ensembleScoring)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
+                        ensembleScoring ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
+                      }`}
+                    >
+                      {ensembleScoring ? 'ON' : 'OFF'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 5. NOTIFICATIONS TAB VIEW */}
+            {activeTab === 'notifications' && (
+              <div>
+                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+                  <Bell className="w-4 h-4" /> Notification Channels & Alerts
+                </h2>
+                <p className="text-xs text-neutral-400 mb-6">
+                  Manage how and when WebShield AI alerts you about critical phishing intercepts or telemetry events.
+                </p>
+
+                <div className="space-y-3">
+                  {[
+                    { title: 'Email Incident Alerts', desc: 'Receive immediate email reports upon critical zero-day threat interception', state: emailAlerts, setter: setEmailAlerts, icon: Mail },
+                    { title: 'Browser Push Notifications', desc: 'Instant browser popup alerts during active link navigation scans', state: pushNotifications, setter: setPushNotifications, icon: Smartphone },
+                    { title: 'Weekly Threat Intelligence Digest', desc: 'Summary of blocked domains and regional cyber trends every Monday', state: weeklyDigest, setter: setWeeklyDigest, icon: Globe },
+                  ].map((item, idx) => {
+                    const ItemIcon = item.icon;
+                    return (
+                      <div key={idx} className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[#22D3EE]">
+                            <ItemIcon className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h3 className="text-xs font-medium text-white">{item.title}</h3>
+                            <p className="text-[11px] text-neutral-400 mt-0.5">{item.desc}</p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => item.setter(!item.state)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
+                            item.state ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
+                          }`}
+                        >
+                          {item.state ? 'ON' : 'OFF'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* 6. PRIVACY TAB VIEW */}
+            {activeTab === 'privacy' && (
+              <div>
+                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+                  <Lock className="w-4 h-4" /> Data Privacy & Telemetry
+                </h2>
+                <p className="text-xs text-neutral-400 mb-6">
+                  Control data sharing policies, scan history retention, and anonymous threat telemetry contributions.
+                </p>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                    <div>
+                      <h3 className="text-xs font-medium text-white">Store Scan History in Database</h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Keep a secure local record of past URL analyses for your dashboard timeline.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setStoreScanHistory(!storeScanHistory)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
+                        storeScanHistory ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
+                      }`}
+                    >
+                      {storeScanHistory ? 'ON' : 'OFF'}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3.5 bg-[#05070A] border border-neutral-800/60 rounded-xl">
+                    <div>
+                      <h3 className="text-xs font-medium text-white">Anonymous Telemetry Sharing</h3>
+                      <p className="text-[11px] text-neutral-400 mt-0.5">Contribute anonymized malicious URL patterns to help train global AI models.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setTelemetrySharing(!telemetrySharing)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
+                        telemetrySharing ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
+                      }`}
+                    >
+                      {telemetrySharing ? 'ON' : 'OFF'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 7. SYSTEM TAB VIEW */}
             {activeTab === 'system' && (
               <div>
                 <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
                   <Server className="w-4 h-4" /> System & Backend Connectivity
                 </h2>
+                <p className="text-xs text-neutral-400 mb-6">
+                  Configure backend server endpoints and database audit logging parameters.
+                </p>
                 
                 <div className="space-y-4">
                   <div>
@@ -428,9 +617,7 @@ export default function Settings() {
                       type="button"
                       onClick={() => setAutoLog(!autoLog)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider transition cursor-pointer border ${
-                        autoLog 
-                          ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30 shadow-sm shadow-cyan-950/50' 
-                          : 'bg-neutral-900 text-neutral-500 border-neutral-800'
+                        autoLog ? 'bg-[#22D3EE]/10 text-[#22D3EE] border-[#22D3EE]/30' : 'bg-neutral-900 text-neutral-500 border-neutral-800'
                       }`}
                     >
                       {autoLog ? 'ON' : 'OFF'}
@@ -440,14 +627,51 @@ export default function Settings() {
               </div>
             )}
 
-            {/* OTHER TABS PLACEHOLDER VIEW */}
-            {['ai', 'notifications', 'privacy', 'account'].includes(activeTab) && (
-              <div className="py-12 text-center">
-                <div className="w-12 h-12 rounded-xl bg-[#22D3EE]/10 border border-[#22D3EE]/20 flex items-center justify-center text-[#22D3EE] mx-auto mb-4">
-                  <SettingsIcon className="w-6 h-6" />
+            {/* 8. ACCOUNT TAB VIEW */}
+            {activeTab === 'account' && (
+              <div>
+                <h2 className="text-xs font-semibold text-[#22D3EE] uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+                  <User className="w-4 h-4" /> Account & Operator Credentials
+                </h2>
+                <p className="text-xs text-neutral-400 mb-6">
+                  Manage your SecOps operator profile information and authentication credentials.
+                </p>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-white mb-2">Operator Name</label>
+                    <input
+                      type="text"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
+                      className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl px-4 py-2.5 text-white text-xs outline-none transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-white mb-2">SecOps Email Address</label>
+                    <input
+                      type="email"
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      className="w-full bg-[#05070A] border border-neutral-800 focus:border-[#22D3EE] rounded-xl px-4 py-2.5 text-white text-xs outline-none transition font-mono"
+                    />
+                  </div>
+
+                  <div className="pt-4 border-t border-neutral-800/80 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xs font-medium text-rose-400">Revoke Session Credentials</h3>
+                      <p className="text-[11px] text-neutral-500 mt-0.5">Invalidate all active API bearer tokens and log out.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => navigate('/login')}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 text-xs font-mono transition cursor-pointer"
+                    >
+                      <Key className="w-3.5 h-3.5" /> Revoke Tokens
+                    </button>
+                  </div>
                 </div>
-                <h3 className="text-sm font-semibold text-white capitalize">{activeTab} Preferences</h3>
-                <p className="text-xs text-neutral-400 mt-1">Configure advanced module parameters and security clearance credentials.</p>
               </div>
             )}
 
