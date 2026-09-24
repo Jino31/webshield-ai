@@ -14,7 +14,7 @@ import Admin from './pages/Admin';
 import About from './pages/About';
 import Feedback from './pages/Feedback';
 import ShieldSenseAI from './components/ShieldAIBot';
-import CyberSpace3D from './components/CyberSpace3D';
+
 
 function AppContent() {
   const { isDark } = useTheme();
@@ -89,9 +89,6 @@ function AppContent() {
       )}
 
       <Navbar />
-
-      {/* Dynamic 3D Perspective Grid, Floating Polyhedra & Scroll Stars Canvas */}
-      <CyberSpace3D />
 
       <main className="flex-1 flex flex-col items-center w-full relative z-10">
         <Routes>
